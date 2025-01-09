@@ -23,16 +23,22 @@ import xyz.breadloaf.imguimc.interfaces.Theme;
 import xyz.breadloaf.imguimc.theme.ImGuiClassicTheme;
 import xyz.breadloaf.imguimc.theme.ImGuiDarkTheme;
 
+import java.awt.*;
 import java.io.File;
+import java.io.IOException;
 import java.lang.reflect.Field;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.nio.file.Path;
 import java.util.*;
+import java.util.List;
 
 public class ModuleRenderable implements Renderable {
 
     public static List<String> commandLogs = new ArrayList<>();
     public static boolean commandTabJustOpened = false;
     public static boolean isCommandTab = false;
+    public static boolean startUpped = false;
 
     @Override
     public String getName() {
@@ -46,11 +52,36 @@ public class ModuleRenderable implements Renderable {
 
     @Override
     public void render() {
-        ImGui.begin("Module Manager");
+        ImGui.begin("Elite Client");
 
         try {
-            ImGui.setWindowPos(IMinecraft.mc.getWindow().getWidth() / 2f - 400f, IMinecraft.mc.getWindow().getHeight() / 2f - 400f);
-            ImGui.setWindowSize(800f, 800f);
+            if (!startUpped) {
+                ImGui.setWindowSize(800f, 800f);
+                startUpped = true;
+            }
+
+            if (!FileUtil.INSTANCE.isLatestClient()) {
+                ImGui.text("Your client is OUTDATED! Please check network, updates");
+
+                if (Desktop.isDesktopSupported()) {
+                    if (ImGui.button("Check updates (Aspw-w/Elite-Client/releases)")) {
+                        try {
+                            Desktop.getDesktop().browse(new URI("https://github.com/Aspw-w/Elite-Client/releases"));
+                        } catch (URISyntaxException e) {
+                            System.err.println("Invalid URI syntax: " + e.getMessage());
+                        } catch (IOException e) {
+                            System.err.println("Failed to open the browser: " + e.getMessage());
+                        }
+                    }
+                } else {
+                    ImGui.text("Check updates (github.com/Aspw-w/Elite-Client/releases)");
+                }
+            } else {
+                ImGui.text("Hello, everyone!");
+            }
+
+            ImGui.separator();
+            ImGui.spacing();
 
             if (ImGui.beginTabBar("Categories")) {
                 try {
@@ -98,7 +129,7 @@ public class ModuleRenderable implements Renderable {
                                         if (prevBase.exists() && prevModuleFile.exists())
                                             Client.configManager.saveConfigFile(Client.configManager.configCurrent, false);
 
-                                        Client.configManager.loadConfig(configName);
+                                        Client.configManager.loadConfig(configName, false);
 
                                         File base = new File(Client.configManager.BASE_DIR, "module-configs");
                                         File moduleFile = new File(base, configName + ".json");
@@ -173,6 +204,43 @@ public class ModuleRenderable implements Renderable {
                                 String configName = newConfigName.get();
                                 if (!configName.isEmpty())
                                     Client.configManager.saveBindFile(configName, true);
+                            }
+                        } finally {
+                            ImGui.endTabItem();
+                        }
+                    }
+
+                    if (ImGui.beginTabItem("Online Configs")) {
+                        try {
+                            isCommandTab = false;
+                            commandTabJustOpened = false;
+
+                            List<String> moduleConfigs = FileUtil.INSTANCE.getOnlineCfgs();
+                            if (!moduleConfigs.isEmpty()) {
+                                ImGui.text("Available Online Configs:");
+                                ImGui.beginChild("OnlineConfigsList", 0, 500, true);
+
+                                for (String config : moduleConfigs) {
+                                    String configName = config.replace(".json", "");
+
+                                    if (ImGui.selectable(configName)) {
+                                        File prevBase = new File(Client.configManager.BASE_DIR, "module-configs");
+                                        File prevModuleFile = new File(prevBase, Client.configManager.configCurrent + ".json");
+                                        if (prevBase.exists() && prevModuleFile.exists())
+                                            Client.configManager.saveConfigFile(Client.configManager.configCurrent, false);
+
+                                        Client.configManager.loadConfig(configName, true);
+
+                                        File base = new File(Client.configManager.BASE_DIR, "module-configs");
+                                        File moduleFile = new File(base, configName + ".json");
+                                        if (base.exists() && moduleFile.exists())
+                                            Client.configManager.saveConfigFile(configName, true);
+                                    }
+                                }
+
+                                ImGui.endChild();
+                            } else {
+                                ImGui.text("No online configs found.");
                             }
                         } finally {
                             ImGui.endTabItem();

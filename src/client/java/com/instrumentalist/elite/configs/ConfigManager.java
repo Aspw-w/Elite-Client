@@ -4,6 +4,7 @@ import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import com.instrumentalist.elite.Client;
 import com.instrumentalist.elite.hacks.ModuleManager;
+import com.instrumentalist.elite.utils.FileUtil;
 import com.instrumentalist.elite.utils.IMinecraft;
 
 import java.io.*;
@@ -82,33 +83,56 @@ public class ConfigManager {
         }
     }
 
-    public void loadConfig(String configName) {
+    public void loadConfig(String configName, boolean online) {
         this.configCurrent = configName;
 
         File base = new File(BASE_DIR, "module-configs");
         File dir = new File(base, this.configCurrent + ".json");
 
-        if (!base.exists() || !dir.exists()) return;
+        if (!online) {
+            if (!base.exists() || !dir.exists()) return;
 
-        this.saveClientJS();
+            this.saveClientJS();
 
-        try {
-            try (InputStream is = new FileInputStream(dir)) {
-                try (InputStreamReader isr = new InputStreamReader(is, StandardCharsets.UTF_8)) {
-                    if (!base.exists() || !dir.exists()) return;
-                    final JsonObject configObject = gson.fromJson(isr, JsonObject.class);
-                    configObject.entrySet().forEach(entry -> {
-                        final String moduleName = entry.getKey();
-                        final JsonObject moduleData = entry.getValue().getAsJsonObject();
-                        ModuleManager.modules.stream()
-                                .filter(m -> m.moduleName.equals(moduleName))
-                                .findFirst()
-                                .ifPresent(m -> m.configObject.load(moduleData));
-                    });
+            try {
+                try (InputStream is = new FileInputStream(dir)) {
+                    try (InputStreamReader isr = new InputStreamReader(is, StandardCharsets.UTF_8)) {
+                        if (!base.exists() || !dir.exists()) return;
+                        final JsonObject configObject = gson.fromJson(isr, JsonObject.class);
+                        configObject.entrySet().forEach(entry -> {
+                            final String moduleName = entry.getKey();
+                            final JsonObject moduleData = entry.getValue().getAsJsonObject();
+                            ModuleManager.modules.stream()
+                                    .filter(m -> m.moduleName.equals(moduleName))
+                                    .findFirst()
+                                    .ifPresent(m -> m.configObject.load(moduleData));
+                        });
+                    }
                 }
+            } catch (Exception e) {
+                e.printStackTrace();
             }
-        } catch (Exception e) {
-            e.printStackTrace();
+        } else {
+            if (!base.exists()) return;
+
+            this.saveClientJS();
+
+            try {
+                final String jsonString = FileUtil.INSTANCE.loadOnlineNow(configCurrent);
+                final JsonObject configObject = gson.fromJson(jsonString, JsonObject.class);
+
+                configObject.entrySet().forEach(entry -> {
+                    final String moduleName = entry.getKey();
+                    final JsonObject moduleData = entry.getValue().getAsJsonObject();
+                    ModuleManager.modules.stream()
+                            .filter(m -> m.moduleName.equals(moduleName))
+                            .findFirst()
+                            .ifPresent(m -> m.configObject.load(moduleData));
+                });
+
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
         }
     }
 
@@ -171,7 +195,7 @@ public class ConfigManager {
         if (!bindBase.exists() || !bindDir.exists())
             saveBindFile(this.bindCurrent, true);
         freshConfig();
-        loadConfig(this.configCurrent);
+        loadConfig(this.configCurrent, false);
         loadBind(this.bindCurrent);
     }
 

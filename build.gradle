@@ -45,6 +45,8 @@ dependencies {
     implementation "io.github.spair:imgui-java-natives-windows:${project.imguiVersion}"
     implementation "io.github.spair:imgui-java-natives-linux:${project.imguiVersion}"
     implementation "io.github.spair:imgui-java-natives-macos:${project.imguiVersion}"
+
+    implementation "com.squareup.okhttp3:okhttp:4.12.0"
 }
 
 processResources {
