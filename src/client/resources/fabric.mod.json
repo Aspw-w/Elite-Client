@@ -1,0 +1,29 @@
+{
+  "schemaVersion": 1,
+  "id": "elite",
+  "version": "1.21.4",
+  "name": "Elite",
+  "description": "Minecraft Hacked Client",
+  "authors": [
+    "Aspw"
+  ],
+  "contact": {
+    "homepage": "https://nattogreatapi.pages.dev"
+  },
+  "license": "GPL-3.0",
+  "icon": "assets/elite/icon.png",
+  "entrypoints": {
+    "client": [
+      "com.instrumentalist.mixin.Initializer"
+    ]
+  },
+  "mixins": [
+    "elite.mixins.json"
+  ],
+  "depends": {
+    "fabricloader": ">=0.16.9",
+    "fabric": "*",
+    "minecraft": "1.21.4"
+  },
+  "accessWidener": "elite.accesswidener"
+}

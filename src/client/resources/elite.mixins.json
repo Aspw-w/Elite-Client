@@ -1,0 +1,39 @@
+{
+  "required": true,
+  "minVersion": "0.8",
+  "package": "com.instrumentalist.mixin.injector",
+  "compatibilityLevel": "JAVA_21",
+  "client": [
+    "BipedEntityModelMixin",
+    "BlockCollisionSpliteratorMixin",
+    "BlockMixin",
+    "CameraMixin",
+    "ChunkOcclusionGraphBuilderMixin",
+    "ClientBrandRetrieverMixin",
+    "ClientConnectionMixin",
+    "ClientPlayerEntityMixin",
+    "ClientPlayerInteractionManagerMixin",
+    "EntityMixin",
+    "EntityRenderDispatcherMixin",
+    "EntityRenderStateMixin",
+    "GameRendererMixin",
+    "HeldItemRendererMixin",
+    "InGameHudMixin",
+    "InGameOverlayRendererMixin",
+    "KeyboardMixin",
+    "LightmapTextureManagerMixin",
+    "LivingEntityMixin",
+    "MinecraftClientMixin",
+    "MouseMixin",
+    "PacketByteBufMixin",
+    "PlayerEntityMixin",
+    "PlayerEntityRendererMixin",
+    "PlayerListEntryMixin",
+    "RenderSystemMixin",
+    "RenderTickCounterDynamicMixin",
+    "SodiumBlockOcclusionCacheMixin"
+  ],
+  "injectors": {
+    "defaultRequire": 1
+  }
+}

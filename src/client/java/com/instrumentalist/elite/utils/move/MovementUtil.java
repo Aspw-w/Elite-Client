@@ -1,0 +1,147 @@
+package com.instrumentalist.elite.utils.move;
+
+import com.instrumentalist.elite.hacks.features.combat.KillAura;
+import com.instrumentalist.elite.hacks.features.combat.TargetStrafe;
+import com.instrumentalist.elite.utils.IMinecraft;
+import com.instrumentalist.elite.utils.entity.EntityExtensionKt;
+import com.instrumentalist.elite.utils.rotation.RotationUtil;
+import net.minecraft.client.input.Input;
+import net.minecraft.entity.LivingEntity;
+import net.minecraft.entity.effect.StatusEffectInstance;
+import net.minecraft.entity.effect.StatusEffects;
+
+public class MovementUtil {
+
+    public static int fallTicks = 0;
+
+    public boolean hasMotion() {
+        return IMinecraft.mc.player != null && (IMinecraft.mc.player.getVelocity().x != 0.0 || IMinecraft.mc.player.getVelocity().y != 0.0 || IMinecraft.mc.player.getVelocity().z != 0.0);
+    }
+
+    public static boolean isMoving() {
+        return IMinecraft.mc.player != null && (IMinecraft.mc.player.input.movementForward != 0.0 || IMinecraft.mc.player.input.movementSideways != 0.0);
+    }
+
+    public static double getBaseMoveSpeed(double customSpeed) {
+        double baseSpeed = customSpeed;
+
+        if (IMinecraft.mc.player != null && IMinecraft.mc.player.hasStatusEffect(StatusEffects.SPEED)) {
+            StatusEffectInstance effect = IMinecraft.mc.player.getStatusEffect(StatusEffects.SPEED);
+
+            if (effect != null) {
+                int amplifier = effect.getAmplifier();
+                baseSpeed *= 1.0 + 0.2 * (amplifier + 1);
+            }
+        }
+
+        return baseSpeed;
+    }
+
+    public static int getSpeedEffect() {
+        if (IMinecraft.mc.player != null && IMinecraft.mc.player.hasStatusEffect(StatusEffects.SPEED)) {
+            StatusEffectInstance effect = IMinecraft.mc.player.getStatusEffect(StatusEffects.SPEED);
+
+            if (effect != null)
+                return effect.getAmplifier() + 1;
+        }
+
+        return 0;
+    }
+
+    public static void stopMoving() {
+        if (IMinecraft.mc.player == null) return;
+
+        IMinecraft.mc.player.setVelocity(0.0, IMinecraft.mc.player.getVelocity().y, 0.0);
+        IMinecraft.mc.player.input.movementForward = 0f;
+        IMinecraft.mc.player.input.movementSideways = 0f;
+    }
+
+    public static boolean isDiagonal(float threshold) {
+        float yaw = getPlayerDirection();
+        yaw = Math.abs(((yaw + 360) % 360));
+        boolean isNorth = Math.abs(yaw) < threshold || Math.abs(yaw - 360) < threshold;
+        boolean isSouth = Math.abs(yaw - 180) < threshold;
+        boolean isEast = Math.abs(yaw - 90) < threshold;
+        boolean isWest = Math.abs(yaw - 270) < threshold;
+        return (!isNorth && !isSouth && !isEast && !isWest);
+    }
+
+    public static float getPlayerDirection() {
+        if (IMinecraft.mc.player == null) return 0f;
+
+        float yaw = IMinecraft.mc.player.getYaw();
+
+        if (TargetStrafe.targetStrafeHook())
+            yaw = RotationUtil.INSTANCE.smoothLookAt(IMinecraft.mc.player.getX(), IMinecraft.mc.player.getY(), IMinecraft.mc.player.getZ(), KillAura.closestEntity.getX(), IMinecraft.mc.player.getY(), KillAura.closestEntity.getZ(), 360f).getFirst();
+
+        float strafe = 45f;
+        Input input = IMinecraft.mc.player.input;
+
+        if (input.movementForward < 0) {
+            strafe = -45f;
+            yaw += 180f;
+        }
+        if (input.playerInput.left()) {
+            yaw -= strafe;
+            if (input.movementForward == 0f)
+                yaw -= 45f;
+        } else if (input.playerInput.right()) {
+            yaw += strafe;
+            if (input.movementForward == 0f)
+                yaw += 45f;
+        }
+
+        yaw = (yaw % 360 + 360) % 360;
+
+        return yaw;
+    }
+
+    public static void setVelocityY(Double y) {
+        if (IMinecraft.mc.player == null) return;
+
+        IMinecraft.mc.player.setVelocity(IMinecraft.mc.player.getVelocity().x, y, IMinecraft.mc.player.getVelocity().z);
+    }
+
+    public static void smoothStrafe(Float speed) {
+        if (IMinecraft.mc.player == null) return;
+
+        if (isMoving()) {
+            double yaw = Math.toRadians(getPlayerDirection());
+            IMinecraft.mc.player.setVelocity(IMinecraft.mc.player.getVelocity().x - Math.sin(yaw) * (speed / 4), IMinecraft.mc.player.getVelocity().y, IMinecraft.mc.player.getVelocity().z + Math.cos(yaw) * (speed / 4));
+        }
+    }
+
+    public static void strafe(Float speed) {
+        if (IMinecraft.mc.player == null) return;
+
+        if (isMoving()) {
+            if (TargetStrafe.targetStrafeHook()) {
+                float yaw = RotationUtil.INSTANCE.getRotationsEntity((LivingEntity) KillAura.closestEntity).getFirst();
+                double forward;
+                if (EntityExtensionKt.distanceToWithoutY(IMinecraft.mc.player, KillAura.closestEntity) <= TargetStrafe.distance.get())
+                    forward = 0.0;
+                else forward = 1.0;
+                double direction = TargetStrafe.direction;
+
+                if (forward != 0.0D) {
+                    if (direction > 0.0D) yaw += -45;
+                    else if (direction < 0.0D) yaw += 45;
+                    direction = 0.0D;
+                }
+
+                if (direction > 0.0D)
+                    direction = 1.0D;
+                else if (direction < 0.0D)
+                    direction = -1.0D;
+
+                double mx = Math.cos(Math.toRadians((yaw + 90.0F)));
+                double mz = Math.sin(Math.toRadians((yaw + 90.0F)));
+
+                IMinecraft.mc.player.setVelocity(forward * speed * mx + direction * speed * mz, IMinecraft.mc.player.getVelocity().y, forward * speed * mz - direction * speed * mx);
+            } else {
+                double yaw = Math.toRadians(getPlayerDirection());
+                IMinecraft.mc.player.setVelocity(-Math.sin(yaw) * speed, IMinecraft.mc.player.getVelocity().y, Math.cos(yaw) * speed);
+            }
+        } else stopMoving();
+    }
+}
