@@ -23,6 +23,11 @@ loom {
     accessWidenerPath = file('src/client/resources/elite.accesswidener')
 }
 
+configurations {
+    library
+    modImplementation.extendsFrom(library)
+}
+
 repositories {
     // Add repositories to retrieve artifacts from in here.
     // You should only use this when depending on other mods because
@@ -39,14 +44,14 @@ dependencies {
 
     modImplementation "net.fabricmc.fabric-api:fabric-api:${project.fabric_version}"
 
-    implementation "io.github.spair:imgui-java-binding:${project.imguiVersion}"
-    implementation "io.github.spair:imgui-java-lwjgl3:${project.imguiVersion}"
+    library "io.github.spair:imgui-java-binding:${project.imguiVersion}"
+    library "io.github.spair:imgui-java-lwjgl3:${project.imguiVersion}"
 
-    implementation "io.github.spair:imgui-java-natives-windows:${project.imguiVersion}"
-    implementation "io.github.spair:imgui-java-natives-linux:${project.imguiVersion}"
-    implementation "io.github.spair:imgui-java-natives-macos:${project.imguiVersion}"
+    library "io.github.spair:imgui-java-natives-windows:${project.imguiVersion}"
+    library "io.github.spair:imgui-java-natives-linux:${project.imguiVersion}"
+    library "io.github.spair:imgui-java-natives-macos:${project.imguiVersion}"
 
-    implementation "com.squareup.okhttp3:okhttp:4.12.0"
+    library "com.squareup.okhttp3:okhttp:4.12.0"
 }
 
 processResources {
@@ -89,6 +94,9 @@ jar {
     from("LICENSE") {
         rename { "${it}_${project.archivesBaseName}" }
     }
+
+    duplicatesStrategy = DuplicatesStrategy.WARN
+    from(configurations.library.collect { if (it.isDirectory()) it else zipTree(it) })
 }
 
 // configure the maven publication

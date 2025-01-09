@@ -15,15 +15,17 @@ import static org.lwjgl.glfw.GLFW.glfwGetCurrentContext;
 import static org.lwjgl.glfw.GLFW.glfwMakeContextCurrent;
 
 public class ImguiLoader {
-    private static final ImGuiImplGlfw imGuiGlfw = new ImGuiImplGlfw();
+    private static ImGuiImplGlfw imGuiGlfw = null;
 
-    private static final ImGuiImplGl3 imGuiGl3 = new ImGuiImplGl3();
+    private static ImGuiImplGl3 imGuiGl3 = null;
 
     private static long windowHandle;
 
     public static void onGlfwInit(long handle) {
         initializeImGui(handle);
+        imGuiGlfw = new ImGuiImplGlfw();
         imGuiGlfw.init(handle,true);
+        imGuiGl3 = new ImGuiImplGl3();
         imGuiGl3.init();
         windowHandle = handle;
     }
