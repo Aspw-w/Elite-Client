@@ -1,5 +1,7 @@
 package com.instrumentalist.mixin.injector;
 
+import com.instrumentalist.elite.hacks.ModuleManager;
+import com.instrumentalist.elite.hacks.features.render.ItemView;
 import com.instrumentalist.elite.hacks.features.render.LegacyCombat;
 import com.instrumentalist.elite.utils.IMinecraft;
 import net.minecraft.client.network.AbstractClientPlayerEntity;
@@ -30,6 +32,9 @@ public abstract class HeldItemRendererMixin {
 
     @Inject(method = "renderFirstPersonItem", at = @At("HEAD"), cancellable = true)
     private void legacyCombatHook(AbstractClientPlayerEntity player, float tickDelta, float pitch, Hand hand, float swingProgress, ItemStack item, float equipProgress, MatrixStack matrices, VertexConsumerProvider vertexConsumers, int light, CallbackInfo ci) {
+        if (ModuleManager.getModuleState(new ItemView()) && ItemView.Companion.getLowOffHand().get() && hand == Hand.OFF_HAND)
+            matrices.translate(0f, -0.16f, 0f);
+
         if (LegacyCombat.Companion.shouldBlock()) {
             if (hand == Hand.MAIN_HAND) {
                 ci.cancel();

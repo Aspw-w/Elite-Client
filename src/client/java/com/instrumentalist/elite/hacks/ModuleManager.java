@@ -103,6 +103,7 @@ public class ModuleManager implements EventListener {
         modules.add(new PathFinder());
         modules.add(new NoBuildLimit());
         modules.add(new FastBreak());
+        modules.add(new ItemView());
 
         // Not shown for click gui (category is NULL)
         modules.add(new PluginsDetector());

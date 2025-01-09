@@ -13,6 +13,7 @@ import com.instrumentalist.elite.hacks.features.world.CivBreak;
 import com.instrumentalist.elite.hacks.features.world.Nuker;
 import com.instrumentalist.elite.utils.IMinecraft;
 import com.instrumentalist.elite.utils.value.BooleanValue;
+import com.instrumentalist.elite.utils.value.TextValue;
 import net.minecraft.client.font.TextRenderer;
 import net.minecraft.client.render.*;
 import net.minecraft.entity.player.PlayerEntity;
@@ -38,6 +39,13 @@ public class Interface extends Module {
     );
 
     @Setting
+    private final TextValue waterMarkText = new TextValue(
+            "Water Mark Text",
+            "Elite",
+            waterMark::get
+    );
+
+    @Setting
     private final BooleanValue information = new BooleanValue(
             "Information",
             true
@@ -47,6 +55,13 @@ public class Interface extends Module {
     private final BooleanValue moduleList = new BooleanValue(
             "Module List",
             true
+    );
+
+    @Setting
+    private final BooleanValue fontShadow = new BooleanValue(
+            "Font Shadow",
+            true,
+            () -> waterMark.get() || information.get() || moduleList.get()
     );
 
     public static TextRenderer cachedTextRenderer = null;
@@ -86,35 +101,35 @@ public class Interface extends Module {
         float infoY = 4f;
 
         if (waterMark.get()) {
-            cachedTextRenderer.draw(Text.of("§fElite (§c" + formattedNow + "§f)"), 4f, infoY, Color.WHITE.getRGB(), true, matrix4f, vertexConsumerProvider, TextRenderer.TextLayerType.SEE_THROUGH, 0, 0);
+            cachedTextRenderer.draw(Text.of("§f" + waterMarkText.get() + " (§c" + formattedNow + "§f)"), 4f, infoY, Color.WHITE.getRGB(), fontShadow.get(), matrix4f, vertexConsumerProvider, TextRenderer.TextLayerType.SEE_THROUGH, 0, 0);
             infoY += 10.5f;
         }
 
         if (information.get()) {
-            cachedTextRenderer.draw(Text.of("§f[§cFPS§f]§7: " + IMinecraft.mc.getCurrentFps()), 4f, infoY, Color.WHITE.getRGB(), true, matrix4f, vertexConsumerProvider, TextRenderer.TextLayerType.SEE_THROUGH, 0, 0);
+            cachedTextRenderer.draw(Text.of("§f[§cFPS§f]§7: " + IMinecraft.mc.getCurrentFps()), 4f, infoY, Color.WHITE.getRGB(), fontShadow.get(), matrix4f, vertexConsumerProvider, TextRenderer.TextLayerType.SEE_THROUGH, 0, 0);
             infoY += 10.5f;
 
-            cachedTextRenderer.draw(Text.of("§f[§cBPS§f]§7: " + ModuleManager.bps), 4f, infoY, Color.WHITE.getRGB(), true, matrix4f, vertexConsumerProvider, TextRenderer.TextLayerType.SEE_THROUGH, 0, 0);
+            cachedTextRenderer.draw(Text.of("§f[§cBPS§f]§7: " + ModuleManager.bps), 4f, infoY, Color.WHITE.getRGB(), fontShadow.get(), matrix4f, vertexConsumerProvider, TextRenderer.TextLayerType.SEE_THROUGH, 0, 0);
             infoY += 10.5f;
 
-            cachedTextRenderer.draw(Text.of("§f[§cServer§f]§7: " + IMinecraft.mc.player.networkHandler.getBrand()), 4f, infoY, Color.WHITE.getRGB(), true, matrix4f, vertexConsumerProvider, TextRenderer.TextLayerType.SEE_THROUGH, 0, 0);
+            cachedTextRenderer.draw(Text.of("§f[§cServer§f]§7: " + IMinecraft.mc.player.networkHandler.getBrand()), 4f, infoY, Color.WHITE.getRGB(), fontShadow.get(), matrix4f, vertexConsumerProvider, TextRenderer.TextLayerType.SEE_THROUGH, 0, 0);
             infoY += 10.5f;
 
             if (IMinecraft.mc.player.networkHandler.getServerInfo() != null) {
-                cachedTextRenderer.draw(Text.of("§f[§cVersion§f]§7: " + IMinecraft.mc.player.networkHandler.getServerInfo().version.getString()), 4f, infoY, Color.WHITE.getRGB(), true, matrix4f, vertexConsumerProvider, TextRenderer.TextLayerType.SEE_THROUGH, 0, 0);
+                cachedTextRenderer.draw(Text.of("§f[§cVersion§f]§7: " + IMinecraft.mc.player.networkHandler.getServerInfo().version.getString()), 4f, infoY, Color.WHITE.getRGB(), fontShadow.get(), matrix4f, vertexConsumerProvider, TextRenderer.TextLayerType.SEE_THROUGH, 0, 0);
                 infoY += 10.5f;
 
-                cachedTextRenderer.draw(Text.of("§f[§cPing§f]§7: " + IMinecraft.mc.player.networkHandler.getServerInfo().ping), 4f, infoY, Color.WHITE.getRGB(), true, matrix4f, vertexConsumerProvider, TextRenderer.TextLayerType.SEE_THROUGH, 0, 0);
+                cachedTextRenderer.draw(Text.of("§f[§cPing§f]§7: " + IMinecraft.mc.player.networkHandler.getServerInfo().ping), 4f, infoY, Color.WHITE.getRGB(), fontShadow.get(), matrix4f, vertexConsumerProvider, TextRenderer.TextLayerType.SEE_THROUGH, 0, 0);
                 infoY += 10.5f;
             } else {
-                cachedTextRenderer.draw(Text.of("§f[§cVersion§f]§7: null"), 4f, infoY, Color.WHITE.getRGB(), true, matrix4f, vertexConsumerProvider, TextRenderer.TextLayerType.SEE_THROUGH, 0, 0);
+                cachedTextRenderer.draw(Text.of("§f[§cVersion§f]§7: null"), 4f, infoY, Color.WHITE.getRGB(), fontShadow.get(), matrix4f, vertexConsumerProvider, TextRenderer.TextLayerType.SEE_THROUGH, 0, 0);
                 infoY += 10.5f;
 
-                cachedTextRenderer.draw(Text.of("§f[§cPing§f]§7: null"), 4f, infoY, Color.WHITE.getRGB(), true, matrix4f, vertexConsumerProvider, TextRenderer.TextLayerType.SEE_THROUGH, 0, 0);
+                cachedTextRenderer.draw(Text.of("§f[§cPing§f]§7: null"), 4f, infoY, Color.WHITE.getRGB(), fontShadow.get(), matrix4f, vertexConsumerProvider, TextRenderer.TextLayerType.SEE_THROUGH, 0, 0);
                 infoY += 10.5f;
             }
 
-            cachedTextRenderer.draw(Text.of("§f[§cPlayers§f]§7: " + IMinecraft.mc.player.networkHandler.getCommandSource().getPlayerNames().size()), 4f, infoY, Color.WHITE.getRGB(), true, matrix4f, vertexConsumerProvider, TextRenderer.TextLayerType.SEE_THROUGH, 0, 0);
+            cachedTextRenderer.draw(Text.of("§f[§cPlayers§f]§7: " + IMinecraft.mc.player.networkHandler.getCommandSource().getPlayerNames().size()), 4f, infoY, Color.WHITE.getRGB(), fontShadow.get(), matrix4f, vertexConsumerProvider, TextRenderer.TextLayerType.SEE_THROUGH, 0, 0);
 
             if (ModuleManager.getModuleState(new Scaffold())) {
                 String scaffoldText = Scaffold.Companion.getHotbarStackSize() + " Blocks";
@@ -136,7 +151,7 @@ public class Interface extends Module {
 
                     Color color = Color.getHSBColor(hueShift, saturation, brightness);
 
-                    cachedTextRenderer.draw(Text.of(text), textLen, 120f, new Color(color.getRed(), color.getGreen(), color.getBlue(), alpha).getRGB(), true, matrix4f, vertexConsumerProvider, TextRenderer.TextLayerType.SEE_THROUGH, 0, 0);
+                    cachedTextRenderer.draw(Text.of(text), textLen, 120f, new Color(color.getRed(), color.getGreen(), color.getBlue(), alpha).getRGB(), fontShadow.get(), matrix4f, vertexConsumerProvider, TextRenderer.TextLayerType.SEE_THROUGH, 0, 0);
 
                     textLen += cachedTextRenderer.getWidth(text);
                     index++;
@@ -163,7 +178,7 @@ public class Interface extends Module {
 
                     Color color = Color.getHSBColor(hueShift, saturation, brightness);
 
-                    cachedTextRenderer.draw(Text.of(text), textLen, 130.5f, new Color(color.getRed(), color.getGreen(), color.getBlue(), alpha).getRGB(), true, matrix4f, vertexConsumerProvider, TextRenderer.TextLayerType.SEE_THROUGH, 0, 0);
+                    cachedTextRenderer.draw(Text.of(text), textLen, 130.5f, new Color(color.getRed(), color.getGreen(), color.getBlue(), alpha).getRGB(), fontShadow.get(), matrix4f, vertexConsumerProvider, TextRenderer.TextLayerType.SEE_THROUGH, 0, 0);
 
                     textLen += cachedTextRenderer.getWidth(text);
                     index++;
@@ -190,7 +205,7 @@ public class Interface extends Module {
 
                     Color color = Color.getHSBColor(hueShift, saturation, brightness);
 
-                    cachedTextRenderer.draw(Text.of(text), textLen, 141f, new Color(color.getRed(), color.getGreen(), color.getBlue(), alpha).getRGB(), true, matrix4f, vertexConsumerProvider, TextRenderer.TextLayerType.SEE_THROUGH, 0, 0);
+                    cachedTextRenderer.draw(Text.of(text), textLen, 141f, new Color(color.getRed(), color.getGreen(), color.getBlue(), alpha).getRGB(), fontShadow.get(), matrix4f, vertexConsumerProvider, TextRenderer.TextLayerType.SEE_THROUGH, 0, 0);
 
                     textLen += cachedTextRenderer.getWidth(text);
                     index++;
@@ -201,7 +216,7 @@ public class Interface extends Module {
                 float murdererTextY = 151.5f;
                 List<PlayerEntity> murdererList = MurdererDetector.murderers;
 
-                cachedTextRenderer.draw(Text.of("§f[§cMurderers§f]§7: " + murdererList.size()), IMinecraft.mc.getWindow().getWidth() / 12f, murdererTextY, Color.WHITE.getRGB(), true, matrix4f, vertexConsumerProvider, TextRenderer.TextLayerType.SEE_THROUGH, 0, 0);
+                cachedTextRenderer.draw(Text.of("§f[§cMurderers§f]§7: " + murdererList.size()), IMinecraft.mc.getWindow().getWidth() / 12f, murdererTextY, Color.WHITE.getRGB(), fontShadow.get(), matrix4f, vertexConsumerProvider, TextRenderer.TextLayerType.SEE_THROUGH, 0, 0);
 
                 if (!murdererList.isEmpty()) {
                     for (PlayerEntity murderer : murdererList) {
@@ -215,7 +230,7 @@ public class Interface extends Module {
                         } catch (NumberFormatException ignored) {
                         }
 
-                        cachedTextRenderer.draw(Text.of("§f> " + murderer.getName().getString() + "§7 (" + distance + "m)"), IMinecraft.mc.getWindow().getWidth() / 12f, murdererTextY, Color.WHITE.getRGB(), true, matrix4f, vertexConsumerProvider, TextRenderer.TextLayerType.SEE_THROUGH, 0, 0);
+                        cachedTextRenderer.draw(Text.of("§f> " + murderer.getName().getString() + "§7 (" + distance + "m)"), IMinecraft.mc.getWindow().getWidth() / 12f, murdererTextY, Color.WHITE.getRGB(), fontShadow.get(), matrix4f, vertexConsumerProvider, TextRenderer.TextLayerType.SEE_THROUGH, 0, 0);
                     }
                 }
             }
@@ -246,7 +261,7 @@ public class Interface extends Module {
                     if (module.tag() != null)
                         text += "§7 " + module.tag();
 
-                    cachedTextRenderer.draw(Text.of(text), IMinecraft.mc.getWindow().getWidth() / 2f - 4f - cachedTextRenderer.getWidth(Text.of(text)), listY, new Color(color.getRed(), color.getGreen(), color.getBlue(), alpha).getRGB(), true, matrix4f, vertexConsumerProvider, TextRenderer.TextLayerType.SEE_THROUGH, 0, 0);
+                    cachedTextRenderer.draw(Text.of(text), IMinecraft.mc.getWindow().getWidth() / 2f - 4f - cachedTextRenderer.getWidth(Text.of(text)), listY, new Color(color.getRed(), color.getGreen(), color.getBlue(), alpha).getRGB(), fontShadow.get(), matrix4f, vertexConsumerProvider, TextRenderer.TextLayerType.SEE_THROUGH, 0, 0);
 
                     listY += 10.5f;
                     index++;

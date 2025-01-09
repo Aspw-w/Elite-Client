@@ -3,9 +3,11 @@ package com.instrumentalist.mixin.injector;
 import com.instrumentalist.elite.hacks.ModuleManager;
 import com.instrumentalist.elite.hacks.features.combat.TargetStrafe;
 import com.instrumentalist.elite.hacks.features.movement.Sprint;
+import com.instrumentalist.elite.hacks.features.render.ItemView;
 import com.instrumentalist.elite.utils.IMinecraft;
 import com.instrumentalist.elite.utils.move.MovementUtil;
 import com.instrumentalist.elite.utils.simulator.PredictUtil;
+import com.llamalad7.mixinextras.injector.ModifyReturnValue;
 import net.minecraft.client.network.ClientPlayerEntity;
 import net.minecraft.entity.EntityPose;
 import net.minecraft.entity.LivingEntity;
@@ -23,7 +25,7 @@ public abstract class LivingEntityMixin extends EntityMixin {
     @Shadow public abstract float getJumpVelocity();
 
     @Inject(method = "jump", at = @At("HEAD"), cancellable = true)
-    public void jump(CallbackInfo ci) {
+    public void jumpEvent(CallbackInfo ci) {
         ci.cancel();
 
         float f = this.getJumpVelocity();
@@ -47,5 +49,10 @@ public abstract class LivingEntityMixin extends EntityMixin {
     private void predictPushFix(CallbackInfo ci) {
         if (((LivingEntity) (Object) this instanceof ClientPlayerEntity) && PredictUtil.predicting)
             ci.cancel();
+    }
+
+    @ModifyReturnValue(method = "getHandSwingDuration", at = @At("RETURN"))
+    private int swingSpeedModifier(int original) {
+        return ItemView.Companion.hookSwingSpeed(original, (LivingEntity) (Object) this);
     }
 }
