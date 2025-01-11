@@ -10,6 +10,7 @@ import com.instrumentalist.elite.utils.IMinecraft
 import com.instrumentalist.elite.utils.math.TargetUtil
 import com.instrumentalist.elite.utils.math.TimerUtil
 import com.instrumentalist.elite.utils.move.MovementUtil
+import com.instrumentalist.elite.utils.packet.PacketUtil
 import com.instrumentalist.elite.utils.rotation.RotationUtil
 import com.instrumentalist.elite.utils.value.BooleanValue
 import com.instrumentalist.elite.utils.value.FloatValue
@@ -22,6 +23,7 @@ import net.minecraft.entity.player.PlayerInventory
 import net.minecraft.item.BlockItem
 import net.minecraft.item.Items
 import net.minecraft.item.PlayerHeadItem
+import net.minecraft.network.packet.c2s.play.HandSwingC2SPacket
 import net.minecraft.util.Hand
 import net.minecraft.util.hit.BlockHitResult
 import net.minecraft.util.math.BlockPos
@@ -536,7 +538,7 @@ class Scaffold : Module("Scaffold", ModuleCategory.Player, GLFW.GLFW_KEY_UNKNOWN
                                     bhr
                                 ).isAccepted
                             ) {
-                                IMinecraft.mc.player!!.swingHand(Hand.MAIN_HAND)
+                                PacketUtil.sendPacket(HandSwingC2SPacket(Hand.MAIN_HAND))
                                 if (!IMinecraft.mc.player!!.mainHandStack.isEmpty)
                                     IMinecraft.mc.gameRenderer.firstPersonRenderer.resetEquipProgress(Hand.MAIN_HAND)
                             }
@@ -582,7 +584,7 @@ class Scaffold : Module("Scaffold", ModuleCategory.Player, GLFW.GLFW_KEY_UNKNOWN
                                         bhr
                                     ).isAccepted
                                 ) {
-                                    IMinecraft.mc.player!!.swingHand(Hand.MAIN_HAND)
+                                    PacketUtil.sendPacket(HandSwingC2SPacket(Hand.MAIN_HAND))
                                     if (!IMinecraft.mc.player!!.mainHandStack.isEmpty)
                                         IMinecraft.mc.gameRenderer.firstPersonRenderer.resetEquipProgress(Hand.MAIN_HAND)
                                 }
@@ -635,7 +637,7 @@ class Scaffold : Module("Scaffold", ModuleCategory.Player, GLFW.GLFW_KEY_UNKNOWN
                             bhr
                         ).isAccepted
                     ) {
-                        IMinecraft.mc.player!!.swingHand(Hand.MAIN_HAND)
+                        PacketUtil.sendPacket(HandSwingC2SPacket(Hand.MAIN_HAND))
                         if (!IMinecraft.mc.player!!.mainHandStack.isEmpty)
                             IMinecraft.mc.gameRenderer.firstPersonRenderer.resetEquipProgress(Hand.MAIN_HAND)
                     }
@@ -679,7 +681,7 @@ class Scaffold : Module("Scaffold", ModuleCategory.Player, GLFW.GLFW_KEY_UNKNOWN
                         bhr
                     ).isAccepted
                 ) {
-                    IMinecraft.mc.player!!.swingHand(Hand.MAIN_HAND)
+                    PacketUtil.sendPacket(HandSwingC2SPacket(Hand.MAIN_HAND))
                     if (!IMinecraft.mc.player!!.mainHandStack.isEmpty)
                         IMinecraft.mc.gameRenderer.firstPersonRenderer.resetEquipProgress(Hand.MAIN_HAND)
                 }

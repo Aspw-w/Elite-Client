@@ -11,7 +11,6 @@ import com.instrumentalist.elite.hacks.features.player.*;
 import com.instrumentalist.elite.hacks.features.render.*;
 import com.instrumentalist.elite.hacks.features.world.*;
 import com.instrumentalist.elite.hacks.features.world.Timer;
-import com.instrumentalist.elite.utils.ChatUtil;
 import com.instrumentalist.elite.utils.IMinecraft;
 import com.instrumentalist.elite.utils.packet.BlinkUtil;
 import com.instrumentalist.elite.utils.rotation.RotationUtil;
@@ -50,7 +49,7 @@ public class ModuleManager implements EventListener {
         modules.add(new NoBreakCooldown());
         modules.add(new Interface());
         modules.add(new KillAura());
-        modules.add(new RotationRecorder());
+        modules.add(new SpinBot());
         modules.add(new VanillaSpoofer());
         modules.add(new AntiBot());
         modules.add(new AutoPotion());

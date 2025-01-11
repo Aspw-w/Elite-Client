@@ -1,7 +1,9 @@
 package com.instrumentalist.mixin.injector;
 
 import com.instrumentalist.elite.hacks.ModuleManager;
+import com.instrumentalist.elite.hacks.features.player.SpinBot;
 import com.instrumentalist.elite.hacks.features.render.FullBright;
+import com.instrumentalist.elite.utils.ChatUtil;
 import com.instrumentalist.elite.utils.IMinecraft;
 import com.instrumentalist.elite.utils.math.Interpolation;
 import com.instrumentalist.elite.utils.rotation.RotationUtil;
@@ -46,18 +48,15 @@ public abstract class PlayerEntityRendererMixin {
 
             lastFrameTime = currentTime;
 
-            float yaw = Interpolation.INSTANCE.lerpWithTime(this.prevYaw, RotationUtil.INSTANCE.getCurrentYaw(), 18f, deltaTime);
+            float showYaw = RotationUtil.INSTANCE.getCurrentYaw();
+
+            if (showYaw >= 360f)
+                showYaw = 360f;
+            else if (showYaw <= -360f)
+                showYaw = -360f;
+
+            float yaw = showYaw >= 0f && (showYaw >= 315f || showYaw <= 45f) || showYaw <= 0f && (showYaw <= -315f || showYaw >= -45f) ? showYaw : Interpolation.INSTANCE.lerpWithTime(this.prevYaw, RotationUtil.INSTANCE.getCurrentYaw(), 18f, deltaTime);
             float pitch = Interpolation.INSTANCE.lerpWithTime(this.prevPitch, RotationUtil.INSTANCE.getCurrentPitch(), 14f, deltaTime);
-
-            if (yaw >= 360f)
-                yaw = 360f;
-            else if (yaw <= -360f)
-                yaw = -360f;
-
-            if (pitch >= 90f)
-                pitch = 90f;
-            else if (pitch <= -90f)
-                pitch = -90f;
 
             state.bodyYaw = yaw;
             this.prevYaw = state.bodyYaw;

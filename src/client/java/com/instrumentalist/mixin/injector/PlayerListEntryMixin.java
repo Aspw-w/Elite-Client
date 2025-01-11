@@ -23,8 +23,8 @@ public abstract class PlayerListEntryMixin {
 
     @Inject(method = "getSkinTextures", at = @At("RETURN"), cancellable = true)
     private void getSkinTextures(CallbackInfoReturnable<SkinTextures> ci) {
-        if (!ModuleManager.getModuleState(new Cape()) || IMinecraft.mc.player != null && !profile.getId().equals(IMinecraft.mc.player.getGameProfile().getId())) return;
         var textures = ci.getReturnValue();
+        if (!ModuleManager.getModuleState(new Cape()) || IMinecraft.mc.player != null && !profile.getId().equals(IMinecraft.mc.player.getGameProfile().getId()) || textures.capeTexture() != null) return;
         Identifier capeFile = Identifier.of("elite", "cape.png");
         ci.setReturnValue(new SkinTextures(textures.texture(), textures.textureUrl(), capeFile,
                 capeFile, textures.model(), textures.secure()));

@@ -1,4 +1,4 @@
-package com.instrumentalist.elite.hacks.features.exploit;
+package com.instrumentalist.elite.hacks.features.player;
 
 import com.instrumentalist.elite.events.features.UpdateEvent;
 import com.instrumentalist.elite.hacks.Module;
@@ -8,32 +8,35 @@ import com.instrumentalist.elite.utils.rotation.RotationUtil;
 import com.instrumentalist.elite.utils.value.FloatValue;
 import org.lwjgl.glfw.GLFW;
 
-public class RotationRecorder extends Module {
+public class SpinBot extends Module {
 
-    public RotationRecorder() {
-        super("Rotation Recorder", ModuleCategory.Exploit, GLFW.GLFW_KEY_UNKNOWN, false, true);
+    public SpinBot() {
+        super("Spin Bot", ModuleCategory.Player, GLFW.GLFW_KEY_UNKNOWN, false, true);
     }
 
     @Setting
-    private final FloatValue yaw = new FloatValue(
-            "Yaw",
-            0f,
-            -180f,
-            180f
+    private final FloatValue spinSpeed = new FloatValue(
+            "Spin Speed",
+            30f,
+            -40f,
+            40f
     );
 
     @Setting
     private final FloatValue pitch = new FloatValue(
             "Pitch",
-            0f,
+            90f,
             -90f,
             90f
     );
+
+    private static float spinYaw = 0f;
 
     @Override
     public void onDisable() {
         if (IMinecraft.mc.player == null) return;
 
+        spinYaw = 0f;
         RotationUtil.INSTANCE.reset();
     }
 
@@ -45,6 +48,11 @@ public class RotationRecorder extends Module {
     public void onUpdate(UpdateEvent event) {
         if (IMinecraft.mc.player == null) return;
 
-        RotationUtil.INSTANCE.setRotation(yaw.get(), pitch.get(), 180f);
+        if (spinYaw >= 360f || spinYaw <= -360f)
+            spinYaw = 0f;
+
+        spinYaw += spinSpeed.get();
+
+        RotationUtil.INSTANCE.setRotation(spinYaw, pitch.get(), 180f);
     }
 }
