@@ -297,6 +297,9 @@ public class ModuleRenderable implements Renderable {
 
                     if (ImGui.beginTabItem("Credits")) {
                         try {
+                            isCommandTab = false;
+                            commandTabJustOpened = false;
+
                             ImGui.text("Made by Aspw");
                             ImGui.text("YouTube: https://www.youtube.com/@Hadveen");
                             ImGui.text("GitHub: https://github.com/Aspw-w");
@@ -325,6 +328,7 @@ public class ModuleRenderable implements Renderable {
             log("pl/plugins -> detect server plugins");
             log("transaction -> debug transaction packets (x10)");
             log("session -> show your current session id");
+            log("vclip <height> -> teleport up from current position");
         } else if (command.toLowerCase().startsWith("t " ) || command.toLowerCase().startsWith("toggle " )) {
             String moduleName = "";
 
