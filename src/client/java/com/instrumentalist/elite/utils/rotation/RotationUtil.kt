@@ -16,6 +16,8 @@ import kotlin.random.Random
 object RotationUtil {
     val mc = IMinecraft.mc
 
+    var baseYaw = 0f
+    var basePitch = 0f
     var currentYaw: Float? = null
     var currentPitch: Float? = null
     private var isRotating = false
@@ -61,10 +63,9 @@ object RotationUtil {
     }
 
     private fun smoothRotate(current: Float, target: Float, speed: Float): Float {
-        var delta = (target - current).wrapDegrees()
-        if (delta > speed) delta = speed
-        if (delta < -speed) delta = -speed
-        return current + delta
+        val delta = target - current
+        val step = delta.coerceIn(-speed, speed)
+        return current + step
     }
 
     private fun calculateRotations(
@@ -88,8 +89,8 @@ object RotationUtil {
     ): Pair<Float, Float> {
         val (targetYaw, targetPitch) = calculateRotations(playerX, playerY, playerZ, targetX, targetY, targetZ)
 
-        val baseYaw = if (currentYaw != null) currentYaw!! else mc.player!!.yaw
-        val basePitch = if (currentPitch != null) currentPitch!! else mc.player!!.pitch
+        val baseYaw = if (currentYaw != null) currentYaw!! else baseYaw
+        val basePitch = if (currentPitch != null) currentPitch!! else basePitch
 
         val newYaw = smoothRotate(baseYaw, targetYaw, speed)
         val newPitch = smoothRotate(basePitch, targetPitch, speed)
@@ -106,9 +107,9 @@ object RotationUtil {
 
     fun setRotation(targetYaw: Float, targetPitch: Float, speed: Float = 90f) {
         if (currentYaw == null)
-            currentYaw = mc.player?.yaw!! + 0.001f
+            currentYaw = baseYaw + 0.001f
         if (currentPitch == null)
-            currentPitch = mc.player?.pitch!! + 0.001f
+            currentPitch = basePitch + 0.001f
 
         isRotating = true
 
@@ -182,9 +183,9 @@ object RotationUtil {
             isRotating = true
 
             if (currentYaw == null)
-                currentYaw = mc.player?.yaw ?: 0f
+                currentYaw = baseYaw
             if (currentPitch == null)
-                currentPitch = mc.player?.pitch ?: 0f
+                currentPitch = basePitch
 
             if (currentPitch!! > 90) {
                 currentPitch = 90f
@@ -273,9 +274,9 @@ object RotationUtil {
             isRotating = true
 
             if (currentYaw == null)
-                currentYaw = mc.player?.yaw ?: 0f
+                currentYaw = baseYaw
             if (currentPitch == null)
-                currentPitch = mc.player?.pitch ?: 0f
+                currentPitch = basePitch
 
             if (currentPitch!! > 90) {
                 currentPitch = 90f
@@ -357,9 +358,9 @@ object RotationUtil {
             isRotating = true
 
             if (currentYaw == null)
-                currentYaw = mc.player?.yaw ?: 0f
+                currentYaw = baseYaw
             if (currentPitch == null)
-                currentPitch = mc.player?.pitch ?: 0f
+                currentPitch = basePitch
 
             if (currentPitch!! > 90) {
                 currentPitch = 90f

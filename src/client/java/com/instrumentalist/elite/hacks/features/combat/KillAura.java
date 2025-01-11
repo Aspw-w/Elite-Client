@@ -8,6 +8,7 @@ import com.instrumentalist.elite.hacks.ModuleCategory;
 import com.instrumentalist.elite.utils.ChatUtil;
 import com.instrumentalist.elite.utils.IMinecraft;
 import com.instrumentalist.elite.utils.math.TargetUtil;
+import com.instrumentalist.elite.utils.move.MovementUtil;
 import com.instrumentalist.elite.utils.packet.BlinkUtil;
 import com.instrumentalist.elite.utils.packet.PacketUtil;
 import com.instrumentalist.elite.utils.pathfinder.MainPathFinder;
@@ -406,6 +407,11 @@ public class KillAura extends Module {
                 IMinecraft.mc.interactionManager.attackEntity(IMinecraft.mc.player, target);
                 break;
         }
+
+        if (IMinecraft.mc.player.getMainHandStack().hasEnchantments())
+            IMinecraft.mc.player.addEnchantedHitParticles(target);
+        if (IMinecraft.mc.player.getVelocity().y < -0.1)
+            IMinecraft.mc.player.addCritParticles(target);
 
         if (tpMode && !paths.isEmpty() && tpBack.get()) {
             List<Vec3d> reversedPaths = paths.reversed();

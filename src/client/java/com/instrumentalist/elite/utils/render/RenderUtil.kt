@@ -55,7 +55,9 @@ object RenderUtil {
                 RenderSystem.setShaderColor(0.5f, 1f, 0f, 1f)
             else if (entity is LivingEntity && TargetUtil.isBot(entity))
                 RenderSystem.setShaderColor(0.6f, 0.6f, 0.6f, 1f)
-            else RenderSystem.setShaderColor(1f, 1f, 1f, 0.8f)
+            else if (entity is LivingEntity && entity.hurtTime >= 5)
+                RenderSystem.setShaderColor(1f, 0f, 0f, 0.8f)
+            else RenderSystem.setShaderColor(0f, 1f, 0f, 0.8f)
 
             drawOutlinedBox(bb, matrixStack)
 

@@ -4,9 +4,11 @@ import com.instrumentalist.elite.hacks.ModuleManager;
 import com.instrumentalist.elite.hacks.features.combat.TargetStrafe;
 import com.instrumentalist.elite.hacks.features.render.Freecam;
 import com.instrumentalist.elite.utils.move.MovementUtil;
+import com.instrumentalist.elite.utils.rotation.RotationUtil;
 import com.llamalad7.mixinextras.injector.ModifyReturnValue;
 import net.minecraft.client.network.ClientPlayerEntity;
 import net.minecraft.entity.Entity;
+import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
@@ -38,6 +40,17 @@ public abstract class EntityMixin {
     @Shadow public boolean velocityDirty;
 
     @Shadow public abstract void setVelocity(double x, double y, double z);
+
+    @Inject(method = "changeLookDirection", at = @At("HEAD"))
+    public void baseRotationHook(double xDelta, double yDelta, CallbackInfo ci) {
+        if ((Object) this instanceof ClientPlayerEntity) {
+            double pitchDelta = (yDelta * 0.15);
+            double yawDelta = (xDelta * 0.15);
+
+            RotationUtil.INSTANCE.setBasePitch(MathHelper.clamp(RotationUtil.INSTANCE.getBasePitch() + (float) pitchDelta, -90.0f, 90.0f));
+            RotationUtil.INSTANCE.setBaseYaw(RotationUtil.INSTANCE.getBaseYaw() + (float) yawDelta);
+        }
+    }
 
     @Inject(method = "updateVelocity", at = @At("HEAD"), cancellable = true)
     public void updateVelocity(float speed, Vec3d movementInput, CallbackInfo ci) {

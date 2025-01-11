@@ -14,7 +14,7 @@ public class MovementUtil {
 
     public static int fallTicks = 0;
 
-    public boolean hasMotion() {
+    public static boolean hasMotion() {
         return IMinecraft.mc.player != null && (IMinecraft.mc.player.getVelocity().x != 0.0 || IMinecraft.mc.player.getVelocity().y != 0.0 || IMinecraft.mc.player.getVelocity().z != 0.0);
     }
 

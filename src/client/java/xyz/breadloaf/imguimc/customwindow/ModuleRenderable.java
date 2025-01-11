@@ -294,6 +294,17 @@ public class ModuleRenderable implements Renderable {
                             ImGui.endTabItem();
                         }
                     }
+
+                    if (ImGui.beginTabItem("Credits")) {
+                        try {
+                            ImGui.text("Made by Aspw");
+                            ImGui.text("YouTube: https://www.youtube.com/@Hadveen");
+                            ImGui.text("GitHub: https://github.com/Aspw-w");
+                            ImGui.text("Discord: https://discord.gg/y8ZDqRxSCy");
+                        } finally {
+                            ImGui.endTabItem();
+                        }
+                    }
                 } finally {
                     ImGui.endTabBar();
                 }
