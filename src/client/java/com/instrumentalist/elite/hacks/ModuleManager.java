@@ -35,10 +35,6 @@ public class ModuleManager implements EventListener {
     public static boolean isDebugRendering = false;
 
     public static int pitchTick = 0;
-    private static Long lastTime = 0L;
-
-    public static Float interpolatedYaw = null;
-    public static Float interpolatedPitch = null;
 
     public static int transactionCounter = 0;
     public static boolean gettingTransactions = false;
@@ -247,13 +243,6 @@ public class ModuleManager implements EventListener {
         if (isDebugRendering && IMinecraft.mc.currentScreen == null)
             IMinecraft.mc.setScreen(new EmptyScreen());
 
-        long currentTime = System.nanoTime();
-        if (lastTime == 0L) {
-            lastTime = currentTime;
-        }
-        double deltaTime = (currentTime - lastTime) / 1_000_000_000.0;
-        lastTime = currentTime;
-
         if (RotationUtil.INSTANCE.getBaseYaw() >= 180) RotationUtil.INSTANCE.setBaseYaw(-180f);
         else if (RotationUtil.INSTANCE.getBaseYaw() <= -180) RotationUtil.INSTANCE.setBaseYaw(180f);
 
@@ -263,33 +252,8 @@ public class ModuleManager implements EventListener {
                 return;
             }
 
-            boolean interpolate = true;
-
-            if (!(RotationUtil.INSTANCE.getCurrentYaw() >= 350 || RotationUtil.INSTANCE.getCurrentYaw() <= 10)) {
-                interpolatedYaw = RotationUtil.INSTANCE.getCurrentYaw();
-                interpolate = false;
-            }
-
-            float yawAngle = RotationUtil.INSTANCE.interpolateAngle(event.yaw, RotationUtil.INSTANCE.getCurrentYaw(), 180f, (float) (20f * deltaTime), false);
-            float pitchAngle = RotationUtil.INSTANCE.interpolateAngle(event.pitch, RotationUtil.INSTANCE.getCurrentPitch(), 180f, (float) (20f * deltaTime), true);
-
-            if (pitchAngle >= 90f)
-                pitchAngle = 90f;
-            else if (pitchAngle <= -90f)
-                pitchAngle = -90f;
-
-            if (Float.isNaN(yawAngle) || Float.isNaN(pitchAngle) || Float.isInfinite(yawAngle) || Float.isInfinite(pitchAngle)) {
-                RotationUtil.INSTANCE.reset();
-                return;
-            }
-
-            if (interpolate)
-                interpolatedYaw = yawAngle;
-
-            interpolatedPitch = pitchAngle;
-
-            event.yaw = interpolatedYaw;
-            event.pitch = interpolatedPitch;
+            event.yaw = RotationUtil.INSTANCE.getCurrentYaw();
+            event.pitch = RotationUtil.INSTANCE.getCurrentPitch();
 
             IMinecraft.mc.player.bodyYaw = IMinecraft.mc.player.getYaw();
 

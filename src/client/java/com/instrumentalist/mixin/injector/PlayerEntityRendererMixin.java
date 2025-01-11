@@ -31,23 +31,28 @@ public abstract class PlayerEntityRendererMixin {
     @Inject(method = "updateRenderState(Lnet/minecraft/client/network/AbstractClientPlayerEntity;Lnet/minecraft/client/render/entity/state/PlayerEntityRenderState;F)V", at = @At("RETURN"))
     private void clientSideRotations(AbstractClientPlayerEntity player, PlayerEntityRenderState state, float f, CallbackInfo info) {
         if (player != IMinecraft.mc.player) return;
-        if (ModuleManager.interpolatedYaw != null && ModuleManager.interpolatedPitch != null) {
+        if (RotationUtil.INSTANCE.getCurrentYaw() != null && RotationUtil.INSTANCE.getCurrentPitch() != null) {
             long currentTime = System.nanoTime();
             float deltaTime = (currentTime - lastFrameTime) / 1e9f;
 
             if (deltaTime > 0.1f) deltaTime = 0.1f;
 
             if (lastFrameTime == 0) {
-                prevYaw = ModuleManager.interpolatedYaw;
-                prevPitch = ModuleManager.interpolatedPitch;
+                prevYaw = RotationUtil.INSTANCE.getCurrentYaw();
+                prevPitch = RotationUtil.INSTANCE.getCurrentPitch();
                 lastFrameTime = currentTime;
                 return;
             }
 
             lastFrameTime = currentTime;
 
-            float yaw = Interpolation.INSTANCE.lerpWithTime(this.prevYaw, ModuleManager.interpolatedYaw, 18f, deltaTime);
-            float pitch = Interpolation.INSTANCE.lerpWithTime(this.prevPitch, ModuleManager.interpolatedPitch, 14f, deltaTime);
+            float yaw = Interpolation.INSTANCE.lerpWithTime(this.prevYaw, RotationUtil.INSTANCE.getCurrentYaw(), 18f, deltaTime);
+            float pitch = Interpolation.INSTANCE.lerpWithTime(this.prevPitch, RotationUtil.INSTANCE.getCurrentPitch(), 14f, deltaTime);
+
+            if (yaw >= 360f)
+                yaw = 360f;
+            else if (yaw <= -360f)
+                yaw = -360f;
 
             if (pitch >= 90f)
                 pitch = 90f;

@@ -23,14 +23,10 @@ object RotationUtil {
     private var isRotating = false
 
     fun reset() {
-        if (isRotating) {
-            currentYaw = null
-            currentPitch = null
-            ModuleManager.pitchTick = 0
-            ModuleManager.interpolatedYaw = null
-            ModuleManager.interpolatedPitch = null
-            isRotating = false
-        }
+        currentYaw = null
+        currentPitch = null
+        ModuleManager.pitchTick = 0
+        isRotating = false
     }
 
     fun getRotationsEntity(entity: LivingEntity): Pair<Float, Float> {

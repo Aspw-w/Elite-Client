@@ -20,7 +20,7 @@ class ItemView : Module("Item View", ModuleCategory.Render, GLFW.GLFW_KEY_UNKNOW
 
         fun hookSwingSpeed(original: Int, entity: Entity): Int {
             if (ModuleManager.getModuleState(ItemView()) && entity is ClientPlayerEntity)
-                return original + swingSpeed.get()
+                return 6 + swingSpeed.get()
 
             return original;
         }
