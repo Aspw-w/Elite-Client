@@ -254,7 +254,7 @@ public class ModuleRenderable implements Renderable {
                             if (!commandTabJustOpened) {
                                 if (commandLogs.isEmpty())
                                     ImGui.setKeyboardFocusHere();
-                                else ImGui.setKeyboardFocusHere(1);
+                                else ImGui.setKeyboardFocusHere(2);
                                 commandTabJustOpened = true;
                             }
 
