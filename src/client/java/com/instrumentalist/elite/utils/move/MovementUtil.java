@@ -72,7 +72,7 @@ public class MovementUtil {
         float yaw = IMinecraft.mc.player.getYaw();
 
         if (TargetStrafe.targetStrafeHook())
-            yaw = RotationUtil.INSTANCE.smoothLookAt(IMinecraft.mc.player.getX(), IMinecraft.mc.player.getY(), IMinecraft.mc.player.getZ(), KillAura.closestEntity.getX(), IMinecraft.mc.player.getY(), KillAura.closestEntity.getZ(), 360f).getFirst();
+            yaw = RotationUtil.INSTANCE.getRotationsEntity((LivingEntity) KillAura.closestEntity).getFirst();
 
         float strafe = 45f;
         Input input = IMinecraft.mc.player.input;
@@ -117,27 +117,37 @@ public class MovementUtil {
         if (isMoving()) {
             if (TargetStrafe.targetStrafeHook()) {
                 float yaw = RotationUtil.INSTANCE.getRotationsEntity((LivingEntity) KillAura.closestEntity).getFirst();
-                double forward;
-                if (EntityExtensionKt.distanceToWithoutY(IMinecraft.mc.player, KillAura.closestEntity) <= TargetStrafe.distance.get())
-                    forward = 0.0;
-                else forward = 1.0;
+                double forward = EntityExtensionKt.distanceToWithoutY(IMinecraft.mc.player, KillAura.closestEntity) >= TargetStrafe.distance.get() + 2f ? 2.0 : EntityExtensionKt.distanceToWithoutY(IMinecraft.mc.player, KillAura.closestEntity) <= TargetStrafe.distance.get() ? 0.0 : 1.0;
                 double direction = TargetStrafe.direction;
 
-                if (forward != 0.0D) {
-                    if (direction > 0.0D) yaw += -45;
-                    else if (direction < 0.0D) yaw += 45;
-                    direction = 0.0D;
+                if (forward == 2.0) {
+                    double deltaX = KillAura.closestEntity.getX() - IMinecraft.mc.player.getX();
+                    double deltaZ = KillAura.closestEntity.getZ() - IMinecraft.mc.player.getZ();
+                    double distance = Math.sqrt(deltaX * deltaX + deltaZ * deltaZ);
+
+                    if (distance > 0.0) {
+                        deltaX /= distance;
+                        deltaZ /= distance;
+                    }
+
+                    IMinecraft.mc.player.setVelocity(deltaX * speed, IMinecraft.mc.player.getVelocity().y, deltaZ * speed);
+                } else {
+                    if (forward != 0.0) {
+                        if (direction > 0.0) yaw -= 45;
+                        else if (direction < 0.0) yaw += 45;
+                        direction = 0.0;
+                    }
+
+                    if (direction > 0.0)
+                        direction = 1.0;
+                    else if (direction < 0.0)
+                        direction = -1.0;
+
+                    double mx = Math.cos(Math.toRadians((yaw + 90f)));
+                    double mz = Math.sin(Math.toRadians((yaw + 90f)));
+
+                    IMinecraft.mc.player.setVelocity(forward * speed * mx + direction * speed * mz, IMinecraft.mc.player.getVelocity().y, forward * speed * mz - direction * speed * mx);
                 }
-
-                if (direction > 0.0D)
-                    direction = 1.0D;
-                else if (direction < 0.0D)
-                    direction = -1.0D;
-
-                double mx = Math.cos(Math.toRadians((yaw + 90.0F)));
-                double mz = Math.sin(Math.toRadians((yaw + 90.0F)));
-
-                IMinecraft.mc.player.setVelocity(forward * speed * mx + direction * speed * mz, IMinecraft.mc.player.getVelocity().y, forward * speed * mz - direction * speed * mx);
             } else {
                 double yaw = Math.toRadians(getPlayerDirection());
                 IMinecraft.mc.player.setVelocity(-Math.sin(yaw) * speed, IMinecraft.mc.player.getVelocity().y, Math.cos(yaw) * speed);

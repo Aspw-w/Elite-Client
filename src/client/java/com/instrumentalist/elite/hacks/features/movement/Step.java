@@ -72,14 +72,14 @@ public class Step extends Module {
                 steppingFunctions();
             else if (calledModifiedStep)
                 afterStepFunctions();
-            else {
-                oldVelocity = IMinecraft.mc.player.getVelocity();
-                wasSprinting = IMinecraft.mc.player.isSprinting();
-                sentBypass = false;
-            }
 
             if (calledModifiedStep)
                 return mode.get().equalsIgnoreCase("hypixel") ? 1f : height.get();
+        }
+
+        if (entity instanceof ClientPlayerEntity && !calledModifiedStep) {
+            oldVelocity = IMinecraft.mc.player.getVelocity();
+            wasSprinting = IMinecraft.mc.player.isSprinting();
         }
 
         return original;
@@ -116,8 +116,10 @@ public class Step extends Module {
 
     private static void afterStepFunctions() {
         if (oldVelocity != null) {
-            IMinecraft.mc.player.getVelocity().x = oldVelocity.x;
-            IMinecraft.mc.player.getVelocity().z = oldVelocity.z;
+            if (!mode.get().equalsIgnoreCase("hypixel")) {
+                IMinecraft.mc.player.getVelocity().x = oldVelocity.x;
+                IMinecraft.mc.player.getVelocity().z = oldVelocity.z;
+            }
             oldVelocity = null;
         }
 
@@ -130,6 +132,7 @@ public class Step extends Module {
 
     @Override
     public void onDisable() {
+        wasSprinting = false;
         calledModifiedStep = false;
         oldVelocity = null;
         sentBypass = false;
