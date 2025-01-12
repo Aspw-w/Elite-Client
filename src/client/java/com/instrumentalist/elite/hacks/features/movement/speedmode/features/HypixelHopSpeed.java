@@ -65,7 +65,7 @@ public class HypixelHopSpeed implements SpeedEvent {
                         break;
 
                     case 7:
-                        if (canLowHop) {
+                        if (canLowHop && lowStrafeCheck()) {
                             MovementUtil.setVelocityY(baseVelocityY / 1.25);
 
                             if (IMinecraft.mc.player.hasStatusEffect(StatusEffects.SPEED))
@@ -75,7 +75,7 @@ public class HypixelHopSpeed implements SpeedEvent {
                         break;
 
                     case 8:
-                        if (canLowHop) {
+                        if (canLowHop && lowStrafeCheck()) {
                             MovementUtil.setVelocityY(baseVelocityY - 0.0118);
                             canLowHop = false;
                         }
