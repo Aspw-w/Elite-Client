@@ -36,6 +36,10 @@ class InvManager : Module("Inv Manager", ModuleCategory.Player, GLFW.GLFW_KEY_UN
 
     private var tickCounter: Int = 0
 
+    companion object {
+        var cleaning = false
+    }
+
     private val itemSlots = mapOf(
         Items.NETHERITE_SWORD to 0,
         Items.DIAMOND_SWORD to 0,
@@ -101,6 +105,7 @@ class InvManager : Module("Inv Manager", ModuleCategory.Player, GLFW.GLFW_KEY_UN
 
     override fun onDisable() {
         tickCounter = 0
+        cleaning = false
     }
 
     override fun onEnable() {}
@@ -109,11 +114,13 @@ class InvManager : Module("Inv Manager", ModuleCategory.Player, GLFW.GLFW_KEY_UN
         val player = IMinecraft.mc.player ?: return
 
         if (onlyInventory.get() && IMinecraft.mc.currentScreen !is InventoryScreen || IMinecraft.mc.currentScreen is GenericContainerScreen || IMinecraft.mc.currentScreen is FurnaceScreen) {
+            cleaning = false
             tickCounter = 0
             return
         }
 
         if (tickCounter > 0) {
+            cleaning = true
             tickCounter--
             return
         }
@@ -140,6 +147,7 @@ class InvManager : Module("Inv Manager", ModuleCategory.Player, GLFW.GLFW_KEY_UN
             if (hotbarIndex != slot) {
                 val oldStack = inventory.getStack(slot)
                 if (!oldStack.isEmpty) {
+                    cleaning = true
                     val button = if (oldStack.count > 1) 1 else 0
                     IMinecraft.mc.interactionManager!!.clickSlot(
                         player.currentScreenHandler.syncId,
@@ -157,6 +165,7 @@ class InvManager : Module("Inv Manager", ModuleCategory.Player, GLFW.GLFW_KEY_UN
                 }
 
                 if (inventoryIndex != -1) {
+                    cleaning = true
                     swapItems(inventoryIndex, slot)
                     tickCounter = armorDelay.get()
                     return
@@ -183,6 +192,7 @@ class InvManager : Module("Inv Manager", ModuleCategory.Player, GLFW.GLFW_KEY_UN
 
             if (currentArmor.isEmpty || ToolUtil.isBetterArmor(bestArmor, currentArmor)) {
                 if (!currentArmor.isEmpty) {
+                    cleaning = true
                     val armorSlot = ToolUtil.getItemSlotId(currentArmor)
                     IMinecraft.mc.interactionManager!!.clickSlot(
                         player.currentScreenHandler.syncId,
@@ -195,6 +205,7 @@ class InvManager : Module("Inv Manager", ModuleCategory.Player, GLFW.GLFW_KEY_UN
                     return
                 }
 
+                cleaning = true
                 val slotIndex = if (inventoryIndex < 9) inventoryIndex + 36 else inventoryIndex
                 IMinecraft.mc.interactionManager!!.clickSlot(
                     player.currentScreenHandler.syncId,
@@ -249,6 +260,7 @@ class InvManager : Module("Inv Manager", ModuleCategory.Player, GLFW.GLFW_KEY_UN
                         stack
                     )
                 ) {
+                    cleaning = true
                     val button = if (stack.count > 1) 1 else 0
                     IMinecraft.mc.interactionManager!!.clickSlot(
                         player.currentScreenHandler.syncId,
@@ -265,6 +277,7 @@ class InvManager : Module("Inv Manager", ModuleCategory.Player, GLFW.GLFW_KEY_UN
             for (i in 9..35) {
                 val stack = inventory.getStack(i)
                 if (!stack.isEmpty && stack.item !is BlockItem && stack.item !is SpawnEggItem && stack.item !is PotionItem && stack.item !is SplashPotionItem && stack.item !is LingeringPotionItem && stack.item !in allowedItems) {
+                    cleaning = true
                     val button = if (stack.count > 1) 1 else 0
                     IMinecraft.mc.interactionManager!!.clickSlot(
                         player.currentScreenHandler.syncId,
@@ -278,6 +291,8 @@ class InvManager : Module("Inv Manager", ModuleCategory.Player, GLFW.GLFW_KEY_UN
                 }
             }
         }
+
+        cleaning = false
     }
 
     private fun findItemInHotbar(inventory: PlayerInventory, item: Item): Int {

@@ -3,13 +3,13 @@ package com.instrumentalist.mixin.injector;
 import com.instrumentalist.elite.hacks.ModuleManager;
 import com.instrumentalist.elite.hacks.features.combat.TargetStrafe;
 import com.instrumentalist.elite.hacks.features.movement.Sprint;
+import com.instrumentalist.elite.hacks.features.movement.Step;
 import com.instrumentalist.elite.hacks.features.render.ItemView;
 import com.instrumentalist.elite.utils.IMinecraft;
 import com.instrumentalist.elite.utils.move.MovementUtil;
 import com.instrumentalist.elite.utils.simulator.PredictUtil;
 import com.llamalad7.mixinextras.injector.ModifyReturnValue;
 import net.minecraft.client.network.ClientPlayerEntity;
-import net.minecraft.entity.EntityPose;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
@@ -54,5 +54,10 @@ public abstract class LivingEntityMixin extends EntityMixin {
     @ModifyReturnValue(method = "getHandSwingDuration", at = @At("RETURN"))
     private int swingSpeedModifier(int original) {
         return ItemView.Companion.hookSwingSpeed(original, (LivingEntity) (Object) this);
+    }
+
+    @ModifyReturnValue(method = "getStepHeight", at = @At("RETURN"))
+    private float stepHook(float original) {
+        return Step.hookStepHeight(original, (LivingEntity) (Object) this);
     }
 }

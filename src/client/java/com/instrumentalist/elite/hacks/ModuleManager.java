@@ -100,6 +100,7 @@ public class ModuleManager implements EventListener {
         modules.add(new FastBreak());
         modules.add(new ItemView());
         modules.add(new EntityDesync());
+        modules.add(new Step());
 
         // Not shown for click gui (category is NULL)
         modules.add(new PluginsDetector());
