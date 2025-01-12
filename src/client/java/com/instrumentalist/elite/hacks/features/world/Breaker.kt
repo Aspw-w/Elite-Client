@@ -61,7 +61,7 @@ class Breaker : Module("Breaker", ModuleCategory.World, GLFW.GLFW_KEY_UNKNOWN, f
 
     override fun onEnable() {}
 
-    override fun onHandleInput(event: HandleInputEvent) {
+    override fun onMotion(event: MotionEvent) {
         if (IMinecraft.mc.player == null || IMinecraft.mc.world == null || ModuleManager.getModuleState(Scaffold())) return
 
         val bed = findNearbyBeds(IMinecraft.mc.player!!.blockPos, range.get())

@@ -20,7 +20,7 @@ public abstract class Module implements EventListener {
     public final ModuleCategory moduleCategory;
     public int key;
     public boolean tempEnabled;
-    public final boolean showOnArray;
+    public boolean showOnArray;
 
     public ConfigObject configObject = new ConfigObject(this);
 

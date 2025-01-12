@@ -427,6 +427,9 @@ public class ModuleRenderable implements Renderable {
             module.toggle();
         }
 
+        if (ImGui.checkbox("Show on array##", module.showOnArray))
+            module.showOnArray = !module.showOnArray;
+
         String shownKey;
         ImString currentKey = new ImString(String.valueOf(module.key).toUpperCase(), 256);
         if (module.key != GLFW.GLFW_KEY_UNKNOWN)

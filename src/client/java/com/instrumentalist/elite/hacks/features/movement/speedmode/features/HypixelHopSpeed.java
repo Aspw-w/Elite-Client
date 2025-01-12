@@ -27,6 +27,8 @@ public class HypixelHopSpeed implements SpeedEvent {
         return IMinecraft.mc.player != null && IMinecraft.mc.world != null && !IMinecraft.mc.world.getBlockState(IMinecraft.mc.player.getBlockPos().down(1)).isAir() && !(IMinecraft.mc.world.getBlockState(IMinecraft.mc.player.getBlockPos().down(1)).getBlock() instanceof SlabBlock)  && !(IMinecraft.mc.world.getBlockState(IMinecraft.mc.player.getBlockPos().down(1)).getBlock() instanceof StairsBlock);
     }
 
+    public static boolean canLowHop = false;
+
     @Override
     public void onUpdate(UpdateEvent event) {
         if (IMinecraft.mc.player == null || IMinecraft.mc.world == null || IMinecraft.mc.player.isTouchingWater() || IMinecraft.mc.player.isSpectator()) return;
@@ -39,24 +41,31 @@ public class HypixelHopSpeed implements SpeedEvent {
                 if (IMinecraft.mc.player.hasStatusEffect(StatusEffects.SPEED))
                     MovementUtil.strafe(0.481f + ((IMinecraft.mc.player.getStatusEffect(StatusEffects.SPEED).getAmplifier() + 1f) * IMinecraft.mc.player.getStatusEffect(StatusEffects.SPEED).getAmplifier() == 0 ? 0.036f : 0.12f));
                 else MovementUtil.strafe(0.481f);
-            } else if (!IMinecraft.mc.player.horizontalCollision && IMinecraft.mc.world.getBlockState(IMinecraft.mc.player.getBlockPos().up(2)).isAir() && !IMinecraft.mc.player.hasStatusEffect(StatusEffects.JUMP_BOOST)) {
+
+                canLowHop = false;
+            } else if (!IMinecraft.mc.player.horizontalCollision && !IMinecraft.mc.player.hasStatusEffect(StatusEffects.JUMP_BOOST) && MovementUtil.isMoving()) {
                 double baseVelocityY = IMinecraft.mc.player.getVelocity().y;
 
                 switch (MovementUtil.fallTicks) {
                     case 4:
-                        MovementUtil.setVelocityY(baseVelocityY - 0.039);
+                        if (IMinecraft.mc.world.getBlockState(IMinecraft.mc.player.getBlockPos().up(2)).isAir()) {
+                            MovementUtil.setVelocityY(baseVelocityY - 0.039);
+                            canLowHop = true;
+                        } else canLowHop = false;
                         break;
 
                     case 5:
-                        MovementUtil.setVelocityY(baseVelocityY - 0.1916);
+                        if (canLowHop)
+                            MovementUtil.setVelocityY(baseVelocityY - 0.1916);
                         break;
 
                     case 6:
-                        MovementUtil.setVelocityY(baseVelocityY * 1.016);
+                        if (canLowHop)
+                            MovementUtil.setVelocityY(baseVelocityY * 1.016);
                         break;
 
                     case 7:
-                        if (lowStrafeCheck()) {
+                        if (canLowHop) {
                             MovementUtil.setVelocityY(baseVelocityY / 1.25);
 
                             if (IMinecraft.mc.player.hasStatusEffect(StatusEffects.SPEED))
@@ -66,8 +75,10 @@ public class HypixelHopSpeed implements SpeedEvent {
                         break;
 
                     case 8:
-                        if (lowStrafeCheck())
+                        if (canLowHop) {
                             MovementUtil.setVelocityY(baseVelocityY - 0.0118);
+                            canLowHop = false;
+                        }
                 }
             }
         } else {

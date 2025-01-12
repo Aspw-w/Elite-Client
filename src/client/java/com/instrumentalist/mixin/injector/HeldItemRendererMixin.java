@@ -30,6 +30,8 @@ public abstract class HeldItemRendererMixin {
 
     @Shadow protected abstract void applyEquipOffset(MatrixStack matrices, Arm arm, float equipProgress);
 
+    @Shadow protected abstract void applySwingOffset(MatrixStack matrices, Arm arm, float swingProgress);
+
     @Inject(method = "renderFirstPersonItem", at = @At("HEAD"), cancellable = true)
     private void legacyCombatHook(AbstractClientPlayerEntity player, float tickDelta, float pitch, Hand hand, float swingProgress, ItemStack item, float equipProgress, MatrixStack matrices, VertexConsumerProvider vertexConsumers, int light, CallbackInfo ci) {
         if (ModuleManager.getModuleState(new ItemView()) && ItemView.Companion.getLowOffHand().get() && hand == Hand.OFF_HAND)
@@ -45,22 +47,17 @@ public abstract class HeldItemRendererMixin {
 
                 matrices.translate(-0.05f, -0.05f, 0f);
 
+                float n = -0.2f * MathHelper.sin(MathHelper.sqrt(swingProgress) * 3.1415927F);
+                float f = -0.1f * MathHelper.sin(swingProgress * 3.1415927F);
+
+                matrices.translate(n, 0f, f);
+
                 this.applyEquipOffset(matrices, arm, 0f);
+                this.applySwingOffset(matrices, arm, swingProgress);
 
                 matrices.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(77f));
                 matrices.multiply(RotationAxis.POSITIVE_Z.rotationDegrees(-10f));
-
-                float var6 = MathHelper.sin(swingProgress * swingProgress * (float) Math.PI);
-                float var7 = MathHelper.sin(MathHelper.sqrt(swingProgress) * (float) Math.PI);
-
-                matrices.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(var6 * -20.0F));
-                matrices.multiply(RotationAxis.POSITIVE_Z.rotationDegrees(var7 * -20.0F));
-                matrices.multiply(RotationAxis.POSITIVE_X.rotationDegrees(var7 * -69.0F));
-
                 matrices.multiply(RotationAxis.POSITIVE_X.rotationDegrees(-80f));
-
-                float scale = 1.2F;
-                matrices.scale(scale, scale, scale);
 
                 this.renderItem(player, item, ModelTransformationMode.FIRST_PERSON_RIGHT_HAND, false, matrices, vertexConsumers, light);
 

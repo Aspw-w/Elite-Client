@@ -156,7 +156,10 @@ public class ConfigManager {
                     ModuleManager.modules.stream()
                             .filter(m -> m.moduleName.equals(moduleName))
                             .findFirst()
-                            .ifPresent(m -> m.key = moduleData.get("bind").getAsInt());
+                            .ifPresent(m -> {
+                                m.key = moduleData.get("bind").getAsInt();
+                                m.showOnArray = moduleData.get("show").getAsBoolean();
+                            });
                 });
             }
         } catch (Exception e) {

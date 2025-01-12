@@ -5,6 +5,7 @@ import com.instrumentalist.elite.hacks.ModuleCategory
 import com.instrumentalist.elite.hacks.ModuleManager
 import com.instrumentalist.elite.hacks.features.combat.KillAura
 import com.instrumentalist.elite.utils.IMinecraft
+import com.instrumentalist.elite.utils.value.FloatValue
 import net.minecraft.block.*
 import net.minecraft.item.SwordItem
 import net.minecraft.util.hit.BlockHitResult

@@ -32,7 +32,7 @@ public class Client {
             for (int i = 0; i <= 1; i++) {
                 module.toggle();
             }
-        } // fixes module state (temporary)
+        } // fixes module state
         ChatUtil.showLog("Initialized Module Manager");
 
         configManager.load();

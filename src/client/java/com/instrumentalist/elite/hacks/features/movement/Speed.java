@@ -8,10 +8,7 @@ import com.instrumentalist.elite.hacks.ModuleCategory;
 import com.instrumentalist.elite.hacks.ModuleManager;
 import com.instrumentalist.elite.hacks.features.exploit.Disabler;
 import com.instrumentalist.elite.hacks.features.movement.speedmode.SpeedModeManager;
-import com.instrumentalist.elite.hacks.features.movement.speedmode.features.CubecraftHopSpeed;
-import com.instrumentalist.elite.hacks.features.movement.speedmode.features.MinibloxSpeed;
-import com.instrumentalist.elite.hacks.features.movement.speedmode.features.VanillaSpeed;
-import com.instrumentalist.elite.hacks.features.movement.speedmode.features.VerusHopSpeed;
+import com.instrumentalist.elite.hacks.features.movement.speedmode.features.*;
 import com.instrumentalist.elite.utils.IMinecraft;
 import com.instrumentalist.elite.utils.math.TimerUtil;
 import com.instrumentalist.elite.utils.move.MovementUtil;
@@ -59,6 +56,8 @@ public class Speed extends Module {
         } else if (speedModeManager.currentMode instanceof MinibloxSpeed) {
             if (IMinecraft.mc.player != null)
                 MovementUtil.stopMoving();
+        } else if (speedModeManager.currentMode instanceof HypixelHopSpeed) {
+            HypixelHopSpeed.canLowHop = false;
         }
     }
 

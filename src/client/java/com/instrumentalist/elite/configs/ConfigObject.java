@@ -22,6 +22,7 @@ public class ConfigObject {
         JsonObject bjo = new JsonObject();
         jo.addProperty("toggle", module.tempEnabled);
         bjo.addProperty("bind", module.key);
+        bjo.addProperty("show", module.showOnArray);
         JsonArray ja = new JsonArray();
         ModuleManager.getSettings(module).stream().map(setting -> {
             try {

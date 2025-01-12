@@ -16,11 +16,14 @@ class ItemView : Module("Item View", ModuleCategory.Render, GLFW.GLFW_KEY_UNKNOW
         val lowOffHand = BooleanValue("Low Off Hand", true)
 
         @Setting
-        private val swingSpeed = IntValue("Swing Speed", 2, -5, 20)
+        private val customSwingSpeed = BooleanValue("Custom Swing Speed", true)
+
+        @Setting
+        private val setSwingSpeed = IntValue("Set Swing Speed", 5, -5, 20) { customSwingSpeed.get() }
 
         fun hookSwingSpeed(original: Int, entity: Entity): Int {
-            if (ModuleManager.getModuleState(ItemView()) && entity is ClientPlayerEntity)
-                return 6 + swingSpeed.get()
+            if (ModuleManager.getModuleState(ItemView()) && customSwingSpeed.get() && entity is ClientPlayerEntity)
+                return 6 + setSwingSpeed.get()
 
             return original;
         }
