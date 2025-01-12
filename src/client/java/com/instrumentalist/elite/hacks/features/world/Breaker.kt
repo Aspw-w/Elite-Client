@@ -2,6 +2,7 @@ package com.instrumentalist.elite.hacks.features.world
 
 import com.instrumentalist.elite.events.features.HandleInputEvent
 import com.instrumentalist.elite.events.features.MotionEvent
+import com.instrumentalist.elite.events.features.TickEvent
 import com.instrumentalist.elite.hacks.Module
 import com.instrumentalist.elite.hacks.ModuleCategory
 import com.instrumentalist.elite.hacks.ModuleManager
@@ -61,7 +62,7 @@ class Breaker : Module("Breaker", ModuleCategory.World, GLFW.GLFW_KEY_UNKNOWN, f
 
     override fun onEnable() {}
 
-    override fun onMotion(event: MotionEvent) {
+    override fun onTick(event: TickEvent) {
         if (IMinecraft.mc.player == null || IMinecraft.mc.world == null || ModuleManager.getModuleState(Scaffold())) return
 
         val bed = findNearbyBeds(IMinecraft.mc.player!!.blockPos, range.get())

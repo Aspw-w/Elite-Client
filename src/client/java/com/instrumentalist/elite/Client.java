@@ -9,7 +9,7 @@ import com.instrumentalist.elite.utils.FileUtil;
 
 public class Client {
 
-    public static String clientVersion = "1.1";
+    public static String clientVersion = "1.2";
 
     public static EventManager eventManager = null;
     public static ConfigManager configManager = null;
