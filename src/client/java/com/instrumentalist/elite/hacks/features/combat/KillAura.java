@@ -211,7 +211,7 @@ public class KillAura extends Module {
     public void onHandleInput(HandleInputEvent event) {
         if (IMinecraft.mc.player == null || IMinecraft.mc.world == null) return;
 
-        if (TargetUtil.noKillAura) {
+        if (TargetUtil.noKillAura || IMinecraft.mc.player.isSpectator()) {
             wasTargeting = false;
             unBlockTick = 0;
             isBlocking = false;

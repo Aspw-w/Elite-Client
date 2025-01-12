@@ -510,7 +510,7 @@ public class ModuleRenderable implements Renderable {
                 else shownKey = "NONE";
                 if (shownKey == null)
                     shownKey = keyMap.getOrDefault(keyBindValue.get(), "Unknown");
-                if (ImGui.inputText("KeyBind (" + shownKey.toUpperCase() + ")##" + moduleName, currentKey)) {
+                if (ImGui.inputText(keyBindValue.name + " (" + shownKey.toUpperCase() + ")##" + moduleName, currentKey)) {
                     try {
                         int newKey = InputUtil.fromTranslationKey("key.keyboard." + currentKey.get().toLowerCase()).getCode();
                         keyBindValue.set(newKey);

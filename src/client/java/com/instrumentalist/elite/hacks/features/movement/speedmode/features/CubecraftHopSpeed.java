@@ -24,10 +24,10 @@ public class CubecraftHopSpeed implements SpeedEvent {
 
         if (IMinecraft.mc.player.isOnGround() && MovementUtil.isMoving()) {
             IMinecraft.mc.player.jump();
-            strafeMultiplier = 0.62f;
+            strafeMultiplier = 0.53f;
         } else strafeMultiplier = 0.312f;
 
-        MovementUtil.strafe(Math.max((float) (strafeMultiplier + MovementUtil.getSpeedEffect() * 0.01), (float) MovementUtil.getBaseMoveSpeed(0.2763)));
+        MovementUtil.strafe(Math.max((float) (strafeMultiplier + MovementUtil.getSpeedEffect() * 0.01), (float) MovementUtil.getBaseMoveSpeed(0.2769)));
     }
 
     @Override
