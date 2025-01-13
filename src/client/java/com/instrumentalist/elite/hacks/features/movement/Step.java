@@ -4,6 +4,7 @@ import com.instrumentalist.elite.events.features.UpdateEvent;
 import com.instrumentalist.elite.hacks.Module;
 import com.instrumentalist.elite.hacks.ModuleCategory;
 import com.instrumentalist.elite.hacks.ModuleManager;
+import com.instrumentalist.elite.hacks.features.combat.KillAura;
 import com.instrumentalist.elite.utils.ChatUtil;
 import com.instrumentalist.elite.utils.IMinecraft;
 import com.instrumentalist.elite.utils.math.TimerUtil;
@@ -84,7 +85,7 @@ public class Step extends Module {
                     afterStepFunctions();
 
                 if (mode.get().equalsIgnoreCase("hypixel")) {
-                    if (IMinecraft.mc.world.getBlockState(IMinecraft.mc.player.getBlockPos().up(3)).isAir() && IMinecraft.mc.world.getBlockState(new BlockPos(IMinecraft.mc.player.getBlockPos().up(3).getX() + 1, IMinecraft.mc.player.getBlockPos().up(3).getY(), IMinecraft.mc.player.getBlockPos().up(3).getZ())).isAir() && IMinecraft.mc.world.getBlockState(new BlockPos(IMinecraft.mc.player.getBlockPos().up(3).getX(), IMinecraft.mc.player.getBlockPos().up(3).getY(), IMinecraft.mc.player.getBlockPos().up(3).getZ() + 1)).isAir() && IMinecraft.mc.world.getBlockState(new BlockPos(IMinecraft.mc.player.getBlockPos().up(3).getX() - 1, IMinecraft.mc.player.getBlockPos().up(3).getY(), IMinecraft.mc.player.getBlockPos().up(3).getZ())).isAir() && IMinecraft.mc.world.getBlockState(new BlockPos(IMinecraft.mc.player.getBlockPos().up(3).getX(), IMinecraft.mc.player.getBlockPos().up(3).getY(), IMinecraft.mc.player.getBlockPos().up(3).getZ() - 1)).isAir())
+                    if ((!ModuleManager.getModuleState(new KillAura()) || KillAura.closestEntity == null) && IMinecraft.mc.world.getBlockState(IMinecraft.mc.player.getBlockPos().up(3)).isAir() && IMinecraft.mc.world.getBlockState(new BlockPos(IMinecraft.mc.player.getBlockPos().up(3).getX() + 1, IMinecraft.mc.player.getBlockPos().up(3).getY(), IMinecraft.mc.player.getBlockPos().up(3).getZ())).isAir() && IMinecraft.mc.world.getBlockState(new BlockPos(IMinecraft.mc.player.getBlockPos().up(3).getX(), IMinecraft.mc.player.getBlockPos().up(3).getY(), IMinecraft.mc.player.getBlockPos().up(3).getZ() + 1)).isAir() && IMinecraft.mc.world.getBlockState(new BlockPos(IMinecraft.mc.player.getBlockPos().up(3).getX() - 1, IMinecraft.mc.player.getBlockPos().up(3).getY(), IMinecraft.mc.player.getBlockPos().up(3).getZ())).isAir() && IMinecraft.mc.world.getBlockState(new BlockPos(IMinecraft.mc.player.getBlockPos().up(3).getX(), IMinecraft.mc.player.getBlockPos().up(3).getY(), IMinecraft.mc.player.getBlockPos().up(3).getZ() - 1)).isAir())
                         return 1f;
                 } else return height.get();
             }
