@@ -18,6 +18,7 @@ import com.instrumentalist.elite.utils.value.IntValue
 import com.instrumentalist.elite.utils.value.ListValue
 import net.minecraft.block.BedBlock
 import net.minecraft.block.DragonEggBlock
+import net.minecraft.block.enums.BedPart
 import net.minecraft.network.packet.c2s.play.PlayerActionC2SPacket
 import net.minecraft.util.Hand
 import net.minecraft.util.hit.BlockHitResult
@@ -130,7 +131,7 @@ class Breaker : Module("Breaker", ModuleCategory.World, GLFW.GLFW_KEY_UNKNOWN, f
                 "hypixel" -> {
                     TargetUtil.noKillAura = true
                     val hypixelPos = BlockPos(cachedBedPos!!.x, cachedBedPos!!.y + 1, cachedBedPos!!.z)
-                    if (!IMinecraft.mc.world?.getBlockState(hypixelPos)?.isAir!!) {
+                    if (!IMinecraft.mc.world?.getBlockState(hypixelPos)?.isAir!! && (range.get() * 10) >= IMinecraft.mc.player!!.squaredDistanceTo(Vec3d(hypixelPos.x.toDouble(), hypixelPos.y.toDouble(), hypixelPos.z.toDouble()))) {
                         if (ModuleManager.getModuleState(AutoTool())) {
                             val bestToolSlot = ToolUtil.findBestTool(hypixelPos)
                             if (bestToolSlot != -1 && bestToolSlot != IMinecraft.mc.player!!.inventory.selectedSlot) {
@@ -194,7 +195,7 @@ class Breaker : Module("Breaker", ModuleCategory.World, GLFW.GLFW_KEY_UNKNOWN, f
                 "cubecraft" -> {
                     TargetUtil.noKillAura = true
                     val cubecraftPos = BlockPos(cachedBedPos!!.x, cachedBedPos!!.y + 1, cachedBedPos!!.z)
-                    if (!IMinecraft.mc.world?.getBlockState(cubecraftPos)?.isAir!!) {
+                    if (!IMinecraft.mc.world?.getBlockState(cubecraftPos)?.isAir!! && (range.get() * 10) >= IMinecraft.mc.player!!.squaredDistanceTo(Vec3d(cubecraftPos.x.toDouble(), cubecraftPos.y.toDouble(), cubecraftPos.z.toDouble()))) {
                         if (ModuleManager.getModuleState(AutoTool())) {
                             val bestToolSlot = ToolUtil.findBestTool(cubecraftPos)
                             if (bestToolSlot != -1 && bestToolSlot != IMinecraft.mc.player!!.inventory.selectedSlot) {
@@ -259,16 +260,17 @@ class Breaker : Module("Breaker", ModuleCategory.World, GLFW.GLFW_KEY_UNKNOWN, f
             }
             TargetUtil.noKillAura = false
             RotationUtil.reset()
-            wasBreaking = false
             if (progress && cachedBedPos != null) {
                 PacketUtil.sendPacket(
                     PlayerActionC2SPacket(
                         PlayerActionC2SPacket.Action.STOP_DESTROY_BLOCK, cachedBedPos, Direction.UP
                     )
                 )
-                progress = false
-                cachedBedPos = null
             }
+            cachedBedPos = null
+            progress = false
+            secondProgress = false
+            wasBreaking = false
         }
     }
 
@@ -280,7 +282,7 @@ class Breaker : Module("Breaker", ModuleCategory.World, GLFW.GLFW_KEY_UNKNOWN, f
                     val blockState = IMinecraft.mc.world?.getBlockState(pos)
 
                     if ((mode.get().equals("hypixel", true) || mode.get().equals("normal", true) && block.get()
-                            .equals("bed", true)) && blockState?.block is BedBlock || (mode.get()
+                            .equals("bed", true)) && blockState?.block is BedBlock && blockState.get(BedBlock.PART) == BedPart.HEAD || (mode.get()
                             .equals("cubecraft", true) || mode.get().equals("normal", true) && block.get()
                             .equals("egg", true)) && blockState?.block is DragonEggBlock
                     )
