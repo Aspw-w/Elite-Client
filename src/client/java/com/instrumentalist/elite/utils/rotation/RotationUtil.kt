@@ -20,7 +20,7 @@ object RotationUtil {
     var basePitch = 0f
     var currentYaw: Float? = null
     var currentPitch: Float? = null
-    private var isRotating = false
+    var isRotating = false
 
     fun reset() {
         currentYaw = null

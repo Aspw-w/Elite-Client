@@ -6,6 +6,8 @@ import com.instrumentalist.elite.events.features.TickEvent
 import com.instrumentalist.elite.events.features.UpdateEvent
 import com.instrumentalist.elite.hacks.Module
 import com.instrumentalist.elite.hacks.ModuleCategory
+import com.instrumentalist.elite.hacks.ModuleManager
+import com.instrumentalist.elite.hacks.features.render.Freecam
 import com.instrumentalist.elite.utils.ChatUtil
 import com.instrumentalist.elite.utils.IMinecraft
 import com.instrumentalist.elite.utils.math.TimerUtil
@@ -39,7 +41,7 @@ class NoFall : Module("No Fall", ModuleCategory.Player, GLFW.GLFW_KEY_UNKNOWN, f
     override fun onEnable() {}
 
     override fun onTick(event: TickEvent) {
-        if (IMinecraft.mc.player == null || IMinecraft.mc.player!!.isSpectator || IMinecraft.mc.player!!.isGliding) {
+        if (IMinecraft.mc.player == null || IMinecraft.mc.player!!.isSpectator || IMinecraft.mc.player!!.isGliding || ModuleManager.getModuleState(Freecam())) {
             if (timering) {
                 TimerUtil.reset()
                 timering = false
@@ -63,7 +65,7 @@ class NoFall : Module("No Fall", ModuleCategory.Player, GLFW.GLFW_KEY_UNKNOWN, f
     }
 
     override fun onMotion(event: MotionEvent) {
-        if (IMinecraft.mc.player == null || IMinecraft.mc.player!!.isSpectator || IMinecraft.mc.player!!.isGliding) {
+        if (IMinecraft.mc.player == null || IMinecraft.mc.player!!.isSpectator || IMinecraft.mc.player!!.isGliding || ModuleManager.getModuleState(Freecam())) {
             if (timering) {
                 TimerUtil.reset()
                 timering = false
