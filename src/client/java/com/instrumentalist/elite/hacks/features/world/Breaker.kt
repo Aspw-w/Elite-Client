@@ -83,7 +83,7 @@ class Breaker : Module("Breaker", ModuleCategory.World, GLFW.GLFW_KEY_UNKNOWN, f
         if (cachedBedPos == null)
             cachedBedPos = findNearbyBeds(IMinecraft.mc.player!!.blockPos, range.get())
 
-        if (cachedBedPos != null && !IMinecraft.mc.world!!.getBlockState(cachedBedPos).isAir) {
+        if (cachedBedPos != null && !IMinecraft.mc.world!!.getBlockState(cachedBedPos).isAir && (range.get() * 10) >= IMinecraft.mc.player!!.squaredDistanceTo(Vec3d(cachedBedPos!!.x.toDouble(), cachedBedPos!!.y.toDouble(), cachedBedPos!!.z.toDouble()))) {
             wasBreaking = true
             when (mode.get().lowercase(Locale.getDefault())) {
                 "normal" -> {
