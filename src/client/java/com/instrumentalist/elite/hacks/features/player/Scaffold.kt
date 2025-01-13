@@ -61,6 +61,10 @@ class Scaffold : Module("Scaffold", ModuleCategory.Player, GLFW.GLFW_KEY_UNKNOWN
         private val rotationMode = ListValue("Rotation Mode", arrayOf("Math", "Simple", "Hypixel", "None"), "Math")
 
         @Setting
+        private val hypixelMode =
+            BooleanValue("Hypixel Mode", false) { rotationMode.get().equals("math", true) }
+
+        @Setting
         private val rotationSpeed = FloatValue("Rotation Speed", 40f, 0f, 90f) {
             rotationMode.get().equals("math", true) || rotationMode.get().equals("simple", true) || rotationMode.get()
                 .equals("hypixel", true)
@@ -530,7 +534,7 @@ class Scaffold : Module("Scaffold", ModuleCategory.Player, GLFW.GLFW_KEY_UNKNOWN
 
                             if (rotationMode.get().equals("math", true))
                                 RotationUtil.scaffoldRotation(
-                                    Vec3d.ofCenter(neighbourPos),
+                                    hypixelMode.get(), Vec3d.ofCenter(neighbourPos),
                                     rotationSpeed.get(),
                                     randomizedRotation.get(),
                                     randomTurnSpeed.get()
@@ -576,7 +580,7 @@ class Scaffold : Module("Scaffold", ModuleCategory.Player, GLFW.GLFW_KEY_UNKNOWN
 
                                 if (rotationMode.get().equals("math", true))
                                     RotationUtil.scaffoldRotation(
-                                        Vec3d.ofCenter(neighbourPos),
+                                        hypixelMode.get(), Vec3d.ofCenter(neighbourPos),
                                         rotationSpeed.get(),
                                         randomizedRotation.get(),
                                         randomTurnSpeed.get()
@@ -629,7 +633,7 @@ class Scaffold : Module("Scaffold", ModuleCategory.Player, GLFW.GLFW_KEY_UNKNOWN
 
                     if (rotationMode.get().equals("math", true))
                         RotationUtil.scaffoldRotation(
-                            Vec3d.ofCenter(neighbour),
+                            hypixelMode.get(), Vec3d.ofCenter(neighbour),
                             rotationSpeed.get(),
                             randomizedRotation.get(),
                             randomTurnSpeed.get()
@@ -673,7 +677,7 @@ class Scaffold : Module("Scaffold", ModuleCategory.Player, GLFW.GLFW_KEY_UNKNOWN
 
                 if (rotationMode.get().equals("math", true))
                     RotationUtil.scaffoldRotation(
-                        Vec3d.ofCenter(neighbour),
+                        hypixelMode.get(), Vec3d.ofCenter(neighbour),
                         rotationSpeed.get(),
                         randomizedRotation.get(),
                         randomTurnSpeed.get()

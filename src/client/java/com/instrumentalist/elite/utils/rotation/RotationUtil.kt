@@ -306,6 +306,7 @@ object RotationUtil {
     }
 
     fun scaffoldRotation(
+        hypixelMode: Boolean,
         pos: Vec3d,
         speed: Float,
         random: Boolean,
@@ -372,7 +373,7 @@ object RotationUtil {
 
             if (rotSpeed <= 0) rotSpeed = 0f
 
-            val (newYaw, newPitch) = humanizeRotation(
+            var (newYaw, newPitch) = humanizeRotation(
                 currentYaw!!,
                 currentPitch!!,
                 targetYaw,
@@ -380,6 +381,9 @@ object RotationUtil {
                 rotSpeed,
                 0.1f
             )
+
+            if (hypixelMode)
+                newYaw += 50f
 
             currentYaw = newYaw
             currentPitch = newPitch
