@@ -106,6 +106,7 @@ class Scaffold : Module("Scaffold", ModuleCategory.Player, GLFW.GLFW_KEY_UNKNOWN
         var hotbarStackSize: Int = 0
     }
 
+    private var once = false
     private var startedScaffold = false
     private var hypBasePlaced = false
     private var hypTowerTicks = 0
@@ -136,6 +137,7 @@ class Scaffold : Module("Scaffold", ModuleCategory.Player, GLFW.GLFW_KEY_UNKNOWN
             }
         }
 
+        once = false
         hypStartIsAllowed = false
         hypBasePlaced = false
         hypTowerTicks = 0
@@ -218,14 +220,16 @@ class Scaffold : Module("Scaffold", ModuleCategory.Player, GLFW.GLFW_KEY_UNKNOWN
             checkGround = false
             wasTowering = false
             lastSlot = null
-            if (startedScaffold) {
+            if (once) {
                 RotationUtil.reset()
                 TimerUtil.reset()
                 TargetUtil.noKillAura = false
             }
-            startedScaffold = false
+            once = false
             return
         }
+
+        once = true
 
         if (noSprint.get())
             IMinecraft.mc.player!!.isSprinting = false
