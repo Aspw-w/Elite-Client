@@ -23,7 +23,7 @@ class NoFall : Module("No Fall", ModuleCategory.Player, GLFW.GLFW_KEY_UNKNOWN, f
     @Setting
     private val mode = ListValue("Mode", arrayOf("Packet", "Spoof", "No Ground", "Hypixel"), "Packet")
 
-    private var timering = false
+    private var timerStage = 0
     private var fallTicks = 0
 
     override fun tag(): String {
@@ -31,9 +31,9 @@ class NoFall : Module("No Fall", ModuleCategory.Player, GLFW.GLFW_KEY_UNKNOWN, f
     }
 
     override fun onDisable() {
-        if (timering) {
+        if (timerStage != 0) {
             TimerUtil.reset()
-            timering = false
+            timerStage = 0
         }
         fallTicks = 0
     }
@@ -42,9 +42,9 @@ class NoFall : Module("No Fall", ModuleCategory.Player, GLFW.GLFW_KEY_UNKNOWN, f
 
     override fun onTick(event: TickEvent) {
         if (IMinecraft.mc.player == null || IMinecraft.mc.player!!.isSpectator || IMinecraft.mc.player!!.isGliding || ModuleManager.getModuleState(Freecam())) {
-            if (timering) {
+            if (timerStage != 0) {
                 TimerUtil.reset()
-                timering = false
+                timerStage = 0
             }
             fallTicks = 0
             return
@@ -52,13 +52,13 @@ class NoFall : Module("No Fall", ModuleCategory.Player, GLFW.GLFW_KEY_UNKNOWN, f
 
         when (mode.get().lowercase(Locale.getDefault())) {
             "hypixel" -> {
-                if (timering) {
+                if (timerStage <= 1) {
                     TimerUtil.reset()
-                    timering = false
+                    timerStage++
                 } else if (IMinecraft.mc.player!!.velocity.y <= -0.6) {
                     TimerUtil.timerSpeed = 0.5f
                     PacketUtil.sendPacket(PlayerMoveC2SPacket.OnGroundOnly(true, IMinecraft.mc.player!!.horizontalCollision))
-                    timering = true
+                    timerStage = 0
                 }
             }
         }
@@ -66,9 +66,9 @@ class NoFall : Module("No Fall", ModuleCategory.Player, GLFW.GLFW_KEY_UNKNOWN, f
 
     override fun onMotion(event: MotionEvent) {
         if (IMinecraft.mc.player == null || IMinecraft.mc.player!!.isSpectator || IMinecraft.mc.player!!.isGliding || ModuleManager.getModuleState(Freecam())) {
-            if (timering) {
+            if (timerStage != 0) {
                 TimerUtil.reset()
-                timering = false
+                timerStage = 0
             }
             fallTicks = 0
             return
