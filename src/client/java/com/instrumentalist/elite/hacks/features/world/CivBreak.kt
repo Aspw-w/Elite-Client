@@ -8,6 +8,7 @@ import com.instrumentalist.elite.hacks.ModuleCategory
 import com.instrumentalist.elite.hacks.ModuleManager
 import com.instrumentalist.elite.hacks.features.player.AutoTool
 import com.instrumentalist.elite.hacks.features.player.Scaffold
+import com.instrumentalist.elite.utils.ChatUtil
 import com.instrumentalist.elite.utils.IMinecraft
 import com.instrumentalist.elite.utils.entity.PlayerUtil
 import com.instrumentalist.elite.utils.math.MSTimer
@@ -32,13 +33,10 @@ import java.util.*
 class CivBreak : Module("Civ Break", ModuleCategory.World, GLFW.GLFW_KEY_UNKNOWN, false, true) {
     companion object {
         @Setting
-        private val mode = ListValue("Mode", arrayOf("Fast", "Legit"), "Fast")
-
-        @Setting
         private val range = FloatValue("Range", 3f, 0.1f, 6f, "m")
 
         @Setting
-        private val fastSpeed = IntValue("Fast Speed", 10, 1, 10) { mode.get().equals("fast", true) }
+        private val fastSpeed = IntValue("Fast Speed", 10, 1, 10)
 
         @Setting
         private val rotations = BooleanValue("Rotations", true)
@@ -86,7 +84,7 @@ class CivBreak : Module("Civ Break", ModuleCategory.World, GLFW.GLFW_KEY_UNKNOWN
     override fun onMotion(event: MotionEvent) {
         if (IMinecraft.mc.player == null || IMinecraft.mc.world == null || ModuleManager.getModuleState(Scaffold())) return
 
-        if (pos == null && direction == null || IMinecraft.mc.world!!.getBlockState(pos).isAir || (range.get() * 10) < IMinecraft.mc.player!!.squaredDistanceTo(
+        if (pos == null || direction == null || IMinecraft.mc.world!!.getBlockState(pos).isAir || (range.get() * 10) < IMinecraft.mc.player!!.squaredDistanceTo(
                 Vec3d(
                     pos!!.x.toDouble(),
                     pos!!.y.toDouble(),
@@ -129,34 +127,19 @@ class CivBreak : Module("Civ Break", ModuleCategory.World, GLFW.GLFW_KEY_UNKNOWN
             }
         }
 
-        when (mode.get().lowercase(Locale.getDefault())) {
-            "fast" -> {
-                if (rotateTimer.hasTimePassed(1000L / (fastSpeed.get() + 2))) {
-                    PacketUtil.sendPacket(HandSwingC2SPacket(Hand.MAIN_HAND))
-                    repeat(2) {
-                        PacketUtil.sendPacket(
-                            PlayerActionC2SPacket(
-                                PlayerActionC2SPacket.Action.STOP_DESTROY_BLOCK,
-                                pos,
-                                direction
-                            )
-                        )
-                    }
-
-                    rotateTimer.reset()
-                }
-            }
-
-            "legit" -> {
-                val hitResult = BlockHitResult(
-                    Vec3d(pos!!.x.toDouble(), pos!!.y.toDouble(), pos!!.z.toDouble()),
-                    direction,
-                    pos,
-                    false
+        if (rotateTimer.hasTimePassed(1000L / (fastSpeed.get() + 2))) {
+            PacketUtil.sendPacket(HandSwingC2SPacket(Hand.MAIN_HAND))
+            repeat(2) {
+                PacketUtil.sendPacket(
+                    PlayerActionC2SPacket(
+                        PlayerActionC2SPacket.Action.STOP_DESTROY_BLOCK,
+                        pos,
+                        direction
+                    )
                 )
-
-                PlayerUtil.destroyBlock(hitResult)
             }
+
+            rotateTimer.reset()
         }
     }
 

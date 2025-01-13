@@ -2,11 +2,13 @@ package com.instrumentalist.elite.hacks.features.player
 
 import com.instrumentalist.elite.events.features.MotionEvent
 import com.instrumentalist.elite.events.features.SendPacketEvent
+import com.instrumentalist.elite.events.features.TickEvent
 import com.instrumentalist.elite.events.features.UpdateEvent
 import com.instrumentalist.elite.hacks.Module
 import com.instrumentalist.elite.hacks.ModuleCategory
 import com.instrumentalist.elite.utils.ChatUtil
 import com.instrumentalist.elite.utils.IMinecraft
+import com.instrumentalist.elite.utils.math.TimerUtil
 import com.instrumentalist.elite.utils.move.MovementUtil
 import com.instrumentalist.elite.utils.packet.PacketUtil
 import com.instrumentalist.elite.utils.value.ListValue
@@ -17,9 +19,9 @@ import kotlin.math.abs
 
 class NoFall : Module("No Fall", ModuleCategory.Player, GLFW.GLFW_KEY_UNKNOWN, false, true) {
     @Setting
-    private val mode = ListValue("Mode", arrayOf("Packet", "Spoof", "No Ground"), "Packet")
+    private val mode = ListValue("Mode", arrayOf("Packet", "Spoof", "No Ground", "Hypixel"), "Packet")
 
-    private var insane = false
+    private var timering = false
     private var fallTicks = 0
 
     override fun tag(): String {
@@ -27,14 +29,45 @@ class NoFall : Module("No Fall", ModuleCategory.Player, GLFW.GLFW_KEY_UNKNOWN, f
     }
 
     override fun onDisable() {
-        insane = false
+        if (timering) {
+            TimerUtil.reset()
+            timering = false
+        }
         fallTicks = 0
     }
 
     override fun onEnable() {}
 
+    override fun onTick(event: TickEvent) {
+        if (IMinecraft.mc.player == null || IMinecraft.mc.player!!.isSpectator || IMinecraft.mc.player!!.isGliding) {
+            if (timering) {
+                TimerUtil.reset()
+                timering = false
+            }
+            fallTicks = 0
+            return
+        }
+
+        when (mode.get().lowercase(Locale.getDefault())) {
+            "hypixel" -> {
+                if (timering) {
+                    TimerUtil.reset()
+                    timering = false
+                } else if (IMinecraft.mc.player!!.velocity.y <= -0.6) {
+                    TimerUtil.timerSpeed = 0.5f
+                    PacketUtil.sendPacket(PlayerMoveC2SPacket.OnGroundOnly(true, IMinecraft.mc.player!!.horizontalCollision))
+                    timering = true
+                }
+            }
+        }
+    }
+
     override fun onMotion(event: MotionEvent) {
         if (IMinecraft.mc.player == null || IMinecraft.mc.player!!.isSpectator || IMinecraft.mc.player!!.isGliding) {
+            if (timering) {
+                TimerUtil.reset()
+                timering = false
+            }
             fallTicks = 0
             return
         }

@@ -214,7 +214,7 @@ class Nuker : Module("Nuker", ModuleCategory.World, GLFW.GLFW_KEY_UNKNOWN, false
                     )
 
                     when (clickMode.get().lowercase(Locale.getDefault())) {
-                        "break" -> PlayerUtil.destroyBlock(hitResult)
+                        "break" -> PlayerUtil.nukeBlockWithPacket(hitResult)
                         "place" -> {
                             if (IMinecraft.mc.interactionManager!!.interactBlock(
                                     IMinecraft.mc.player!!,
@@ -245,7 +245,7 @@ class Nuker : Module("Nuker", ModuleCategory.World, GLFW.GLFW_KEY_UNKNOWN, false
                         )
 
                         when (clickMode.get().lowercase(Locale.getDefault())) {
-                            "break" -> PlayerUtil.destroyBlock(hitResult)
+                            "break" -> PlayerUtil.nukeBlockWithPacket(hitResult)
                             "place" -> {
                                 if (IMinecraft.mc.interactionManager!!.interactBlock(
                                         IMinecraft.mc.player!!,

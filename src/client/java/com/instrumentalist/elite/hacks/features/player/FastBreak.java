@@ -2,6 +2,7 @@ package com.instrumentalist.elite.hacks.features.player;
 
 import com.instrumentalist.elite.events.features.MotionEvent;
 import com.instrumentalist.elite.events.features.SendPacketEvent;
+import com.instrumentalist.elite.events.features.UpdateEvent;
 import com.instrumentalist.elite.hacks.Module;
 import com.instrumentalist.elite.hacks.ModuleCategory;
 import com.instrumentalist.elite.utils.IMinecraft;
@@ -34,7 +35,7 @@ public class FastBreak extends Module {
     }
 
     @Override
-    public void onMotion(MotionEvent event) {
+    public void onUpdate(UpdateEvent event) {
         if (IMinecraft.mc.player == null || IMinecraft.mc.world == null || IMinecraft.mc.player.isCreative()) {
             reset();
             return;

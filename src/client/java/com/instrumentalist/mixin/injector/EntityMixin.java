@@ -6,6 +6,7 @@ import com.instrumentalist.elite.hacks.features.movement.Step;
 import com.instrumentalist.elite.hacks.features.render.Freecam;
 import com.instrumentalist.elite.utils.move.MovementUtil;
 import com.instrumentalist.elite.utils.rotation.RotationUtil;
+import com.llamalad7.mixinextras.injector.ModifyExpressionValue;
 import com.llamalad7.mixinextras.injector.ModifyReturnValue;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.network.ClientPlayerEntity;
@@ -86,5 +87,11 @@ public abstract class EntityMixin {
             return true;
 
         return original;
+    }
+
+    @Inject(method = "adjustMovementForCollisions(Lnet/minecraft/util/math/Vec3d;)Lnet/minecraft/util/math/Vec3d;", at = @At(value = "RETURN", ordinal = 0), cancellable = true)
+    private void steppingHook(Vec3d movement, CallbackInfoReturnable<Vec3d> ci) {
+        if (((Object) this instanceof ClientPlayerEntity) && ModuleManager.getModuleState(new Step()) && ci.getReturnValue().y > 0.6)
+            Step.steppingFunctions();
     }
 }

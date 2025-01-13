@@ -1,5 +1,6 @@
 package com.instrumentalist.elite.hacks.features.movement;
 
+import com.instrumentalist.elite.events.features.UpdateEvent;
 import com.instrumentalist.elite.hacks.Module;
 import com.instrumentalist.elite.hacks.ModuleCategory;
 import com.instrumentalist.elite.hacks.ModuleManager;
@@ -10,12 +11,14 @@ import com.instrumentalist.elite.utils.move.MovementUtil;
 import com.instrumentalist.elite.utils.packet.PacketUtil;
 import com.instrumentalist.elite.utils.value.BooleanValue;
 import com.instrumentalist.elite.utils.value.FloatValue;
+import com.instrumentalist.elite.utils.value.IntValue;
 import com.instrumentalist.elite.utils.value.ListValue;
 import net.minecraft.client.gui.screen.ChatScreen;
 import net.minecraft.client.network.ClientPlayerEntity;
 import net.minecraft.client.option.KeyBinding;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.network.packet.c2s.play.PlayerMoveC2SPacket;
+import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
 import org.lwjgl.glfw.GLFW;
 import xyz.breadloaf.imguimc.customwindow.ModuleRenderable;
@@ -50,7 +53,15 @@ public class Step extends Module {
     );
 
     @Setting
-    private static final BooleanValue customTimer = new BooleanValue("Custom Timer", true, () -> !mode.get().equalsIgnoreCase("hypixel"));
+    private static final IntValue delay = new IntValue(
+            "Delay",
+            1,
+            1,
+            10
+    );
+
+    @Setting
+    private static final BooleanValue customTimer = new BooleanValue("Custom Timer", true);
 
     @Setting
     private static final FloatValue timerSpeed = new FloatValue(
@@ -58,40 +69,35 @@ public class Step extends Module {
             0.6f,
             0.1f,
             10f,
-            () -> customTimer.get() && !mode.get().equalsIgnoreCase("hypixel")
+            customTimer::get
     );
 
-    private static Vec3d oldVelocity = null;
-    private static boolean wasSprinting = false;
+    private static boolean canStep = true;
     private static boolean sentBypass = false;
     private static boolean calledModifiedStep = false;
+    private static int stepDelay = 0;
 
     public static float hookStepHeight(float original, LivingEntity entity) {
-        if (ModuleManager.getModuleState(new Step()) && entity instanceof ClientPlayerEntity && IMinecraft.mc.player != null && (!disableWhenSpeed.get() || !ModuleManager.getModuleState(new Speed()))) {
-            if (IMinecraft.mc.player.isOnGround() && IMinecraft.mc.player.horizontalCollision && MovementUtil.isMoving())
-                steppingFunctions();
-            else if (calledModifiedStep)
+        if (entity instanceof ClientPlayerEntity && IMinecraft.mc.player != null) {
+            if (ModuleManager.getModuleState(new Step()) && IMinecraft.mc.player.isOnGround() && canStep && (!disableWhenSpeed.get() || !ModuleManager.getModuleState(new Speed()))) {
+                if (calledModifiedStep)
+                    afterStepFunctions();
+
+                if (mode.get().equalsIgnoreCase("hypixel")) {
+                    if (IMinecraft.mc.world.getBlockState(IMinecraft.mc.player.getBlockPos().up(3)).isAir() && IMinecraft.mc.world.getBlockState(new BlockPos(IMinecraft.mc.player.getBlockPos().up(3).getX() + 1, IMinecraft.mc.player.getBlockPos().up(3).getY(), IMinecraft.mc.player.getBlockPos().up(3).getZ())).isAir() && IMinecraft.mc.world.getBlockState(new BlockPos(IMinecraft.mc.player.getBlockPos().up(3).getX(), IMinecraft.mc.player.getBlockPos().up(3).getY(), IMinecraft.mc.player.getBlockPos().up(3).getZ() + 1)).isAir() && IMinecraft.mc.world.getBlockState(new BlockPos(IMinecraft.mc.player.getBlockPos().up(3).getX() - 1, IMinecraft.mc.player.getBlockPos().up(3).getY(), IMinecraft.mc.player.getBlockPos().up(3).getZ())).isAir() && IMinecraft.mc.world.getBlockState(new BlockPos(IMinecraft.mc.player.getBlockPos().up(3).getX(), IMinecraft.mc.player.getBlockPos().up(3).getY(), IMinecraft.mc.player.getBlockPos().up(3).getZ() - 1)).isAir())
+                        return 1f;
+                } else return height.get();
+            }
+
+            if (calledModifiedStep && !IMinecraft.mc.player.isOnGround())
                 afterStepFunctions();
-
-            if (calledModifiedStep)
-                return mode.get().equalsIgnoreCase("hypixel") ? 1f : height.get();
-        }
-
-        if (entity instanceof ClientPlayerEntity && !calledModifiedStep) {
-            oldVelocity = IMinecraft.mc.player.getVelocity();
-            wasSprinting = IMinecraft.mc.player.isSprinting();
         }
 
         return original;
     }
 
-    private static void steppingFunctions() {
-        if (wasSprinting)
-            IMinecraft.mc.player.setSprinting(true);
-
-        if (mode.get().equalsIgnoreCase("hypixel"))
-            TimerUtil.timerSpeed = 0.25f;
-        else if (customTimer.get())
+    public static void steppingFunctions() {
+        if (customTimer.get())
             TimerUtil.timerSpeed = timerSpeed.get();
 
         if (!sentBypass) {
@@ -115,30 +121,39 @@ public class Step extends Module {
     }
 
     private static void afterStepFunctions() {
-        if (oldVelocity != null) {
-            if (!mode.get().equalsIgnoreCase("hypixel")) {
-                IMinecraft.mc.player.getVelocity().x = oldVelocity.x;
-                IMinecraft.mc.player.getVelocity().z = oldVelocity.z;
-            }
-            oldVelocity = null;
-        }
-
-        if (customTimer.get() || mode.get().equalsIgnoreCase("hypixel"))
+        if (customTimer.get())
             TimerUtil.reset();
 
+        stepDelay = delay.get();
+        canStep = false;
         sentBypass = false;
         calledModifiedStep = false;
     }
 
     @Override
     public void onDisable() {
-        wasSprinting = false;
+        if (customTimer.get())
+            TimerUtil.reset();
+
+        canStep = true;
+        stepDelay = 0;
         calledModifiedStep = false;
-        oldVelocity = null;
         sentBypass = false;
     }
 
     @Override
     public void onEnable() {
+    }
+
+    @Override
+    public void onUpdate(UpdateEvent event) {
+        if (IMinecraft.mc.player == null) return;
+
+        if (!canStep) {
+            if (stepDelay <= 0) {
+                stepDelay = 0;
+                canStep = true;
+            } else stepDelay--;
+        }
     }
 }
