@@ -67,6 +67,9 @@ class NoFall : Module("No Fall", ModuleCategory.Player, GLFW.GLFW_KEY_UNKNOWN, f
 
                         2 -> timerStage = 0
                     }
+                } else if (timerStage != 0) {
+                    TimerUtil.reset()
+                    timerStage = 0
                 }
             }
         }
