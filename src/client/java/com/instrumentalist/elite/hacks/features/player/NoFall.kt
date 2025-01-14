@@ -52,13 +52,21 @@ class NoFall : Module("No Fall", ModuleCategory.Player, GLFW.GLFW_KEY_UNKNOWN, f
 
         when (mode.get().lowercase(Locale.getDefault())) {
             "hypixel" -> {
-                if (timerStage <= 1) {
-                    TimerUtil.reset()
-                    timerStage++
-                } else if (IMinecraft.mc.player!!.velocity.y <= -0.6) {
-                    TimerUtil.timerSpeed = 0.5f
-                    PacketUtil.sendPacket(PlayerMoveC2SPacket.OnGroundOnly(true, IMinecraft.mc.player!!.horizontalCollision))
-                    timerStage = 0
+                if (IMinecraft.mc.player!!.velocity.y <= -0.6) {
+                    when (timerStage) {
+                        0 -> {
+                            TimerUtil.reset()
+                            timerStage++
+                        }
+
+                        1 -> {
+                            TimerUtil.timerSpeed = 0.6f
+                            PacketUtil.sendPacket(PlayerMoveC2SPacket.OnGroundOnly(true, IMinecraft.mc.player!!.horizontalCollision))
+                            timerStage++
+                        }
+
+                        2 -> timerStage = 0
+                    }
                 }
             }
         }
