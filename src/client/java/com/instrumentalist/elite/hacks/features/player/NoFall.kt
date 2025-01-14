@@ -55,18 +55,17 @@ class NoFall : Module("No Fall", ModuleCategory.Player, GLFW.GLFW_KEY_UNKNOWN, f
                 if (IMinecraft.mc.player!!.velocity.y <= -0.6) {
                     when (timerStage) {
                         0 -> {
-                            TimerUtil.reset()
-                            timerStage++
-                        }
-
-                        1 -> {
                             TimerUtil.timerSpeed = 0.6f
                             PacketUtil.sendPacket(PlayerMoveC2SPacket.OnGroundOnly(true, IMinecraft.mc.player!!.horizontalCollision))
-                            timerStage++
                         }
 
-                        2 -> timerStage = 0
+                        2 -> {
+                            TimerUtil.reset()
+                            timerStage = 0
+                        }
                     }
+
+                    timerStage++
                 } else if (timerStage != 0) {
                     TimerUtil.reset()
                     timerStage = 0
