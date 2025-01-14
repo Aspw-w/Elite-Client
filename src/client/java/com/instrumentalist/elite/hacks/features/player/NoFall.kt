@@ -23,6 +23,7 @@ class NoFall : Module("No Fall", ModuleCategory.Player, GLFW.GLFW_KEY_UNKNOWN, f
     @Setting
     private val mode = ListValue("Mode", arrayOf("Packet", "Spoof", "No Ground", "Hypixel"), "Packet")
 
+    private var timered = false
     private var timerStage = 0
     private var fallTicks = 0
 
@@ -35,6 +36,7 @@ class NoFall : Module("No Fall", ModuleCategory.Player, GLFW.GLFW_KEY_UNKNOWN, f
             TimerUtil.reset()
             timerStage = 0
         }
+        timered = false
         fallTicks = 0
     }
 
@@ -46,6 +48,7 @@ class NoFall : Module("No Fall", ModuleCategory.Player, GLFW.GLFW_KEY_UNKNOWN, f
                 TimerUtil.reset()
                 timerStage = 0
             }
+            timered = false
             fallTicks = 0
             return
         }
@@ -57,18 +60,21 @@ class NoFall : Module("No Fall", ModuleCategory.Player, GLFW.GLFW_KEY_UNKNOWN, f
                         0 -> {
                             TimerUtil.timerSpeed = 0.6f
                             PacketUtil.sendPacket(PlayerMoveC2SPacket.OnGroundOnly(true, IMinecraft.mc.player!!.horizontalCollision))
+                            timerStage++
+                            timered = true
                         }
+
+                        1 -> timerStage++
 
                         2 -> {
                             TimerUtil.reset()
                             timerStage = 0
                         }
                     }
-
-                    timerStage++
-                } else if (timerStage != 0) {
+                } else if (timered) {
                     TimerUtil.reset()
                     timerStage = 0
+                    timered = false
                 }
             }
         }
@@ -80,6 +86,7 @@ class NoFall : Module("No Fall", ModuleCategory.Player, GLFW.GLFW_KEY_UNKNOWN, f
                 TimerUtil.reset()
                 timerStage = 0
             }
+            timered = false
             fallTicks = 0
             return
         }
