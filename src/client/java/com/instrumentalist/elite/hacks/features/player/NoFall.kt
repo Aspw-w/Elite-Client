@@ -55,7 +55,7 @@ class NoFall : Module("No Fall", ModuleCategory.Player, GLFW.GLFW_KEY_UNKNOWN, f
 
         when (mode.get().lowercase(Locale.getDefault())) {
             "hypixel" -> {
-                if (IMinecraft.mc.player!!.velocity.y <= -0.6) {
+                if (IMinecraft.mc.player!!.velocity.y <= -0.6 && !IMinecraft.mc.options.sneakKey.isPressed) {
                     when (timerStage) {
                         0 -> {
                             TimerUtil.timerSpeed = 0.6f
