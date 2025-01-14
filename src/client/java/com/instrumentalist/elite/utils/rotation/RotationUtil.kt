@@ -383,7 +383,7 @@ object RotationUtil {
             )
 
             if (hypixelMode)
-                newYaw += 70f
+                newYaw += 55f
 
             currentYaw = newYaw
             currentPitch = newPitch
