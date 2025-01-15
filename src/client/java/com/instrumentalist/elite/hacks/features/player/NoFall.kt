@@ -10,6 +10,7 @@ import com.instrumentalist.elite.hacks.ModuleManager
 import com.instrumentalist.elite.hacks.features.render.Freecam
 import com.instrumentalist.elite.utils.ChatUtil
 import com.instrumentalist.elite.utils.IMinecraft
+import com.instrumentalist.elite.utils.entity.isFallingToVoid
 import com.instrumentalist.elite.utils.math.TimerUtil
 import com.instrumentalist.elite.utils.move.MovementUtil
 import com.instrumentalist.elite.utils.packet.PacketUtil
@@ -55,16 +56,19 @@ class NoFall : Module("No Fall", ModuleCategory.Player, GLFW.GLFW_KEY_UNKNOWN, f
 
         when (mode.get().lowercase(Locale.getDefault())) {
             "hypixel" -> {
-                if (IMinecraft.mc.player!!.velocity.y <= -0.6 && !IMinecraft.mc.options.sneakKey.isPressed) {
+                if (IMinecraft.mc.player!!.velocity.y <= -0.6 && !IMinecraft.mc.options.sneakKey.isPressed && !IMinecraft.mc.player!!.isFallingToVoid()) {
                     when (timerStage) {
                         0 -> {
-                            TimerUtil.timerSpeed = 0.6f
+                            TimerUtil.timerSpeed = 0.5f
                             PacketUtil.sendPacket(PlayerMoveC2SPacket.OnGroundOnly(true, IMinecraft.mc.player!!.horizontalCollision))
                             timerStage++
                             timered = true
                         }
 
-                        1 -> timerStage++
+                        1 -> {
+                            TimerUtil.timerSpeed = 0.75f
+                            timerStage++
+                        }
 
                         2 -> {
                             TimerUtil.reset()

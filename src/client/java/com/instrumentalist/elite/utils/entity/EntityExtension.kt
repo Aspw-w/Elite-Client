@@ -36,3 +36,13 @@ fun ItemStack.getArmorColor(): Int? {
         null
     }
 }
+
+fun Entity.isFallingToVoid(voidLevel: Double = -64.0, safetyExpand: Double = 0.0): Boolean {
+    if (this.y < voidLevel || boundingBox.minY < voidLevel) return true
+
+    val boundingBox = boundingBox
+        .withMinY(voidLevel)
+        .expand(safetyExpand, 0.0, safetyExpand)
+    return world.getBlockCollisions(this, boundingBox)
+        .all { shape -> shape == VoxelShapes.empty() }
+}
