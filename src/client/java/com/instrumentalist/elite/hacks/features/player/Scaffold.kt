@@ -412,7 +412,7 @@ class Scaffold : Module("Scaffold", ModuleCategory.Player, GLFW.GLFW_KEY_UNKNOWN
             val isEast = yaw > 10f && yaw < 170f
             val isWest = yaw > 190f && yaw < 350f
 
-            val groundYaw = if (rotationMode.get().equals("hypixel", true)) {
+            val groundYaw = if (rotationMode.get().equals("hypixel", true) || rotationMode.get().equals("math", true) && hypixelMode.get()) {
                 if (!IMinecraft.mc.world!!.getBlockState(BlockPos(IMinecraft.mc.player!!.blockPos.down(1))).isAir)
                     direction + 70f
                 else if (MovementUtil.isDiagonal(6f)) {
@@ -426,7 +426,7 @@ class Scaffold : Module("Scaffold", ModuleCategory.Player, GLFW.GLFW_KEY_UNKNOWN
                 } else (direction + 60f) % 360
             } else direction
 
-            val offGroundYaw = if (rotationMode.get().equals("hypixel", true)) {
+            val offGroundYaw = if (rotationMode.get().equals("hypixel", true) || rotationMode.get().equals("math", true) && hypixelMode.get()) {
                 if (!IMinecraft.mc.world!!.getBlockState(BlockPos(IMinecraft.mc.player!!.blockPos.down(1))).isAir)
                     direction + 70f
                 else if (MovementUtil.isDiagonal(6f)) {
@@ -440,8 +440,8 @@ class Scaffold : Module("Scaffold", ModuleCategory.Player, GLFW.GLFW_KEY_UNKNOWN
                 } else (direction + 60f) % 360
             } else direction
 
-            val groundPitch = if (rotationMode.get().equals("hypixel", true)) 70f else 70f
-            val offGroundPitch = if (rotationMode.get().equals("hypixel", true)) 80f else 80f
+            val groundPitch = 70f
+            val offGroundPitch = 80f
 
             if (IMinecraft.mc.player!!.isOnGround)
                 RotationUtil.setRotation(
