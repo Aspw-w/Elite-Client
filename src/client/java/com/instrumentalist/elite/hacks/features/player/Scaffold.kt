@@ -173,7 +173,7 @@ class Scaffold : Module("Scaffold", ModuleCategory.Player, GLFW.GLFW_KEY_UNKNOWN
         if (!wasTowering && InputUtil.isKeyPressed(
                 IMinecraft.mc.window.handle,
                 InputUtil.fromTranslationKey(IMinecraft.mc.options.jumpKey.boundKeyTranslationKey).code
-            )
+            ) && !ModuleManager.getModuleState(Speed())
         )
             IMinecraft.mc.options.jumpKey.isPressed = true
     }

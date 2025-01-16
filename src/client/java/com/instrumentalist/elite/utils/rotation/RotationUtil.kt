@@ -3,6 +3,7 @@ package com.instrumentalist.elite.utils.rotation
 import com.instrumentalist.elite.hacks.ModuleManager
 import com.instrumentalist.elite.utils.ChatUtil
 import com.instrumentalist.elite.utils.IMinecraft
+import com.instrumentalist.elite.utils.move.MovementUtil
 import net.minecraft.entity.Entity
 import net.minecraft.entity.LivingEntity
 import net.minecraft.util.math.BlockPos
@@ -383,8 +384,11 @@ object RotationUtil {
                 0.1f
             )
 
-            if (hypixelMode)
-                newYaw += 45f
+            if (hypixelMode) {
+                if (!MovementUtil.isDiagonal(5f))
+                    newYaw = MovementUtil.getPlayerDirection() - 124f
+                else newYaw += 59f
+            }
 
             currentYaw = newYaw
             currentPitch = newPitch

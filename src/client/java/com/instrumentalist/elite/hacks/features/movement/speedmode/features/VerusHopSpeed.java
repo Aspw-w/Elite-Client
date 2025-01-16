@@ -6,6 +6,7 @@ import com.instrumentalist.elite.events.features.UpdateEvent;
 import com.instrumentalist.elite.hacks.ModuleManager;
 import com.instrumentalist.elite.hacks.features.movement.Fly;
 import com.instrumentalist.elite.hacks.features.movement.speedmode.SpeedEvent;
+import com.instrumentalist.elite.utils.ChatUtil;
 import com.instrumentalist.elite.utils.IMinecraft;
 import com.instrumentalist.elite.utils.math.TimerUtil;
 import com.instrumentalist.elite.utils.move.MovementUtil;
@@ -18,40 +19,33 @@ public class VerusHopSpeed implements SpeedEvent {
         return "Verus Hop";
     }
 
-    public static int tick = 0;
-
     @Override
     public void onUpdate(UpdateEvent event) {
         if (IMinecraft.mc.player == null || ModuleManager.getModuleState(new Fly())) return;
 
-        if (IMinecraft.mc.player.isOnGround() && MovementUtil.isMoving())
-            IMinecraft.mc.player.jump();
+        if (IMinecraft.mc.player.isOnGround()) {
+            if (MovementUtil.isMoving())
+                IMinecraft.mc.player.jump();
 
-        if (IMinecraft.mc.player.hasStatusEffect(StatusEffects.SPEED))
-            MovementUtil.strafe(0.38f);
-        else MovementUtil.strafe(0.33f);
+            if (IMinecraft.mc.player.hasStatusEffect(StatusEffects.SPEED))
+                MovementUtil.strafe(0.59f);
+            else MovementUtil.strafe(0.51f);
+        } else {
+            if (IMinecraft.mc.player.hasStatusEffect(StatusEffects.SPEED))
+                MovementUtil.strafe(0.38f);
+            else MovementUtil.strafe(0.33f);
+        }
     }
 
     @Override
     public void onMotion(MotionEvent event) {
-        if (IMinecraft.mc.player == null || ModuleManager.getModuleState(new Fly())) return;
-
-        tick += 1;
-
-        if (tick > 2) {
-            TimerUtil.timerSpeed = 1.15f;
-            if (tick > 5) {
-                TimerUtil.timerSpeed = 0.9f;
-                tick = 0;
-            }
-        }
     }
 
     @Override
     public void onTick(TickEvent event) {
         if (IMinecraft.mc.player == null) return;
 
-        if (IMinecraft.mc.player.isOnGround() && !MovementUtil.isMoving())
+        if (IMinecraft.mc.player.isOnGround() && MovementUtil.isMoving())
             IMinecraft.mc.options.jumpKey.setPressed(false);
     }
 }

@@ -24,8 +24,8 @@ public class CubecraftHopSpeed implements SpeedEvent {
 
         if (IMinecraft.mc.player.isOnGround() && MovementUtil.isMoving()) {
             IMinecraft.mc.player.jump();
-            strafeMultiplier = 0.49f;
-        } else strafeMultiplier = 0.3f;
+            strafeMultiplier = 0.48f;
+        } else strafeMultiplier = 0.31f;
 
         MovementUtil.strafe(Math.max((float) (strafeMultiplier + MovementUtil.getSpeedEffect() * 0.01), (float) MovementUtil.getBaseMoveSpeed(0.2769)));
     }
@@ -38,7 +38,7 @@ public class CubecraftHopSpeed implements SpeedEvent {
     public void onTick(TickEvent event) {
         if (IMinecraft.mc.player == null) return;
 
-        if (IMinecraft.mc.player.isOnGround())
+        if (IMinecraft.mc.player.isOnGround() && MovementUtil.isMoving())
             IMinecraft.mc.options.jumpKey.setPressed(false);
     }
 }
