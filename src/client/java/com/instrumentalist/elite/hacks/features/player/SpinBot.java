@@ -53,6 +53,6 @@ public class SpinBot extends Module {
 
         spinYaw += spinSpeed.get();
 
-        RotationUtil.INSTANCE.setRotation(spinYaw, pitch.get(), 180f);
+        RotationUtil.INSTANCE.setRotation(spinYaw, pitch.get(), 180f, true);
     }
 }

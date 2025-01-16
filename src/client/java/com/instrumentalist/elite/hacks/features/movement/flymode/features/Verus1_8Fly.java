@@ -59,7 +59,7 @@ public class Verus1_8Fly implements FlyEvent {
             return;
         }
 
-        RotationUtil.INSTANCE.setRotation((IMinecraft.mc.player.getYaw() % 360 + 360) % 360, 90f, 90f);
+        RotationUtil.INSTANCE.setRotation((IMinecraft.mc.player.getYaw() % 360 + 360) % 360, 90f, 90f, true);
         verusRotating = true;
 
         //BlockHitResult hitResult = new BlockHitResult(new Vec3d(IMinecraft.mc.player.getBlockPos().down(2).getX(), IMinecraft.mc.player.getBlockPos().down(2).getY() + 0.5f + (Math.random() * 0.44), IMinecraft.mc.player.getBlockPos().down(2).getZ()), Direction.UP, IMinecraft.mc.player.getBlockPos().down(2), true);

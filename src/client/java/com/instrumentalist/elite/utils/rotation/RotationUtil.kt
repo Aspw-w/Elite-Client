@@ -101,13 +101,14 @@ object RotationUtil {
         return angle
     }
 
-    fun setRotation(targetYaw: Float, targetPitch: Float, speed: Float = 90f) {
+    fun setRotation(targetYaw: Float, targetPitch: Float, speed: Float = 90f, setRotationStatus: Boolean = true) {
         if (currentYaw == null)
             currentYaw = baseYaw + 0.001f
         if (currentPitch == null)
             currentPitch = basePitch + 0.001f
 
-        isRotating = true
+        if (setRotationStatus)
+            isRotating = true
 
         val rotYaw = smoothRotation(currentYaw!!, targetYaw, speed)
         val rotPitch = smoothRotation(currentPitch!!, targetPitch, speed)

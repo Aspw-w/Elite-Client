@@ -146,11 +146,31 @@ public class MovementUtil {
                     double mx = Math.cos(Math.toRadians((yaw + 90f)));
                     double mz = Math.sin(Math.toRadians((yaw + 90f)));
 
-                    IMinecraft.mc.player.setVelocity(forward * speed * mx + direction * speed * mz, IMinecraft.mc.player.getVelocity().y, forward * speed * mz - direction * speed * mx);
+                    double combinedX = forward * speed * mx + direction * speed * mz;
+                    double combinedZ = forward * speed * mz - direction * speed * mx;
+
+                    double magnitude = Math.sqrt(combinedX * combinedX + combinedZ * combinedZ);
+
+                    if (magnitude > 0) {
+                        combinedX /= magnitude;
+                        combinedZ /= magnitude;
+                    }
+
+                    IMinecraft.mc.player.setVelocity(combinedX * speed, IMinecraft.mc.player.getVelocity().y, combinedZ * speed);
                 }
             } else {
                 double yaw = Math.toRadians(getPlayerDirection());
-                IMinecraft.mc.player.setVelocity(-Math.sin(yaw) * speed, IMinecraft.mc.player.getVelocity().y, Math.cos(yaw) * speed);
+                double xSpeed = -Math.sin(yaw);
+                double zSpeed = Math.cos(yaw);
+
+                double magnitude = Math.sqrt(xSpeed * xSpeed + zSpeed * zSpeed);
+
+                if (magnitude > 0) {
+                    xSpeed /= magnitude;
+                    zSpeed /= magnitude;
+                }
+
+                IMinecraft.mc.player.setVelocity(xSpeed * speed, IMinecraft.mc.player.getVelocity().y, zSpeed * speed);
             }
         } else stopMoving();
     }

@@ -251,7 +251,7 @@ class Scaffold : Module("Scaffold", ModuleCategory.Player, GLFW.GLFW_KEY_UNKNOWN
             TimerUtil.timerSpeed = if (wasTowering) towerTimerSpeed.get() else normalTimerSpeed.get()
 
         if (tower.get() && (!towerMode.get()
-                .equals("hypixel", true) || !IMinecraft.mc.player!!.hasStatusEffect(StatusEffects.JUMP_BOOST)) && (towerWhen.get()
+                .equals("hypixel", true) || !IMinecraft.mc.player!!.hasStatusEffect(StatusEffects.JUMP_BOOST) && !ModuleManager.getModuleState(Speed())) && (towerWhen.get()
                 .equals("always", true) || towerWhen.get()
                 .equals("standing", true) && !MovementUtil.isMoving() || towerWhen.get()
                 .equals("moving", true) && MovementUtil.isMoving())
