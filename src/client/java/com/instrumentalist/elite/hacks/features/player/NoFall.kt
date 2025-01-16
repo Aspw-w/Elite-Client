@@ -66,11 +66,6 @@ class NoFall : Module("No Fall", ModuleCategory.Player, GLFW.GLFW_KEY_UNKNOWN, f
                         }
 
                         1 -> {
-                            TimerUtil.timerSpeed = 0.75f
-                            timerStage++
-                        }
-
-                        2 -> {
                             TimerUtil.reset()
                             timerStage = 0
                         }

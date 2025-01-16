@@ -33,7 +33,7 @@ public abstract class PlayerEntityRendererMixin {
     @Inject(method = "updateRenderState(Lnet/minecraft/client/network/AbstractClientPlayerEntity;Lnet/minecraft/client/render/entity/state/PlayerEntityRenderState;F)V", at = @At("RETURN"))
     private void clientSideRotations(AbstractClientPlayerEntity player, PlayerEntityRenderState state, float f, CallbackInfo info) {
         if (player != IMinecraft.mc.player) return;
-        if (RotationUtil.INSTANCE.getCurrentYaw() != null && RotationUtil.INSTANCE.getCurrentPitch() != null) {
+        if (RotationUtil.INSTANCE.getCurrentYaw() != null && RotationUtil.INSTANCE.getCurrentPitch() != null && !RotationUtil.INSTANCE.getCurrentYaw().isInfinite() && !RotationUtil.INSTANCE.getCurrentYaw().isNaN() && !RotationUtil.INSTANCE.getCurrentPitch().isInfinite() && !RotationUtil.INSTANCE.getCurrentPitch().isNaN()) {
             long currentTime = System.nanoTime();
             float deltaTime = (currentTime - lastFrameTime) / 1e9f;
 

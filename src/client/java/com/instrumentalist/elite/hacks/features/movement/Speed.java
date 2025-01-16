@@ -51,8 +51,6 @@ public class Speed extends Module {
         } else if (speedModeManager.currentMode instanceof VerusHopSpeed) {
             if (IMinecraft.mc.player != null)
                 MovementUtil.stopMoving();
-            TimerUtil.reset();
-            VerusHopSpeed.tick = 0;
         } else if (speedModeManager.currentMode instanceof MinibloxSpeed) {
             if (IMinecraft.mc.player != null)
                 MovementUtil.stopMoving();
