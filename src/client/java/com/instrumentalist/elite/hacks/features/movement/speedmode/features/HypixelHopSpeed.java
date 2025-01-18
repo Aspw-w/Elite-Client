@@ -8,6 +8,7 @@ import com.instrumentalist.elite.hacks.features.exploit.Disabler;
 import com.instrumentalist.elite.hacks.features.exploit.disablermode.features.HypixelDisabler;
 import com.instrumentalist.elite.hacks.features.movement.Fly;
 import com.instrumentalist.elite.hacks.features.movement.speedmode.SpeedEvent;
+import com.instrumentalist.elite.hacks.features.player.Scaffold;
 import com.instrumentalist.elite.utils.ChatUtil;
 import com.instrumentalist.elite.utils.IMinecraft;
 import com.instrumentalist.elite.utils.move.MovementUtil;
@@ -48,7 +49,7 @@ public class HypixelHopSpeed implements SpeedEvent {
 
                 switch (MovementUtil.fallTicks) {
                     case 4:
-                        if (IMinecraft.mc.world.getBlockState(IMinecraft.mc.player.getBlockPos().up(2)).isAir() && !IMinecraft.mc.player.horizontalCollision) {
+                        if (IMinecraft.mc.world.getBlockState(IMinecraft.mc.player.getBlockPos().up(2)).isAir() && !IMinecraft.mc.player.horizontalCollision && (!IMinecraft.mc.player.hasStatusEffect(StatusEffects.SPEED) || !ModuleManager.getModuleState(new Scaffold()))) {
                             MovementUtil.setVelocityY(baseVelocityY - 0.039);
                             canLowHop = true;
                         } else canLowHop = false;
@@ -75,7 +76,7 @@ public class HypixelHopSpeed implements SpeedEvent {
                         break;
 
                     case 8:
-                        if (canLowHop && lowStrafeCheck() && !IMinecraft.mc.player.hasStatusEffect(StatusEffects.SPEED))
+                        if (canLowHop && lowStrafeCheck())
                             MovementUtil.setVelocityY(baseVelocityY - 0.0118);
 
                         canLowHop = false;
