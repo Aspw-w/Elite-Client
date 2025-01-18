@@ -2,6 +2,11 @@
 
 [Join the client discord server](https://discord.gg/y8ZDqRxSCy)
 
+### Need more features?
+[Account Switcher Mod](https://github.com/The-Fireplace-Minecraft-Mods/In-Game-Account-Switcher)
+
+[Via Version Mod](https://github.com/ViaVersion/ViaFabricPlus)
+
 ### Credits
 
 [AlignedCookie88/imgui-mc (This is a Fork)](https://github.com/AlignedCookie88/imgui-mc)
