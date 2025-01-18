@@ -87,6 +87,9 @@ class NoSlow : Module("No Slow", ModuleCategory.Movement, GLFW.GLFW_KEY_UNKNOWN,
     override fun onUpdate(event: UpdateEvent) {
         if (IMinecraft.mc.player == null) return
 
+        if (mode.get().equals("hypixel", true) && waitingPacket && !IMinecraft.mc.player!!.isUsingItem)
+            waitingPacket = false
+
         if (mode.get().equals("hypixel", true) && waitingPacket && MovementUtil.fallTicks >= 2 && (IMinecraft.mc.player!!.mainHandStack.item.components.contains(DataComponentTypes.FOOD) || IMinecraft.mc.player!!.mainHandStack.item == Items.POTION || IMinecraft.mc.player!!.mainHandStack.item is BowItem || IMinecraft.mc.player!!.mainHandStack.item == Items.MILK_BUCKET)) {
             val yaw = if (RotationUtil.currentYaw != null) RotationUtil.currentYaw else IMinecraft.mc.player!!.yaw
             val pitch = if (RotationUtil.currentPitch != null) RotationUtil.currentPitch else IMinecraft.mc.player!!.pitch

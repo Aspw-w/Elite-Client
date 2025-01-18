@@ -110,6 +110,7 @@ class Scaffold : Module("Scaffold", ModuleCategory.Player, GLFW.GLFW_KEY_UNKNOWN
         var hotbarStackSize: Int = 0
     }
 
+    private var jumped = false
     private var once = false
     private var startedScaffold = false
     private var hypBasePlaced = false
@@ -141,6 +142,7 @@ class Scaffold : Module("Scaffold", ModuleCategory.Player, GLFW.GLFW_KEY_UNKNOWN
             }
         }
 
+        jumped = false
         once = false
         hypStartIsAllowed = false
         hypBasePlaced = false
@@ -166,6 +168,9 @@ class Scaffold : Module("Scaffold", ModuleCategory.Player, GLFW.GLFW_KEY_UNKNOWN
 
         if (down.get())
             IMinecraft.mc.options.sneakKey.isPressed = false
+
+        if (!jumped && IMinecraft.mc.player!!.isOnGround && (rotationMode.get().equals("math", true) && hypixelMode.get() || rotationMode.get().equals("hypixel", true)))
+            IMinecraft.mc.options.jumpKey.isPressed = false
 
         if (wasTowering)
             IMinecraft.mc.options.jumpKey.isPressed = false
@@ -217,6 +222,7 @@ class Scaffold : Module("Scaffold", ModuleCategory.Player, GLFW.GLFW_KEY_UNKNOWN
             }
             if (lastSlot != null)
                 IMinecraft.mc.player!!.inventory.selectedSlot = lastSlot!!
+            jumped = false
             hypBasePlaced = false
             hypTowerTicks = 0
             jumpGround = 0.0
@@ -237,6 +243,11 @@ class Scaffold : Module("Scaffold", ModuleCategory.Player, GLFW.GLFW_KEY_UNKNOWN
 
         if (noSprint.get())
             IMinecraft.mc.player!!.isSprinting = false
+
+        if (!jumped && !ModuleManager.getModuleState(Speed()) && IMinecraft.mc.player!!.isOnGround && (rotationMode.get().equals("math", true) && hypixelMode.get() || rotationMode.get().equals("hypixel", true))) {
+            IMinecraft.mc.player!!.jump()
+            jumped = true
+        }
 
         var hypixelPlaced = false
 
