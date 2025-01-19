@@ -14,6 +14,7 @@ import com.instrumentalist.elite.utils.math.TargetUtil
 import com.instrumentalist.elite.utils.math.ToolUtil
 import com.instrumentalist.elite.utils.packet.PacketUtil
 import com.instrumentalist.elite.utils.rotation.RotationUtil
+import com.instrumentalist.elite.utils.value.FloatValue
 import com.instrumentalist.elite.utils.value.IntValue
 import com.instrumentalist.elite.utils.value.ListValue
 import net.minecraft.block.BedBlock
@@ -41,7 +42,7 @@ class Breaker : Module("Breaker", ModuleCategory.World, GLFW.GLFW_KEY_UNKNOWN, f
         private val block = ListValue("Block", arrayOf("Bed", "Egg"), "Bed") { mode.get().equals("normal", true) }
 
         @Setting
-        private val range = IntValue("Range", 4, 1, 6, "m")
+        private val range = FloatValue("Range", 4f, 1f, 6f, "m")
 
         var wasBreaking = false
     }
@@ -82,7 +83,7 @@ class Breaker : Module("Breaker", ModuleCategory.World, GLFW.GLFW_KEY_UNKNOWN, f
         if (IMinecraft.mc.player == null || IMinecraft.mc.world == null || ModuleManager.getModuleState(Scaffold())) return
 
         if (cachedBedPos == null)
-            cachedBedPos = findNearbyBeds(IMinecraft.mc.player!!.blockPos, range.get())
+            cachedBedPos = findNearbyBeds(IMinecraft.mc.player!!.blockPos, range.get().toInt() + 1)
 
         if (cachedBedPos != null && !IMinecraft.mc.world!!.getBlockState(cachedBedPos).isAir && (range.get() * 10) >= IMinecraft.mc.player!!.squaredDistanceTo(Vec3d(cachedBedPos!!.x.toDouble(), cachedBedPos!!.y.toDouble(), cachedBedPos!!.z.toDouble()))) {
             wasBreaking = true

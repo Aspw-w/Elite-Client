@@ -32,7 +32,10 @@ public class HypixelHopSpeed implements SpeedEvent {
 
     @Override
     public void onUpdate(UpdateEvent event) {
-        if (IMinecraft.mc.player == null || IMinecraft.mc.world == null || IMinecraft.mc.player.isTouchingWater() || IMinecraft.mc.player.isSpectator()) return;
+        if (IMinecraft.mc.player == null || IMinecraft.mc.world == null || IMinecraft.mc.player.isTouchingWater() || IMinecraft.mc.player.isSpectator() || ModuleManager.getModuleState(new Scaffold()) && (!Scaffold.Companion.getJumped() || Scaffold.Companion.getWasTowering())) {
+            canLowHop = false;
+            return;
+        }
 
         if (ModuleManager.getModuleState(new Disabler()) && HypixelDisabler.watchDogDisabled) {
             if (IMinecraft.mc.player.isOnGround()) {
@@ -49,7 +52,7 @@ public class HypixelHopSpeed implements SpeedEvent {
 
                 switch (MovementUtil.fallTicks) {
                     case 4:
-                        if (IMinecraft.mc.world.getBlockState(IMinecraft.mc.player.getBlockPos().up(2)).isAir() && !IMinecraft.mc.player.horizontalCollision && (!IMinecraft.mc.player.hasStatusEffect(StatusEffects.SPEED) || !ModuleManager.getModuleState(new Scaffold()))) {
+                        if (IMinecraft.mc.world.getBlockState(IMinecraft.mc.player.getBlockPos().up(2)).isAir() && !IMinecraft.mc.player.horizontalCollision) {
                             MovementUtil.setVelocityY(baseVelocityY - 0.039);
                             canLowHop = true;
                         } else canLowHop = false;
