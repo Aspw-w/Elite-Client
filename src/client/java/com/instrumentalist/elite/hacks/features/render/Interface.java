@@ -12,6 +12,7 @@ import com.instrumentalist.elite.hacks.features.world.Breaker;
 import com.instrumentalist.elite.hacks.features.world.CivBreak;
 import com.instrumentalist.elite.hacks.features.world.Nuker;
 import com.instrumentalist.elite.utils.IMinecraft;
+import com.instrumentalist.elite.utils.packet.BlinkUtil;
 import com.instrumentalist.elite.utils.value.BooleanValue;
 import com.instrumentalist.elite.utils.value.TextValue;
 import net.minecraft.client.font.TextRenderer;
@@ -137,7 +138,7 @@ public class Interface extends Module {
                 String[] scaffoldStrings = scaffoldText.split("");
 
                 int index = 0;
-                float textLen = IMinecraft.mc.getWindow().getWidth() / 12f;
+                float textLen = IMinecraft.mc.getWindow().getScaledWidth() / 2f;
 
                 for (String text : scaffoldStrings) {
                     float saturation = 1.0f;
@@ -151,7 +152,7 @@ public class Interface extends Module {
 
                     Color color = Color.getHSBColor(hueShift, saturation, brightness);
 
-                    cachedTextRenderer.draw(Text.of(text), textLen, 120f, new Color(color.getRed(), color.getGreen(), color.getBlue(), alpha).getRGB(), fontShadow.get(), matrix4f, vertexConsumerProvider, TextRenderer.TextLayerType.SEE_THROUGH, 0, 0);
+                    cachedTextRenderer.draw(Text.of(text), textLen - (cachedTextRenderer.getWidth(Text.of(scaffoldText)) / 2f), IMinecraft.mc.getWindow().getScaledHeight() / 2f - 40f, new Color(color.getRed(), color.getGreen(), color.getBlue(), alpha).getRGB(), fontShadow.get(), matrix4f, vertexConsumerProvider, TextRenderer.TextLayerType.SEE_THROUGH, 0, 0);
 
                     textLen += cachedTextRenderer.getWidth(text);
                     index++;
@@ -164,7 +165,7 @@ public class Interface extends Module {
                 String[] disablerStrings = disablingText.split("");
 
                 int index = 0;
-                float textLen = IMinecraft.mc.getWindow().getWidth() / 12f;
+                float textLen = IMinecraft.mc.getWindow().getScaledWidth() / 2f;
 
                 for (String text : disablerStrings) {
                     float saturation = 1.0f;
@@ -178,7 +179,7 @@ public class Interface extends Module {
 
                     Color color = Color.getHSBColor(hueShift, saturation, brightness);
 
-                    cachedTextRenderer.draw(Text.of(text), textLen, 130.5f, new Color(color.getRed(), color.getGreen(), color.getBlue(), alpha).getRGB(), fontShadow.get(), matrix4f, vertexConsumerProvider, TextRenderer.TextLayerType.SEE_THROUGH, 0, 0);
+                    cachedTextRenderer.draw(Text.of(text), textLen - (cachedTextRenderer.getWidth(Text.of(disablingText)) / 2f), IMinecraft.mc.getWindow().getScaledHeight() / 2f - 60f, new Color(color.getRed(), color.getGreen(), color.getBlue(), alpha).getRGB(), fontShadow.get(), matrix4f, vertexConsumerProvider, TextRenderer.TextLayerType.SEE_THROUGH, 0, 0);
 
                     textLen += cachedTextRenderer.getWidth(text);
                     index++;
@@ -191,7 +192,7 @@ public class Interface extends Module {
                 String[] breakingStrings = breakingText.split("");
 
                 int index = 0;
-                float textLen = IMinecraft.mc.getWindow().getWidth() / 12f;
+                float textLen = IMinecraft.mc.getWindow().getScaledWidth() / 2f;
 
                 for (String text : breakingStrings) {
                     float saturation = 1.0f;
@@ -205,7 +206,34 @@ public class Interface extends Module {
 
                     Color color = Color.getHSBColor(hueShift, saturation, brightness);
 
-                    cachedTextRenderer.draw(Text.of(text), textLen, 141f, new Color(color.getRed(), color.getGreen(), color.getBlue(), alpha).getRGB(), fontShadow.get(), matrix4f, vertexConsumerProvider, TextRenderer.TextLayerType.SEE_THROUGH, 0, 0);
+                    cachedTextRenderer.draw(Text.of(text), textLen - (cachedTextRenderer.getWidth(Text.of(breakingText)) / 2f), IMinecraft.mc.getWindow().getScaledHeight() / 2f - 80f, new Color(color.getRed(), color.getGreen(), color.getBlue(), alpha).getRGB(), fontShadow.get(), matrix4f, vertexConsumerProvider, TextRenderer.TextLayerType.SEE_THROUGH, 0, 0);
+
+                    textLen += cachedTextRenderer.getWidth(text);
+                    index++;
+                }
+            }
+
+            if (BlinkUtil.INSTANCE.getBlinking()) {
+                String blinkText = "Blinking...";
+
+                String[] blinkStrings = blinkText.split("");
+
+                int index = 0;
+                float textLen = IMinecraft.mc.getWindow().getScaledWidth() / 2f;
+
+                for (String text : blinkStrings) {
+                    float saturation = 1.0f;
+                    float brightness = 1.0f;
+                    int alpha = 255;
+                    long cycleDuration = 3600L;
+
+                    long currentTime = System.currentTimeMillis();
+                    float hueShift = ((currentTime % cycleDuration) / (float) cycleDuration) + (index / (float) blinkStrings.length);
+                    hueShift %= 1.0f;
+
+                    Color color = Color.getHSBColor(hueShift, saturation, brightness);
+
+                    cachedTextRenderer.draw(Text.of(text), textLen - (cachedTextRenderer.getWidth(Text.of(blinkText)) / 2f), IMinecraft.mc.getWindow().getScaledHeight() / 2f - 100f, new Color(color.getRed(), color.getGreen(), color.getBlue(), alpha).getRGB(), fontShadow.get(), matrix4f, vertexConsumerProvider, TextRenderer.TextLayerType.SEE_THROUGH, 0, 0);
 
                     textLen += cachedTextRenderer.getWidth(text);
                     index++;
@@ -213,10 +241,10 @@ public class Interface extends Module {
             }
 
             if (ModuleManager.getModuleState(new MurdererDetector())) {
-                float murdererTextY = 151.5f;
+                float murdererTextY = IMinecraft.mc.getWindow().getScaledHeight() / 2f - 160f;
                 List<PlayerEntity> murdererList = MurdererDetector.murderers;
 
-                cachedTextRenderer.draw(Text.of("§f[§cMurderers§f]§7: " + murdererList.size()), IMinecraft.mc.getWindow().getWidth() / 12f, murdererTextY, Color.WHITE.getRGB(), fontShadow.get(), matrix4f, vertexConsumerProvider, TextRenderer.TextLayerType.SEE_THROUGH, 0, 0);
+                cachedTextRenderer.draw(Text.of("§f[§cMurderers§f]: " + murdererList.size()), IMinecraft.mc.getWindow().getScaledWidth() / 2f - (cachedTextRenderer.getWidth(Text.of("[Murderers]: " + murdererList.size())) / 2f), murdererTextY, Color.WHITE.getRGB(), fontShadow.get(), matrix4f, vertexConsumerProvider, TextRenderer.TextLayerType.SEE_THROUGH, 0, 0);
 
                 if (!murdererList.isEmpty()) {
                     for (PlayerEntity murderer : murdererList) {
@@ -230,7 +258,7 @@ public class Interface extends Module {
                         } catch (NumberFormatException ignored) {
                         }
 
-                        cachedTextRenderer.draw(Text.of("§f> " + murderer.getName().getString() + "§7 (" + distance + "m)"), IMinecraft.mc.getWindow().getWidth() / 12f, murdererTextY, Color.WHITE.getRGB(), fontShadow.get(), matrix4f, vertexConsumerProvider, TextRenderer.TextLayerType.SEE_THROUGH, 0, 0);
+                        cachedTextRenderer.draw(Text.of("§f> " + murderer.getName().getString() + "§7 (" + distance + "m)"), IMinecraft.mc.getWindow().getScaledWidth() / 2f - (cachedTextRenderer.getWidth(Text.of("> " + murderer.getName().getString() + " (" + distance + "m)")) / 2f), murdererTextY, Color.WHITE.getRGB(), fontShadow.get(), matrix4f, vertexConsumerProvider, TextRenderer.TextLayerType.SEE_THROUGH, 0, 0);
                     }
                 }
             }
@@ -261,7 +289,7 @@ public class Interface extends Module {
                     if (module.tag() != null)
                         text += "§7 " + module.tag();
 
-                    cachedTextRenderer.draw(Text.of(text), IMinecraft.mc.getWindow().getWidth() / 2f - 4f - cachedTextRenderer.getWidth(Text.of(text)), listY, new Color(color.getRed(), color.getGreen(), color.getBlue(), alpha).getRGB(), fontShadow.get(), matrix4f, vertexConsumerProvider, TextRenderer.TextLayerType.SEE_THROUGH, 0, 0);
+                    cachedTextRenderer.draw(Text.of(text), IMinecraft.mc.getWindow().getScaledWidth() - 4f - cachedTextRenderer.getWidth(Text.of(text)), listY, new Color(color.getRed(), color.getGreen(), color.getBlue(), alpha).getRGB(), fontShadow.get(), matrix4f, vertexConsumerProvider, TextRenderer.TextLayerType.SEE_THROUGH, 0, 0);
 
                     listY += 10.5f;
                     index++;
