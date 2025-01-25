@@ -22,6 +22,9 @@ public class FlyModeManager {
             case "vanilla":
                 currentMode = new VanillaFly();
                 break;
+            case "creative":
+                currentMode = new CreativeFly();
+                break;
             case "cubecraft":
                 currentMode = new CubecraftFly();
                 break;

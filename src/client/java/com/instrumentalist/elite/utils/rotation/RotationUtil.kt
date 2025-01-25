@@ -388,8 +388,8 @@ object RotationUtil {
 
             if (hypixelMode) {
                 if (MovementUtil.isDiagonal(37f))
-                    newYaw += 65f
-                else newYaw = MovementUtil.getPlayerDirection() - 115f
+                    newYaw += 76f
+                else newYaw = MovementUtil.getPlayerDirection() - 114f
             }
 
             currentYaw = newYaw

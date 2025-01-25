@@ -29,7 +29,7 @@ public class Fly extends Module {
     @Setting
     private static final ListValue flyMode = new ListValue(
             "Fly Mode",
-            Arrays.asList("Vanilla", "Cubecraft", "Miniblox", "Verus 1.8", "Verus JetPack", "Float").toArray(new String[0]),
+            Arrays.asList("Vanilla", "Creative", "Cubecraft", "Miniblox", "Verus 1.8", "Verus JetPack", "Float").toArray(new String[0]),
             "Vanilla"
     );
 
@@ -80,6 +80,13 @@ public class Fly extends Module {
             CubecraftFly.blinkTimer.reset();
             BlinkUtil.INSTANCE.sync(true, true);
             BlinkUtil.INSTANCE.stopBlink();
+        } else if (flyModeManager.currentMode instanceof CreativeFly) {
+            if (IMinecraft.mc.player != null) {
+                if (IMinecraft.mc.player.isSpectator() || !IMinecraft.mc.player.isCreative())
+                    IMinecraft.mc.player.getAbilities().allowFlying = false;
+                if (!IMinecraft.mc.player.isCreative())
+                    IMinecraft.mc.player.getAbilities().flying = false;
+            }
         }
     }
 

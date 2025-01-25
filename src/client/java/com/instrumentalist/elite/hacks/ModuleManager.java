@@ -162,6 +162,11 @@ public class ModuleManager implements EventListener {
                 Client.configManager.saveBindFile(Client.configManager.bindCurrent, true);
         }
 
+        for (Module module : modules) {
+            if (module.tempEnabled && (module instanceof InvManager || module instanceof ChestStealer || module instanceof Scaffold || module instanceof KillAura))
+                module.toggle();
+        }
+
         BlinkUtil.INSTANCE.sync(true, true);
         BlinkUtil.INSTANCE.stopBlink();
 

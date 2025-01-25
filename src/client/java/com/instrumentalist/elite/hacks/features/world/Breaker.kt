@@ -262,11 +262,19 @@ class Breaker : Module("Breaker", ModuleCategory.World, GLFW.GLFW_KEY_UNKNOWN, f
             TargetUtil.noKillAura = false
             RotationUtil.reset()
             if (progress && cachedBedPos != null) {
-                PacketUtil.sendPacket(
-                    PlayerActionC2SPacket(
-                        PlayerActionC2SPacket.Action.STOP_DESTROY_BLOCK, cachedBedPos, Direction.UP
+                if (IMinecraft.mc.world!!.getBlockState(cachedBedPos).isAir)
+                    PacketUtil.sendPacket(
+                        PlayerActionC2SPacket(
+                            PlayerActionC2SPacket.Action.STOP_DESTROY_BLOCK, cachedBedPos, Direction.UP
+                        )
                     )
-                )
+                else
+                    PacketUtil.sendPacketAsSilent(
+                        PlayerActionC2SPacket(
+                            PlayerActionC2SPacket.Action.ABORT_DESTROY_BLOCK, cachedBedPos, Direction.UP
+                        )
+                    )
+                IMinecraft.mc.interactionManager!!.currentBreakingProgress = 0f
             }
             cachedBedPos = null
             progress = false

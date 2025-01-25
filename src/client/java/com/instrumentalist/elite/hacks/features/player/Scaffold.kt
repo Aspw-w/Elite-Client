@@ -460,8 +460,8 @@ class Scaffold : Module("Scaffold", ModuleCategory.Player, GLFW.GLFW_KEY_UNKNOWN
                 } else (direction + 60f) % 360
             } else direction
 
-            val groundPitch = 70f
-            val offGroundPitch = 80f
+            val groundPitch = if (rotationMode.get().equals("hypixel", true) || rotationMode.get().equals("math", true) && hypixelMode.get()) 78f else 70f
+            val offGroundPitch = if (rotationMode.get().equals("hypixel", true) || rotationMode.get().equals("math", true) && hypixelMode.get()) 88f else 80f
 
             if (IMinecraft.mc.player!!.isOnGround)
                 RotationUtil.setRotation(

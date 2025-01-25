@@ -37,52 +37,54 @@ public class HypixelHopSpeed implements SpeedEvent {
             return;
         }
 
-        if (ModuleManager.getModuleState(new Disabler()) && HypixelDisabler.watchDogDisabled) {
-            if (IMinecraft.mc.player.isOnGround()) {
-                if (MovementUtil.isMoving())
-                    IMinecraft.mc.player.jump();
+        if (ModuleManager.getModuleState(new Disabler())) {
+            if (HypixelDisabler.watchDogDisabled) {
+                if (IMinecraft.mc.player.isOnGround()) {
+                    if (MovementUtil.isMoving())
+                        IMinecraft.mc.player.jump();
 
-                if (IMinecraft.mc.player.hasStatusEffect(StatusEffects.SPEED))
-                    MovementUtil.strafe(0.481f + ((IMinecraft.mc.player.getStatusEffect(StatusEffects.SPEED).getAmplifier() + 1f) * IMinecraft.mc.player.getStatusEffect(StatusEffects.SPEED).getAmplifier() == 0 ? 0.036f : 0.12f));
-                else MovementUtil.strafe(0.481f);
+                    if (IMinecraft.mc.player.hasStatusEffect(StatusEffects.SPEED))
+                        MovementUtil.strafe(0.481f + ((IMinecraft.mc.player.getStatusEffect(StatusEffects.SPEED).getAmplifier() + 1f) * IMinecraft.mc.player.getStatusEffect(StatusEffects.SPEED).getAmplifier() == 0 ? 0.036f : 0.12f));
+                    else MovementUtil.strafe(0.481f);
 
-                canLowHop = false;
-            } else if (!IMinecraft.mc.player.horizontalCollision && !IMinecraft.mc.player.hasStatusEffect(StatusEffects.JUMP_BOOST) && MovementUtil.isMoving()) {
-                double baseVelocityY = IMinecraft.mc.player.getVelocity().y;
+                    canLowHop = false;
+                } else if (!IMinecraft.mc.player.horizontalCollision && !IMinecraft.mc.player.hasStatusEffect(StatusEffects.JUMP_BOOST) && MovementUtil.isMoving()) {
+                    double baseVelocityY = IMinecraft.mc.player.getVelocity().y;
 
-                switch (MovementUtil.fallTicks) {
-                    case 4:
-                        if (IMinecraft.mc.world.getBlockState(IMinecraft.mc.player.getBlockPos().up(2)).isAir() && !IMinecraft.mc.player.horizontalCollision) {
-                            MovementUtil.setVelocityY(baseVelocityY - 0.039);
-                            canLowHop = true;
-                        } else canLowHop = false;
-                        break;
+                    switch (MovementUtil.fallTicks) {
+                        case 4:
+                            if (IMinecraft.mc.world.getBlockState(IMinecraft.mc.player.getBlockPos().up(2)).isAir() && !IMinecraft.mc.player.horizontalCollision) {
+                                MovementUtil.setVelocityY(baseVelocityY - 0.039);
+                                canLowHop = true;
+                            } else canLowHop = false;
+                            break;
 
-                    case 5:
-                        if (canLowHop)
-                            MovementUtil.setVelocityY(baseVelocityY - 0.1916);
-                        break;
+                        case 5:
+                            if (canLowHop)
+                                MovementUtil.setVelocityY(baseVelocityY - 0.1916);
+                            break;
 
-                    case 6:
-                        if (canLowHop && IMinecraft.mc.world.getBlockState(IMinecraft.mc.player.getBlockPos().up(2)).isAir())
-                            MovementUtil.setVelocityY(baseVelocityY * 1.016);
-                        break;
+                        case 6:
+                            if (canLowHop && IMinecraft.mc.world.getBlockState(IMinecraft.mc.player.getBlockPos().up(2)).isAir())
+                                MovementUtil.setVelocityY(baseVelocityY * 1.016);
+                            break;
 
-                    case 7:
-                        if (canLowHop && lowStrafeCheck() && IMinecraft.mc.world.getBlockState(IMinecraft.mc.player.getBlockPos().up(2)).isAir()) {
-                            MovementUtil.setVelocityY(baseVelocityY / 1.25);
+                        case 7:
+                            if (canLowHop && lowStrafeCheck() && IMinecraft.mc.world.getBlockState(IMinecraft.mc.player.getBlockPos().up(2)).isAir()) {
+                                MovementUtil.setVelocityY(baseVelocityY / 1.25);
 
-                            if (IMinecraft.mc.player.hasStatusEffect(StatusEffects.SPEED))
-                                MovementUtil.strafe(0.305f + ((IMinecraft.mc.player.getStatusEffect(StatusEffects.SPEED).getAmplifier() + 1f) * IMinecraft.mc.player.getStatusEffect(StatusEffects.SPEED).getAmplifier() == 0 ? 0.036f : 0.044f));
-                            else MovementUtil.strafe(0.305f);
-                        }
-                        break;
+                                if (IMinecraft.mc.player.hasStatusEffect(StatusEffects.SPEED))
+                                    MovementUtil.strafe(0.305f + ((IMinecraft.mc.player.getStatusEffect(StatusEffects.SPEED).getAmplifier() + 1f) * IMinecraft.mc.player.getStatusEffect(StatusEffects.SPEED).getAmplifier() == 0 ? 0.036f : 0.044f));
+                                else MovementUtil.strafe(0.305f);
+                            }
+                            break;
 
-                    case 8:
-                        if (canLowHop && lowStrafeCheck())
-                            MovementUtil.setVelocityY(baseVelocityY - 0.0118);
+                        case 8:
+                            if (canLowHop && lowStrafeCheck())
+                                MovementUtil.setVelocityY(baseVelocityY - 0.0118);
 
-                        canLowHop = false;
+                            canLowHop = false;
+                    }
                 }
             }
         } else {
