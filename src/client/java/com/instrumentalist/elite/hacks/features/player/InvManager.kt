@@ -5,6 +5,7 @@ import com.instrumentalist.elite.events.features.UpdateEvent
 import com.instrumentalist.elite.hacks.Module
 import com.instrumentalist.elite.hacks.ModuleCategory
 import com.instrumentalist.elite.hacks.features.movement.InventoryMove
+import com.instrumentalist.elite.utils.ChatUtil
 import com.instrumentalist.elite.utils.IMinecraft
 import com.instrumentalist.elite.utils.math.ToolUtil
 import com.instrumentalist.elite.utils.move.MovementUtil
@@ -145,21 +146,6 @@ class InvManager : Module("Inv Manager", ModuleCategory.Player, GLFW.GLFW_KEY_UN
             val hotbarIndex = findItemInHotbar(inventory, targetStack.item)
 
             if (hotbarIndex != slot) {
-                val oldStack = inventory.getStack(slot)
-                if (!oldStack.isEmpty) {
-                    cleaning = true
-                    val button = if (oldStack.count > 1) 1 else 0
-                    IMinecraft.mc.interactionManager!!.clickSlot(
-                        player.currentScreenHandler.syncId,
-                        slot + 36,
-                        button,
-                        SlotActionType.THROW,
-                        player
-                    )
-                    tickCounter = delay.get()
-                    return
-                }
-
                 val inventoryIndex = inventory.main.indexOfFirst {
                     it.item == targetStack.item && compareItems(it, targetStack) == 0
                 }
@@ -167,7 +153,7 @@ class InvManager : Module("Inv Manager", ModuleCategory.Player, GLFW.GLFW_KEY_UN
                 if (inventoryIndex != -1) {
                     cleaning = true
                     swapItems(inventoryIndex, slot)
-                    tickCounter = armorDelay.get()
+                    tickCounter = delay.get()
                     return
                 }
             }
@@ -246,7 +232,7 @@ class InvManager : Module("Inv Manager", ModuleCategory.Player, GLFW.GLFW_KEY_UN
             for (i in 0..35) {
                 val stack = inventory.getStack(i)
                 val slot = itemSlots[stack.item]
-                if (slot != null && (i in 0..8)) {
+                if (slot != null) {
                     val targetStack = cleanerTargets[slot]
                     if (targetStack == null || compareItems(stack, targetStack) > 0) {
                         cleanerTargets[slot] = stack
@@ -254,34 +240,15 @@ class InvManager : Module("Inv Manager", ModuleCategory.Player, GLFW.GLFW_KEY_UN
                 }
             }
 
-            for (i in 0..8) {
+            for (i in 0..35) {
                 val stack = inventory.getStack(i)
-                if (!stack.isEmpty && stack.item !is BlockItem && stack.item !is SpawnEggItem && stack.item !is PotionItem && stack.item !is SplashPotionItem && stack.item !is LingeringPotionItem && stack.item !in allowedItems && !cleanerTargets.contains(
-                        stack
-                    )
-                ) {
+                if (!stack.isEmpty && stack.item !is BlockItem && stack.item !is SpawnEggItem && stack.item !is PotionItem && stack.item !is SplashPotionItem && stack.item !is LingeringPotionItem && stack.item !in allowedItems && !cleanerTargets.contains(stack)) {
                     cleaning = true
                     val button = if (stack.count > 1) 1 else 0
+                    val slot = if (i < 9) i + 36 else i
                     IMinecraft.mc.interactionManager!!.clickSlot(
                         player.currentScreenHandler.syncId,
-                        i + 36,
-                        button,
-                        SlotActionType.THROW,
-                        player
-                    )
-                    tickCounter = delay.get()
-                    return
-                }
-            }
-
-            for (i in 9..35) {
-                val stack = inventory.getStack(i)
-                if (!stack.isEmpty && stack.item !is BlockItem && stack.item !is SpawnEggItem && stack.item !is PotionItem && stack.item !is SplashPotionItem && stack.item !is LingeringPotionItem && stack.item !in allowedItems) {
-                    cleaning = true
-                    val button = if (stack.count > 1) 1 else 0
-                    IMinecraft.mc.interactionManager!!.clickSlot(
-                        player.currentScreenHandler.syncId,
-                        i,
+                        slot,
                         button,
                         SlotActionType.THROW,
                         player

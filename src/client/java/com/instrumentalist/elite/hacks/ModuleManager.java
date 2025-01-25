@@ -11,6 +11,7 @@ import com.instrumentalist.elite.hacks.features.player.*;
 import com.instrumentalist.elite.hacks.features.render.*;
 import com.instrumentalist.elite.hacks.features.world.*;
 import com.instrumentalist.elite.hacks.features.world.Timer;
+import com.instrumentalist.elite.utils.ChatUtil;
 import com.instrumentalist.elite.utils.IMinecraft;
 import com.instrumentalist.elite.utils.packet.BlinkUtil;
 import com.instrumentalist.elite.utils.rotation.RotationUtil;
@@ -33,7 +34,11 @@ public class ModuleManager implements EventListener {
     public static final List<Module> modules = new ArrayList<>();
     public static boolean isDebugRendering = false;
 
+    public static Float interpolatedYaw = null;
+    public static Float interpolatedPitch = null;
+
     public static int pitchTick = 0;
+    private static Long lastTime = 0L;
 
     public static int transactionCounter = 0;
     public static boolean gettingTransactions = false;
@@ -61,7 +66,7 @@ public class ModuleManager implements EventListener {
         modules.add(new Spammer());
         modules.add(new PerfectHorseJump());
         modules.add(new InventoryMove());
-        modules.add(new WaterWalk());
+        modules.add(new WaterSpeed());
         modules.add(new NoSlow());
         modules.add(new AutoTool());
         modules.add(new ChestStealer());
@@ -102,6 +107,7 @@ public class ModuleManager implements EventListener {
         modules.add(new EntityDesync());
         modules.add(new Step());
         modules.add(new AntiVoid());
+        modules.add(new AutoFish());
 
         // Not shown for click gui (category is NULL)
         modules.add(new PluginsDetector());
@@ -244,17 +250,27 @@ public class ModuleManager implements EventListener {
         if (isDebugRendering && IMinecraft.mc.currentScreen == null)
             IMinecraft.mc.setScreen(new EmptyScreen());
 
+        long currentTime = System.nanoTime();
+        if (lastTime == 0L) {
+            lastTime = currentTime;
+        }
+        double deltaTime = (currentTime - lastTime) / 1_000_000_000.0;
+        lastTime = currentTime;
+
         if (RotationUtil.INSTANCE.getBaseYaw() >= 180) RotationUtil.INSTANCE.setBaseYaw(-180f);
         else if (RotationUtil.INSTANCE.getBaseYaw() <= -180) RotationUtil.INSTANCE.setBaseYaw(180f);
 
         if (RotationUtil.INSTANCE.getCurrentYaw() != null && RotationUtil.INSTANCE.getCurrentPitch() != null) {
-            if (RotationUtil.INSTANCE.getCurrentYaw().isNaN() || RotationUtil.INSTANCE.getCurrentPitch().isNaN() || RotationUtil.INSTANCE.getCurrentYaw().isInfinite() || RotationUtil.INSTANCE.getCurrentPitch().isInfinite()) {
+            interpolatedYaw = RotationUtil.INSTANCE.interpolateAngle(event.yaw, RotationUtil.INSTANCE.getCurrentYaw(), 180f, (float) (20f * deltaTime), false);
+            interpolatedPitch = RotationUtil.INSTANCE.interpolateAngle(event.pitch, RotationUtil.INSTANCE.getCurrentPitch(), 180f, (float) (20f * deltaTime), true);
+
+            if (Float.isNaN(interpolatedYaw) || Float.isNaN(interpolatedPitch) || Float.isInfinite(interpolatedYaw) || Float.isInfinite(interpolatedPitch)) {
                 RotationUtil.INSTANCE.reset();
                 return;
             }
 
-            event.yaw = RotationUtil.INSTANCE.getCurrentYaw();
-            event.pitch = RotationUtil.INSTANCE.getCurrentPitch();
+            event.yaw = interpolatedYaw;
+            event.pitch = interpolatedPitch;
 
             IMinecraft.mc.player.bodyYaw = IMinecraft.mc.player.getYaw();
 

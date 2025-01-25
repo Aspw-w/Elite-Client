@@ -26,6 +26,8 @@ object RotationUtil {
     fun reset() {
         currentYaw = null
         currentPitch = null
+        ModuleManager.interpolatedYaw = null
+        ModuleManager.interpolatedPitch = null
         ModuleManager.pitchTick = 0
         isRotating = false
     }
@@ -385,7 +387,7 @@ object RotationUtil {
             )
 
             if (hypixelMode) {
-                if (MovementUtil.isDiagonal(35f))
+                if (MovementUtil.isDiagonal(37f))
                     newYaw += 70f
                 else newYaw = MovementUtil.getPlayerDirection() - 115f
             }

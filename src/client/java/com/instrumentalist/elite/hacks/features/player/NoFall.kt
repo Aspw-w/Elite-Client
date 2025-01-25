@@ -97,9 +97,9 @@ class NoFall : Module("No Fall", ModuleCategory.Player, GLFW.GLFW_KEY_UNKNOWN, f
                     return
                 }
 
-                if (IMinecraft.mc.player!!.velocity.y < -0.4) {
+                if (IMinecraft.mc.player!!.velocity.y < -0.5) {
                     fallTicks++
-                    if (fallTicks > 2) {
+                    if (fallTicks > 1) {
                         event.onGround = true
                         fallTicks = 0
                     }

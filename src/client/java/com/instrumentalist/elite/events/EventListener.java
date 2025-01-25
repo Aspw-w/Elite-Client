@@ -33,12 +33,12 @@ public interface EventListener {
     default void onTick(TickEvent event) {
     }
 
-    default void onCollision(CollisionEvent event) {
-    }
-
     default void onRender(RenderEvent event) {
     }
 
     default void onMouseScroll(MouseScrollEvent event) {
+    }
+
+    default void onModifyPacket(ModifyPacketEvent event) {
     }
 }

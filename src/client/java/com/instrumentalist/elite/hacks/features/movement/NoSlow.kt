@@ -60,7 +60,7 @@ class NoSlow : Module("No Slow", ModuleCategory.Movement, GLFW.GLFW_KEY_UNKNOWN,
     override fun onMotion(event: MotionEvent) {
         if (IMinecraft.mc.player == null) return
 
-        if (mode.get().equals("hypixel", true) && IMinecraft.mc.player!!.mainHandStack.item !is SwordItem && IMinecraft.mc.player!!.isUsingItem && IMinecraft.mc.player!!.isOnGround)
+        if (mode.get().equals("hypixel", true) && IMinecraft.mc.player!!.mainHandStack.item !is SwordItem && IMinecraft.mc.player!!.isUsingItem)
             event.y += 1E-14
     }
 

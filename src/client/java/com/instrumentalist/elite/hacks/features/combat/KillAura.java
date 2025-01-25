@@ -100,7 +100,7 @@ public class KillAura extends Module {
             "Rotation Speed",
             40f,
             1f,
-            90f,
+            180f,
             rotations::get
     );
 

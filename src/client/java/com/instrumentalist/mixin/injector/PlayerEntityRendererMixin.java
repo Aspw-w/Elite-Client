@@ -22,10 +22,10 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 public abstract class PlayerEntityRendererMixin {
 
     @Unique
-    private float prevYaw = 0.0F;
+    private Float prevYaw = null;
 
     @Unique
-    private float prevPitch = 0.0F;
+    private Float prevPitch = null;
 
     @Unique
     private long lastFrameTime = System.nanoTime();
@@ -33,36 +33,40 @@ public abstract class PlayerEntityRendererMixin {
     @Inject(method = "updateRenderState(Lnet/minecraft/client/network/AbstractClientPlayerEntity;Lnet/minecraft/client/render/entity/state/PlayerEntityRenderState;F)V", at = @At("RETURN"))
     private void clientSideRotations(AbstractClientPlayerEntity player, PlayerEntityRenderState state, float f, CallbackInfo info) {
         if (player != IMinecraft.mc.player) return;
-        if (RotationUtil.INSTANCE.getCurrentYaw() != null && RotationUtil.INSTANCE.getCurrentPitch() != null && !RotationUtil.INSTANCE.getCurrentYaw().isInfinite() && !RotationUtil.INSTANCE.getCurrentYaw().isNaN() && !RotationUtil.INSTANCE.getCurrentPitch().isInfinite() && !RotationUtil.INSTANCE.getCurrentPitch().isNaN()) {
+        if (ModuleManager.interpolatedYaw != null && ModuleManager.interpolatedPitch != null && !ModuleManager.interpolatedYaw.isInfinite() && !ModuleManager.interpolatedYaw.isNaN() && !ModuleManager.interpolatedPitch.isInfinite() && !ModuleManager.interpolatedPitch.isNaN()) {
             long currentTime = System.nanoTime();
             float deltaTime = (currentTime - lastFrameTime) / 1e9f;
 
             if (deltaTime > 0.1f) deltaTime = 0.1f;
 
-            if (lastFrameTime == 0) {
-                prevYaw = RotationUtil.INSTANCE.getCurrentYaw();
-                prevPitch = RotationUtil.INSTANCE.getCurrentPitch();
+            if (lastFrameTime == 0 || prevYaw == null || prevPitch == null) {
+                prevYaw = ModuleManager.interpolatedYaw;
+                prevPitch = ModuleManager.interpolatedPitch;
                 lastFrameTime = currentTime;
                 return;
             }
 
             lastFrameTime = currentTime;
 
-            float showYaw = RotationUtil.INSTANCE.getCurrentYaw();
+            float showYaw = ModuleManager.interpolatedYaw;
 
             if (showYaw >= 360f)
                 showYaw = 360f;
             else if (showYaw <= -360f)
                 showYaw = -360f;
 
-            float yaw = showYaw >= 0f && (showYaw >= 315f || showYaw <= 45f) || showYaw <= 0f && (showYaw <= -315f || showYaw >= -45f) ? showYaw : Interpolation.INSTANCE.lerpWithTime(this.prevYaw, RotationUtil.INSTANCE.getCurrentYaw(), 18f, deltaTime);
-            float pitch = Interpolation.INSTANCE.lerpWithTime(this.prevPitch, RotationUtil.INSTANCE.getCurrentPitch(), 14f, deltaTime);
+            float yaw = showYaw >= 0f && (showYaw >= 315f || showYaw <= 45f) || showYaw <= 0f && (showYaw <= -315f || showYaw >= -45f) ? showYaw : Interpolation.INSTANCE.lerpWithTime(this.prevYaw, ModuleManager.interpolatedYaw, 18f, deltaTime);
+            float pitch = Interpolation.INSTANCE.lerpWithTime(this.prevPitch, ModuleManager.interpolatedPitch, 14f, deltaTime);
 
             state.bodyYaw = yaw;
             this.prevYaw = state.bodyYaw;
 
             state.pitch = pitch;
             this.prevPitch = state.pitch;
+        } else if (lastFrameTime != 0) {
+            prevYaw = null;
+            prevPitch = null;
+            lastFrameTime = 0;
         }
     }
 }

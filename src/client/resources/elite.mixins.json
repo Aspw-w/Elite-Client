@@ -5,11 +5,9 @@
   "compatibilityLevel": "JAVA_21",
   "client": [
     "BipedEntityModelMixin",
-    "BlockCollisionSpliteratorMixin",
     "BlockMixin",
     "CameraMixin",
     "ChunkOcclusionGraphBuilderMixin",
-    "ClientBrandRetrieverMixin",
     "ClientConnectionMixin",
     "ClientPlayerEntityMixin",
     "ClientPlayerInteractionManagerMixin",

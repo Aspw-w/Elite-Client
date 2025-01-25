@@ -65,7 +65,7 @@ class Scaffold : Module("Scaffold", ModuleCategory.Player, GLFW.GLFW_KEY_UNKNOWN
             BooleanValue("Hypixel Mode", false) { rotationMode.get().equals("math", true) }
 
         @Setting
-        private val rotationSpeed = FloatValue("Rotation Speed", 40f, 0f, 90f) {
+        private val rotationSpeed = FloatValue("Rotation Speed", 40f, 0f, 180f) {
             rotationMode.get().equals("math", true) || rotationMode.get().equals("simple", true) || rotationMode.get()
                 .equals("hypixel", true)
         }
