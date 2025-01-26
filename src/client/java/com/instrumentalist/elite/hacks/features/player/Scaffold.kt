@@ -110,17 +110,18 @@ class Scaffold : Module("Scaffold", ModuleCategory.Player, GLFW.GLFW_KEY_UNKNOWN
         var hotbarStackSize: Int = 0
         var jumped = false
         var wasTowering = false
+        var startedScaffold = false
+        var lastSlot: Int? = null
+        var spoofTick = 0
     }
 
     private var firstJumped = false
     private var once = false
-    private var startedScaffold = false
     private var hypBasePlaced = false
     private var hypTowerTicks = 0
     private var jumpGround = 0.0
     private var checkGround = false
     private var launchY: Int? = null
-    private var lastSlot: Int? = null
     private var hypStartIsAllowed = false
 
     override fun onDisable() {
@@ -135,11 +136,14 @@ class Scaffold : Module("Scaffold", ModuleCategory.Player, GLFW.GLFW_KEY_UNKNOWN
                     "hypixel" -> launchY = IMinecraft.mc.player!!.blockPos.y - 1
                 }
             }
-            if (lastSlot != null) {
-                IMinecraft.mc.player!!.inventory.selectedSlot = lastSlot!!
+            if (once) {
                 RotationUtil.reset()
                 TimerUtil.reset()
                 TargetUtil.noKillAura = false
+                if (lastSlot != null) {
+                    IMinecraft.mc.player!!.inventory.selectedSlot = lastSlot!!
+                    spoofTick = 160
+                }
             }
         }
 
@@ -153,7 +157,6 @@ class Scaffold : Module("Scaffold", ModuleCategory.Player, GLFW.GLFW_KEY_UNKNOWN
         wasTowering = false
         checkGround = false
         wasTowering = false
-        lastSlot = null
         launchY = null
         startedScaffold = false
     }
@@ -222,8 +225,6 @@ class Scaffold : Module("Scaffold", ModuleCategory.Player, GLFW.GLFW_KEY_UNKNOWN
                     "hypixel" -> launchY = IMinecraft.mc.player!!.blockPos.y - 1
                 }
             }
-            if (lastSlot != null)
-                IMinecraft.mc.player!!.inventory.selectedSlot = lastSlot!!
             firstJumped = false
             jumped = false
             hypBasePlaced = false
@@ -232,11 +233,14 @@ class Scaffold : Module("Scaffold", ModuleCategory.Player, GLFW.GLFW_KEY_UNKNOWN
             wasTowering = false
             checkGround = false
             wasTowering = false
-            lastSlot = null
             if (once) {
                 RotationUtil.reset()
                 TimerUtil.reset()
                 TargetUtil.noKillAura = false
+                if (lastSlot != null) {
+                    IMinecraft.mc.player!!.inventory.selectedSlot = lastSlot!!
+                    spoofTick = 160
+                }
             }
             once = false
             return
@@ -566,9 +570,8 @@ class Scaffold : Module("Scaffold", ModuleCategory.Player, GLFW.GLFW_KEY_UNKNOWN
                                     bhr
                                 ).isAccepted
                             ) {
-                                PacketUtil.sendPacket(HandSwingC2SPacket(Hand.MAIN_HAND))
-                                if (!IMinecraft.mc.player!!.mainHandStack.isEmpty)
-                                    IMinecraft.mc.gameRenderer.firstPersonRenderer.resetEquipProgress(Hand.MAIN_HAND)
+                                IMinecraft.mc.player!!.swingHand(Hand.MAIN_HAND)
+                                IMinecraft.mc.gameRenderer.firstPersonRenderer.resetEquipProgress(Hand.MAIN_HAND)
                             }
                         } catch (e: Exception) {
                             e.printStackTrace()
@@ -612,9 +615,8 @@ class Scaffold : Module("Scaffold", ModuleCategory.Player, GLFW.GLFW_KEY_UNKNOWN
                                         bhr
                                     ).isAccepted
                                 ) {
-                                    PacketUtil.sendPacket(HandSwingC2SPacket(Hand.MAIN_HAND))
-                                    if (!IMinecraft.mc.player!!.mainHandStack.isEmpty)
-                                        IMinecraft.mc.gameRenderer.firstPersonRenderer.resetEquipProgress(Hand.MAIN_HAND)
+                                    IMinecraft.mc.player!!.swingHand(Hand.MAIN_HAND)
+                                    IMinecraft.mc.gameRenderer.firstPersonRenderer.resetEquipProgress(Hand.MAIN_HAND)
                                 }
                             } catch (e: Exception) {
                                 e.printStackTrace()
@@ -665,9 +667,8 @@ class Scaffold : Module("Scaffold", ModuleCategory.Player, GLFW.GLFW_KEY_UNKNOWN
                             bhr
                         ).isAccepted
                     ) {
-                        PacketUtil.sendPacket(HandSwingC2SPacket(Hand.MAIN_HAND))
-                        if (!IMinecraft.mc.player!!.mainHandStack.isEmpty)
-                            IMinecraft.mc.gameRenderer.firstPersonRenderer.resetEquipProgress(Hand.MAIN_HAND)
+                        IMinecraft.mc.player!!.swingHand(Hand.MAIN_HAND)
+                        IMinecraft.mc.gameRenderer.firstPersonRenderer.resetEquipProgress(Hand.MAIN_HAND)
                     }
                 } catch (e: Exception) {
                     e.printStackTrace()
@@ -709,9 +710,8 @@ class Scaffold : Module("Scaffold", ModuleCategory.Player, GLFW.GLFW_KEY_UNKNOWN
                         bhr
                     ).isAccepted
                 ) {
-                    PacketUtil.sendPacket(HandSwingC2SPacket(Hand.MAIN_HAND))
-                    if (!IMinecraft.mc.player!!.mainHandStack.isEmpty)
-                        IMinecraft.mc.gameRenderer.firstPersonRenderer.resetEquipProgress(Hand.MAIN_HAND)
+                    IMinecraft.mc.player!!.swingHand(Hand.MAIN_HAND)
+                    IMinecraft.mc.gameRenderer.firstPersonRenderer.resetEquipProgress(Hand.MAIN_HAND)
                 }
             } catch (e: Exception) {
                 e.printStackTrace()

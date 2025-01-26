@@ -1,9 +1,12 @@
 package com.instrumentalist.mixin.injector;
 
 import com.instrumentalist.elite.hacks.ModuleManager;
+import com.instrumentalist.elite.hacks.features.player.Scaffold;
 import com.instrumentalist.elite.hacks.features.render.ItemView;
 import com.instrumentalist.elite.hacks.features.render.LegacyCombat;
+import com.instrumentalist.elite.utils.ChatUtil;
 import com.instrumentalist.elite.utils.IMinecraft;
+import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.network.AbstractClientPlayerEntity;
 import net.minecraft.client.network.ClientPlayerEntity;
 import net.minecraft.client.render.VertexConsumerProvider;
@@ -13,11 +16,14 @@ import net.minecraft.entity.LivingEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.ModelTransformationMode;
 import net.minecraft.item.ShieldItem;
+import net.minecraft.item.consume.UseAction;
 import net.minecraft.util.Arm;
 import net.minecraft.util.Hand;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.RotationAxis;
+import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.Overwrite;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
@@ -32,8 +38,18 @@ public abstract class HeldItemRendererMixin {
 
     @Shadow protected abstract void applySwingOffset(MatrixStack matrices, Arm arm, float swingProgress);
 
+    @Shadow private float equipProgressMainHand;
+
+    @Shadow private ItemStack mainHand;
+
+    @Shadow private float prevEquipProgressMainHand;
+
+    @Shadow @Final private MinecraftClient client;
+
+    @Shadow protected abstract void renderArmHoldingItem(MatrixStack matrices, VertexConsumerProvider vertexConsumers, int light, float equipProgress, float swingProgress, Arm arm);
+
     @Inject(method = "renderFirstPersonItem", at = @At("HEAD"), cancellable = true)
-    private void legacyCombatHook(AbstractClientPlayerEntity player, float tickDelta, float pitch, Hand hand, float swingProgress, ItemStack item, float equipProgress, MatrixStack matrices, VertexConsumerProvider vertexConsumers, int light, CallbackInfo ci) {
+    private void itemRendererHook(AbstractClientPlayerEntity player, float tickDelta, float pitch, Hand hand, float swingProgress, ItemStack item, float equipProgress, MatrixStack matrices, VertexConsumerProvider vertexConsumers, int light, CallbackInfo ci) {
         if (ModuleManager.getModuleState(new ItemView()) && ItemView.Companion.getLowOffHand().get() && hand == Hand.OFF_HAND)
             matrices.translate(0f, -0.16f, 0f);
 
@@ -65,6 +81,59 @@ public abstract class HeldItemRendererMixin {
             } else if (hand == Hand.OFF_HAND && IMinecraft.mc.player != null && IMinecraft.mc.player.getOffHandStack() != null && IMinecraft.mc.player.getOffHandStack().getItem() instanceof ShieldItem) {
                 ci.cancel();
             }
+        } else if (Scaffold.Companion.getLastSlot() != null && IMinecraft.mc.player != null) {
+            if (hand == Hand.MAIN_HAND) {
+                ci.cancel();
+
+                matrices.push();
+
+                Arm arm = player.getMainArm();
+
+                if (!IMinecraft.mc.player.getInventory().getStack(Scaffold.Companion.getLastSlot()).isEmpty()) {
+                    float f = -0.4F * MathHelper.sin(MathHelper.sqrt(swingProgress) * (float)Math.PI);
+                    float g = 0.2F * MathHelper.sin(MathHelper.sqrt(swingProgress) * ((float)Math.PI * 2F));
+                    float h = -0.2F * MathHelper.sin(swingProgress * (float)Math.PI);
+
+                    matrices.translate(f, g, h);
+
+                    this.applyEquipOffset(matrices, arm, equipProgress);
+                    this.applySwingOffset(matrices, arm, swingProgress);
+                    this.renderItem(player, IMinecraft.mc.player.getInventory().getStack(Scaffold.Companion.getLastSlot()), ModelTransformationMode.FIRST_PERSON_RIGHT_HAND, false, matrices, vertexConsumers, light);
+                } else if (!player.isInvisible()) {
+                    this.renderArmHoldingItem(matrices, vertexConsumers, light, equipProgress, swingProgress, arm);
+                }
+
+                matrices.pop();
+
+                if (!ModuleManager.getModuleState(new Scaffold())) {
+                    Scaffold.Companion.setSpoofTick(Scaffold.Companion.getSpoofTick() - 1);
+                    if (Scaffold.Companion.getSpoofTick() <= 1) {
+                        Scaffold.Companion.setSpoofTick(0);
+                        Scaffold.Companion.setLastSlot(null);
+                    }
+                }
+            }
+        }
+    }
+
+    @Inject(method = "updateHeldItems", at = @At("HEAD"), cancellable = true)
+    public void itemSpoofHook(CallbackInfo ci) {
+        if (Scaffold.Companion.getLastSlot() != null && IMinecraft.mc.player != null) {
+            ci.cancel();
+
+            this.prevEquipProgressMainHand = this.equipProgressMainHand;
+            ClientPlayerEntity clientPlayerEntity = this.client.player;
+            if (clientPlayerEntity == null) return;
+            ItemStack itemStack = ModuleManager.getModuleState(new Scaffold()) ? IMinecraft.mc.player.getInventory().getStack(Scaffold.Companion.getLastSlot()) : clientPlayerEntity.getMainHandStack();
+
+            if (ItemStack.areEqual(this.mainHand, itemStack))
+                this.mainHand = itemStack;
+
+            float f = clientPlayerEntity.getAttackCooldownProgress(1.0F);
+            this.equipProgressMainHand += MathHelper.clamp((this.mainHand == itemStack ? (Scaffold.Companion.getLastSlot() != null && IMinecraft.mc.player != null ? 1F : f * f * f) : 0.0F) - this.equipProgressMainHand, -0.4F, 0.4F);
+
+            if (this.equipProgressMainHand < 0.1F)
+                this.mainHand = itemStack;
         }
     }
 }
