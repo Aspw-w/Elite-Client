@@ -1,8 +1,10 @@
 package com.instrumentalist.mixin.injector;
 
 import com.instrumentalist.elite.hacks.ModuleManager;
+import com.instrumentalist.elite.hacks.features.player.MurdererDetector;
 import com.instrumentalist.elite.hacks.features.render.NameTags;
 import com.instrumentalist.elite.utils.IMinecraft;
+import com.instrumentalist.elite.utils.math.TargetUtil;
 import com.instrumentalist.mixin.oringo.IEntityRenderState;
 import com.llamalad7.mixinextras.injector.ModifyReturnValue;
 import net.minecraft.client.font.TextRenderer;
@@ -12,6 +14,8 @@ import net.minecraft.client.render.entity.EntityRenderer;
 import net.minecraft.client.render.entity.state.EntityRenderState;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.LivingEntity;
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.text.Text;
 import net.minecraft.util.math.Vec3d;
 import org.joml.Matrix4f;
@@ -47,14 +51,14 @@ public abstract class EntityRendererMixin<T extends Entity, S extends EntityRend
             Entity entity = ((IEntityRenderState) state).client$getEntity();
             Text renderText = state.displayName != null ? state.displayName : entity.getName();
             if (NameTags.Companion.forceShouldRenderName(entity))
-                customRenderLabelIfPresent(state, renderText, matrices, vertexConsumers, light);
+                customRenderLabelIfPresent(state, entity, renderText, matrices, vertexConsumers, light);
             else if (state.displayName != null)
                 this.renderLabelIfPresent(state, state.displayName, matrices, vertexConsumers, light);
         }
     }
 
     @Unique
-    protected void customRenderLabelIfPresent(S state, Text text, MatrixStack matrices, VertexConsumerProvider vertexConsumers, int light) {
+    protected void customRenderLabelIfPresent(S state, Entity entity, Text text, MatrixStack matrices, VertexConsumerProvider vertexConsumers, int light) {
         Vec3d attVec = state.nameLabelPos;
         if (attVec == null) return;
 
@@ -78,6 +82,20 @@ public abstract class EntityRendererMixin<T extends Entity, S extends EntityRend
         int bgColor = (int)(bgOpacity * 255F) << 24;
         TextRenderer tr = getTextRenderer();
         float labelX = -tr.getWidth(text) / 2f;
+
+        String tag = null;
+
+        if (ModuleManager.getModuleState(new MurdererDetector()) && entity instanceof PlayerEntity && MurdererDetector.murderers.contains(entity))
+            tag = "§7[§cMurderer§7]";
+        else if (TargetUtil.isBot((LivingEntity) entity))
+            tag = "§7[§cBot§7]";
+        else if (TargetUtil.isTeammate((LivingEntity) entity))
+            tag = "§7[§eTeammate§7]";
+
+        if (tag != null) {
+            tr.draw(tag, -tr.getWidth(tag) / 2f, labelY - 10, 0x20FFFFFF, false, matrix, vertexConsumers, TextRenderer.TextLayerType.SEE_THROUGH, bgColor, light);
+            tr.draw(tag, -tr.getWidth(tag) / 2f, labelY - 10, 0xFFFFFFFF, false, matrix, vertexConsumers, TextRenderer.TextLayerType.SEE_THROUGH, 0, light);
+        }
 
         tr.draw(text, labelX, labelY, 0x20FFFFFF, false, matrix, vertexConsumers, TextRenderer.TextLayerType.SEE_THROUGH, bgColor, light);
         tr.draw(text, labelX, labelY, 0xFFFFFFFF, false, matrix, vertexConsumers, TextRenderer.TextLayerType.SEE_THROUGH, 0, light);

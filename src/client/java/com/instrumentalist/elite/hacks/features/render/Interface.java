@@ -240,7 +240,7 @@ public class Interface extends Module {
             }
 
             if (ModuleManager.getModuleState(new MurdererDetector())) {
-                float murdererTextY = IMinecraft.mc.getWindow().getScaledHeight() / 2f - 160f;
+                float murdererTextY = IMinecraft.mc.getWindow().getScaledHeight() / 2f - 220f;
                 List<PlayerEntity> murdererList = MurdererDetector.murderers;
 
                 cachedTextRenderer.draw(Text.of("§f[§cMurderers§f]: " + murdererList.size()), IMinecraft.mc.getWindow().getScaledWidth() / 2f - (cachedTextRenderer.getWidth(Text.of("[Murderers]: " + murdererList.size())) / 2f), murdererTextY, Color.WHITE.getRGB(), fontShadow.get(), matrix4f, vertexConsumerProvider, TextRenderer.TextLayerType.SEE_THROUGH, 0, 0);
