@@ -8,6 +8,7 @@ import com.instrumentalist.elite.utils.math.TargetUtil;
 import com.instrumentalist.mixin.oringo.IEntityRenderState;
 import com.llamalad7.mixinextras.injector.ModifyReturnValue;
 import net.minecraft.client.font.TextRenderer;
+import net.minecraft.client.network.PlayerListEntry;
 import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.render.entity.EntityRenderDispatcher;
 import net.minecraft.client.render.entity.EntityRenderer;
@@ -16,6 +17,7 @@ import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.Text;
 import net.minecraft.util.math.Vec3d;
 import org.joml.Matrix4f;
@@ -83,18 +85,31 @@ public abstract class EntityRendererMixin<T extends Entity, S extends EntityRend
         TextRenderer tr = getTextRenderer();
         float labelX = -tr.getWidth(text) / 2f;
 
-        String tag = null;
+        String pingHpTag = null;
+        String extendedTag = null;
 
         if (ModuleManager.getModuleState(new MurdererDetector()) && entity instanceof PlayerEntity && MurdererDetector.murderers.contains(entity))
-            tag = "§7[§cMurderer§7]";
+            extendedTag = "§7[§cMurderer§7]";
         else if (TargetUtil.isBot((LivingEntity) entity))
-            tag = "§7[§cBot§7]";
+            extendedTag = "§7[§cBot§7]";
         else if (TargetUtil.isTeammate((LivingEntity) entity))
-            tag = "§7[§eTeammate§7]";
+            extendedTag = "§7[§eTeam§7]";
 
-        if (tag != null) {
-            tr.draw(tag, -tr.getWidth(tag) / 2f, labelY - 10, 0x20FFFFFF, false, matrix, vertexConsumers, TextRenderer.TextLayerType.SEE_THROUGH, bgColor, light);
-            tr.draw(tag, -tr.getWidth(tag) / 2f, labelY - 10, 0xFFFFFFFF, false, matrix, vertexConsumers, TextRenderer.TextLayerType.SEE_THROUGH, 0, light);
+        if (entity instanceof PlayerEntity && IMinecraft.mc.getNetworkHandler() != null) {
+            PlayerListEntry entry = IMinecraft.mc.getNetworkHandler().getPlayerListEntry(entity.getUuid());
+            if (entry != null)
+                pingHpTag = "§7[§eHP: " + (int) ((PlayerEntity) entity).getHealth() + "§7] [§ePing: " + entry.getLatency() + "ms§7]";
+        }
+
+        if (extendedTag != null) {
+            float tagY = pingHpTag != null ? labelY - 20 : labelY - 10;
+            tr.draw(extendedTag, -tr.getWidth(extendedTag) / 2f, tagY, 0x20FFFFFF, false, matrix, vertexConsumers, TextRenderer.TextLayerType.SEE_THROUGH, bgColor, light);
+            tr.draw(extendedTag, -tr.getWidth(extendedTag) / 2f, tagY, 0xFFFFFFFF, false, matrix, vertexConsumers, TextRenderer.TextLayerType.SEE_THROUGH, 0, light);
+        }
+
+        if (pingHpTag != null) {
+            tr.draw(pingHpTag, -tr.getWidth(pingHpTag) / 2f, labelY - 10, 0x20FFFFFF, false, matrix, vertexConsumers, TextRenderer.TextLayerType.SEE_THROUGH, bgColor, light);
+            tr.draw(pingHpTag, -tr.getWidth(pingHpTag) / 2f, labelY - 10, 0xFFFFFFFF, false, matrix, vertexConsumers, TextRenderer.TextLayerType.SEE_THROUGH, 0, light);
         }
 
         tr.draw(text, labelX, labelY, 0x20FFFFFF, false, matrix, vertexConsumers, TextRenderer.TextLayerType.SEE_THROUGH, bgColor, light);
