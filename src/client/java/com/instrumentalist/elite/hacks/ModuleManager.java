@@ -108,6 +108,7 @@ public class ModuleManager implements EventListener {
         modules.add(new Step());
         modules.add(new AntiVoid());
         modules.add(new AutoFish());
+        modules.add(new NameTags());
 
         // Not shown for click gui (category is NULL)
         modules.add(new PluginsDetector());

@@ -56,7 +56,7 @@ public class ModuleRenderable implements Renderable {
 
         try {
             if (!startUpped) {
-                ImGui.setWindowSize(800f, 800f);
+                ImGui.setWindowSize(1000f, 800f);
                 startUpped = true;
             }
 
@@ -254,7 +254,7 @@ public class ModuleRenderable implements Renderable {
                             if (!commandTabJustOpened) {
                                 if (commandLogs.isEmpty())
                                     ImGui.setKeyboardFocusHere();
-                                else ImGui.setKeyboardFocusHere(2);
+                                else ImGui.setKeyboardFocusHere(3);
                                 commandTabJustOpened = true;
                             }
 
@@ -289,6 +289,20 @@ public class ModuleRenderable implements Renderable {
                                 executeCommand(commandInput.get());
                                 commandInput.set("");
                                 ImGui.setKeyboardFocusHere(-1);
+                            }
+                        } finally {
+                            ImGui.endTabItem();
+                        }
+                    }
+
+                    if (ImGui.beginTabItem("Multi Play")) {
+                        try {
+                            isCommandTab = false;
+                            commandTabJustOpened = false;
+
+                            if (ImGui.button("Force disconnect from server")) {
+                                if (IMinecraft.mc.world != null)
+                                    IMinecraft.mc.world.disconnect();
                             }
                         } finally {
                             ImGui.endTabItem();

@@ -13,6 +13,7 @@
     "ClientPlayerInteractionManagerMixin",
     "EntityMixin",
     "EntityRenderDispatcherMixin",
+    "EntityRendererMixin",
     "EntityRenderStateMixin",
     "GameRendererMixin",
     "HeldItemRendererMixin",
