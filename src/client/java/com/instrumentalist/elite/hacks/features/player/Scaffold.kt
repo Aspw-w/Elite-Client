@@ -6,6 +6,7 @@ import com.instrumentalist.elite.hacks.Module
 import com.instrumentalist.elite.hacks.ModuleCategory
 import com.instrumentalist.elite.hacks.ModuleManager
 import com.instrumentalist.elite.hacks.features.movement.Speed
+import com.instrumentalist.elite.utils.ChatUtil
 import com.instrumentalist.elite.utils.IMinecraft
 import com.instrumentalist.elite.utils.math.TargetUtil
 import com.instrumentalist.elite.utils.math.TimerUtil
@@ -250,6 +251,9 @@ class Scaffold : Module("Scaffold", ModuleCategory.Player, GLFW.GLFW_KEY_UNKNOWN
 
         if (noSprint.get())
             IMinecraft.mc.player!!.isSprinting = false
+
+        if (MovementUtil.isDiagonal(38f) && (rotationMode.get().equals("hypixel", true) || rotationMode.get().equals("math", true) && hypixelMode.get()))
+            MovementUtil.strafe(0.04f)
 
         if (!jumped && (rotationMode.get().equals("math", true) && hypixelMode.get() || rotationMode.get().equals("hypixel", true))) {
             if (!IMinecraft.mc.player!!.isOnGround && MovementUtil.fallTicks >= 7 && firstJumped) {

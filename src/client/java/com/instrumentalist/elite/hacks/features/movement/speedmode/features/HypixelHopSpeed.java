@@ -67,6 +67,7 @@ public class HypixelHopSpeed implements SpeedEvent {
                         case 6:
                             if (canLowHop && IMinecraft.mc.world.getBlockState(IMinecraft.mc.player.getBlockPos().up(2)).isAir())
                                 MovementUtil.setVelocityY(baseVelocityY * 1.016);
+                            else canLowHop = false;
                             break;
 
                         case 7:
@@ -76,7 +77,7 @@ public class HypixelHopSpeed implements SpeedEvent {
                                 if (IMinecraft.mc.player.hasStatusEffect(StatusEffects.SPEED))
                                     MovementUtil.strafe(0.305f + ((IMinecraft.mc.player.getStatusEffect(StatusEffects.SPEED).getAmplifier() + 1f) * IMinecraft.mc.player.getStatusEffect(StatusEffects.SPEED).getAmplifier() == 0 ? 0.036f : 0.044f));
                                 else MovementUtil.strafe(0.305f);
-                            }
+                            } else canLowHop = false;
                             break;
 
                         case 8:
