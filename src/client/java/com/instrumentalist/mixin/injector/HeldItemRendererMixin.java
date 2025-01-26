@@ -83,6 +83,12 @@ public abstract class HeldItemRendererMixin {
             }
         } else if (Scaffold.Companion.getLastSlot() != null && IMinecraft.mc.player != null) {
             if (hand == Hand.MAIN_HAND) {
+                if (!ModuleManager.getModuleState(new Scaffold()) && IMinecraft.mc.player.getInventory().selectedSlot != Scaffold.Companion.getLastSlot()) {
+                    Scaffold.Companion.setSpoofTick(0);
+                    Scaffold.Companion.setLastSlot(null);
+                    return;
+                }
+
                 ci.cancel();
 
                 matrices.push();
