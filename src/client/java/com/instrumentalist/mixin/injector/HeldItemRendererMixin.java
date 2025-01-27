@@ -29,6 +29,8 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
+import java.util.Locale;
+
 @Mixin(HeldItemRenderer.class)
 public abstract class HeldItemRendererMixin {
 
@@ -61,19 +63,40 @@ public abstract class HeldItemRendererMixin {
 
                 Arm arm = player.getMainArm();
 
-                matrices.translate(-0.05f, -0.05f, 0f);
+                switch (LegacyCombat.Companion.getMode().get().toLowerCase(Locale.ROOT)) {
+                    case "old":
+                        matrices.translate(-0.05f, -0.05f, 0f);
 
-                float n = -0.2f * MathHelper.sin(MathHelper.sqrt(swingProgress) * 3.1415927F);
-                float f = -0.1f * MathHelper.sin(swingProgress * 3.1415927F);
+                        float n = -0.2f * MathHelper.sin(MathHelper.sqrt(swingProgress) * 3.1415927F);
+                        float f = -0.1f * MathHelper.sin(swingProgress * 3.1415927F);
 
-                matrices.translate(n, 0f, f);
+                        matrices.translate(n, 0f, f);
 
-                this.applyEquipOffset(matrices, arm, 0f);
-                this.applySwingOffset(matrices, arm, swingProgress);
+                        this.applyEquipOffset(matrices, arm, 0f);
+                        this.applySwingOffset(matrices, arm, swingProgress);
 
-                matrices.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(77f));
-                matrices.multiply(RotationAxis.POSITIVE_Z.rotationDegrees(-10f));
-                matrices.multiply(RotationAxis.POSITIVE_X.rotationDegrees(-80f));
+                        matrices.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(77f));
+                        matrices.multiply(RotationAxis.POSITIVE_Z.rotationDegrees(-10f));
+                        matrices.multiply(RotationAxis.POSITIVE_X.rotationDegrees(-80f));
+                        break;
+
+                    case "astra":
+                        matrices.translate(-0.05f, 0.08f, 0f);
+
+                        this.applyEquipOffset(matrices, arm, equipProgress / 1.6f);
+                        this.applySwingOffset(matrices, arm, swingProgress);
+
+                        final float var9 = MathHelper.sin(MathHelper.sqrt(swingProgress) * (float) Math.PI);
+
+                        matrices.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(-var9 * -30f));
+                        matrices.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(-var9 * 60f));
+                        matrices.multiply(RotationAxis.POSITIVE_Z.rotationDegrees(-var9 * 32f));
+
+                        matrices.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(77f));
+                        matrices.multiply(RotationAxis.POSITIVE_Z.rotationDegrees(-10f));
+                        matrices.multiply(RotationAxis.POSITIVE_X.rotationDegrees(-80f));
+                        break;
+                }
 
                 this.renderItem(player, item, ModelTransformationMode.FIRST_PERSON_RIGHT_HAND, false, matrices, vertexConsumers, light);
 
@@ -124,7 +147,24 @@ public abstract class HeldItemRendererMixin {
 
     @Inject(method = "updateHeldItems", at = @At("HEAD"), cancellable = true)
     public void itemSpoofHook(CallbackInfo ci) {
-        if (Scaffold.Companion.getLastSlot() != null && IMinecraft.mc.player != null) {
+        if (LegacyCombat.Companion.shouldBlock()) {
+            if (LegacyCombat.Companion.getMode().get().equalsIgnoreCase("astra")) {
+                ci.cancel();
+
+                this.prevEquipProgressMainHand = this.equipProgressMainHand;
+                ClientPlayerEntity clientPlayerEntity = this.client.player;
+                if (clientPlayerEntity == null) return;
+                ItemStack itemStack = clientPlayerEntity.getMainHandStack();
+
+                if (ItemStack.areEqual(this.mainHand, itemStack))
+                    this.mainHand = itemStack;
+
+                this.equipProgressMainHand += MathHelper.clamp((this.mainHand == itemStack ? 1f : 0.0F) - this.equipProgressMainHand, -0.4F, 0.4F);
+
+                if (this.equipProgressMainHand < 0.1F)
+                    this.mainHand = itemStack;
+            }
+        } else if (Scaffold.Companion.getLastSlot() != null && IMinecraft.mc.player != null) {
             ci.cancel();
 
             this.prevEquipProgressMainHand = this.equipProgressMainHand;

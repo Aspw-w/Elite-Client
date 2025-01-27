@@ -6,6 +6,7 @@ import com.instrumentalist.elite.hacks.ModuleManager
 import com.instrumentalist.elite.hacks.features.combat.KillAura
 import com.instrumentalist.elite.utils.IMinecraft
 import com.instrumentalist.elite.utils.value.FloatValue
+import com.instrumentalist.elite.utils.value.ListValue
 import net.minecraft.block.*
 import net.minecraft.item.SwordItem
 import net.minecraft.util.hit.BlockHitResult
@@ -14,6 +15,9 @@ import org.lwjgl.glfw.GLFW
 
 class LegacyCombat : Module("Legacy Combat", ModuleCategory.Render, GLFW.GLFW_KEY_UNKNOWN, true, true) {
     companion object {
+        @Setting
+        val mode = ListValue("Mode", arrayOf("Old", "Astra"), "Astra")
+
         fun shouldBlock(): Boolean {
             val hitResult = IMinecraft.mc.player!!.raycast(5.0, 0.0f, false)
             if (hitResult.type == HitResult.Type.BLOCK) {
@@ -25,6 +29,10 @@ class LegacyCombat : Module("Legacy Combat", ModuleCategory.Render, GLFW.GLFW_KE
 
             return IMinecraft.mc.player != null && IMinecraft.mc.world != null && ModuleManager.getModuleState(LegacyCombat()) && IMinecraft.mc.player!!.mainHandStack.item is SwordItem && (IMinecraft.mc.options.useKey.isPressed || ModuleManager.getModuleState(KillAura()) && KillAura.isBlocking)
         }
+    }
+
+    override fun tag(): String {
+        return mode.get()
     }
 
     override fun onDisable() {}
