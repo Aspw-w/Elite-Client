@@ -9,7 +9,7 @@ import net.minecraft.util.math.Vec3d
 object BlinkUtil {
     val mc = IMinecraft.mc
 
-    private val packets = mutableListOf<Packet<*>>()
+    val packets = mutableListOf<Packet<*>>()
     private val positions = mutableListOf<Vec3d>()
     private var prevYMotion: Double? = null
     private var isStarted = false

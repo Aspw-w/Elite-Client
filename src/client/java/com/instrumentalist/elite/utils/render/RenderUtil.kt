@@ -4,6 +4,17 @@ import com.instrumentalist.elite.hacks.features.player.MurdererDetector
 import com.instrumentalist.elite.utils.IMinecraft
 import com.instrumentalist.elite.utils.math.TargetUtil
 import com.mojang.blaze3d.systems.RenderSystem
+import net.minecraft.block.BedBlock
+import net.minecraft.block.ChestBlock
+import net.minecraft.block.TrappedChestBlock
+import net.minecraft.block.entity.BarrelBlockEntity
+import net.minecraft.block.entity.BedBlockEntity
+import net.minecraft.block.entity.BlockEntity
+import net.minecraft.block.entity.ChestBlockEntity
+import net.minecraft.block.entity.EnderChestBlockEntity
+import net.minecraft.block.entity.ShulkerBoxBlockEntity
+import net.minecraft.block.entity.TrappedChestBlockEntity
+import net.minecraft.block.enums.ChestType
 import net.minecraft.client.gl.ShaderProgramKeys
 import net.minecraft.client.render.BufferRenderer
 import net.minecraft.client.render.Camera
@@ -13,10 +24,7 @@ import net.minecraft.client.util.math.MatrixStack
 import net.minecraft.entity.Entity
 import net.minecraft.entity.LivingEntity
 import net.minecraft.entity.player.PlayerEntity
-import net.minecraft.util.math.BlockPos
-import net.minecraft.util.math.Box
-import net.minecraft.util.math.MathHelper
-import net.minecraft.util.math.Vec3d
+import net.minecraft.util.math.*
 import org.joml.Vector3f
 import kotlin.math.cos
 import kotlin.math.sin
@@ -30,7 +38,7 @@ object RenderUtil {
     var ringLastFrameTime: Long = System.nanoTime()
     var ringVerticalTime: Double = 0.0
 
-    fun renderBoxes(
+    fun renderEntityBoxes(
         entityList: MutableList<Entity>,
         matrixStack: MatrixStack,
         partialTicks: Float,
@@ -58,6 +66,83 @@ object RenderUtil {
             else if (entity is LivingEntity && entity.hurtTime >= 5)
                 RenderSystem.setShaderColor(1f, 0f, 0f, 0.8f)
             else RenderSystem.setShaderColor(0f, 1f, 0f, 0.8f)
+
+            drawOutlinedBox(bb, matrixStack)
+
+            matrixStack.pop()
+        }
+    }
+
+    fun renderBlockBox(
+        entityList: MutableList<BlockEntity>,
+        matrixStack: MatrixStack,
+        partialTicks: Float,
+        regionVec: Vec3d
+    ) {
+        if (entityList.isEmpty()) return
+
+        for (blockEntity in entityList) {
+            var bb = Box(-0.5, 0.0, -0.5, 0.5, 1.0, 0.5)
+            val lerpedPos = Vec3d.of(blockEntity.pos).subtract(regionVec)
+
+            matrixStack.push()
+
+            matrixStack.translate(lerpedPos.x + 0.5, lerpedPos.y, lerpedPos.z + 0.5)
+
+            when (blockEntity) {
+                is BarrelBlockEntity -> {
+                    RenderSystem.setShaderColor(0.95f, 0.6f, 0.5f, 0.6f)
+                }
+
+                is ShulkerBoxBlockEntity -> {
+                    RenderSystem.setShaderColor(0.5f, 0.5f, 0.5f, 0.6f)
+                }
+
+                is EnderChestBlockEntity -> {
+                    bb = Box(-0.44, 0.0, -0.44, 0.44, 0.88, 0.44)
+                    RenderSystem.setShaderColor(1f, 0.2f, 1f, 0.6f)
+                }
+
+                is TrappedChestBlockEntity -> {
+                    if (blockEntity.cachedState.get(ChestBlock.CHEST_TYPE) != ChestType.SINGLE) {
+                        if (blockEntity.cachedState.get(ChestBlock.FACING) == Direction.WEST)
+                            bb = Box(-0.44, 0.0, -1.44, 0.44, 0.88, 0.44)
+                        else if (blockEntity.cachedState.get(ChestBlock.FACING) == Direction.EAST)
+                            bb = Box(-0.44, 0.0, -0.44, 0.44, 0.88, 1.44)
+                        else if (blockEntity.cachedState.get(ChestBlock.FACING) == Direction.NORTH)
+                            bb = Box(-0.44, 0.0, -0.44, 1.44, 0.88, 0.44)
+                        else if (blockEntity.cachedState.get(ChestBlock.FACING) == Direction.SOUTH)
+                            bb = Box(-1.44, 0.0, -0.44, 0.44, 0.88, 0.44)
+                    } else bb = Box(-0.44, 0.0, -0.44, 0.44, 0.88, 0.44)
+                    RenderSystem.setShaderColor(1f, 0f, 0f, 0.6f)
+                }
+
+                is ChestBlockEntity -> {
+                    if (blockEntity.cachedState.get(ChestBlock.CHEST_TYPE) != ChestType.SINGLE) {
+                        if (blockEntity.cachedState.get(ChestBlock.FACING) == Direction.WEST)
+                            bb = Box(-0.44, 0.0, -1.44, 0.44, 0.88, 0.44)
+                        else if (blockEntity.cachedState.get(ChestBlock.FACING) == Direction.EAST)
+                            bb = Box(-0.44, 0.0, -0.44, 0.44, 0.88, 1.44)
+                        else if (blockEntity.cachedState.get(ChestBlock.FACING) == Direction.NORTH)
+                            bb = Box(-0.44, 0.0, -0.44, 1.44, 0.88, 0.44)
+                        else if (blockEntity.cachedState.get(ChestBlock.FACING) == Direction.SOUTH)
+                            bb = Box(-1.44, 0.0, -0.44, 0.44, 0.88, 0.44)
+                    } else bb = Box(-0.44, 0.0, -0.44, 0.44, 0.88, 0.44)
+                    RenderSystem.setShaderColor(1f, 0.5f, 1f, 0.6f)
+                }
+
+                is BedBlockEntity -> {
+                    if (blockEntity.cachedState.get(BedBlock.FACING) == Direction.WEST)
+                        bb = Box(-0.5, 0.0, -0.5, 1.5, 0.56, 0.5)
+                    else if (blockEntity.cachedState.get(BedBlock.FACING) == Direction.EAST)
+                        bb = Box(-1.5, 0.0, -0.5, 0.5, 0.56, 0.5)
+                    else if (blockEntity.cachedState.get(BedBlock.FACING) == Direction.NORTH)
+                        bb = Box(-0.5, 0.0, -0.5, 0.5, 0.56, 1.5)
+                    else if (blockEntity.cachedState.get(BedBlock.FACING) == Direction.SOUTH)
+                        bb = Box(-0.5, 0.0, -1.5, 0.5, 0.56, 0.5)
+                    RenderSystem.setShaderColor(1f, 0.2f, 0.2f, 0.6f)
+                }
+            }
 
             drawOutlinedBox(bb, matrixStack)
 

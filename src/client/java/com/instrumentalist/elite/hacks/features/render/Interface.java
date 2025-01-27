@@ -213,7 +213,7 @@ public class Interface extends Module {
             }
 
             if (BlinkUtil.INSTANCE.getBlinking()) {
-                String blinkText = "Blinking...";
+                String blinkText = "Blinking... (x" + BlinkUtil.INSTANCE.getPackets().size() + ")";
 
                 String[] blinkStrings = blinkText.split("");
 
@@ -267,7 +267,7 @@ public class Interface extends Module {
             if (sortedModules == null)
                 reloadSortedModules(cachedTextRenderer);
 
-            float listY = 4;
+            float listY = 5f;
             int index = 0;
 
             for (Module module : sortedModules) {

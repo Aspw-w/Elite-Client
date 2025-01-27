@@ -65,7 +65,7 @@ public abstract class HeldItemRendererMixin {
 
                 switch (LegacyCombat.Companion.getMode().get().toLowerCase(Locale.ROOT)) {
                     case "old":
-                        matrices.translate(-0.05f, -0.05f, 0f);
+                        matrices.translate(-0.05f, 0f, 0f);
 
                         float n = -0.2f * MathHelper.sin(MathHelper.sqrt(swingProgress) * 3.1415927F);
                         float f = -0.1f * MathHelper.sin(swingProgress * 3.1415927F);

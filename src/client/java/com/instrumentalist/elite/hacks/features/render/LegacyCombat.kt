@@ -16,7 +16,7 @@ import org.lwjgl.glfw.GLFW
 class LegacyCombat : Module("Legacy Combat", ModuleCategory.Render, GLFW.GLFW_KEY_UNKNOWN, true, true) {
     companion object {
         @Setting
-        val mode = ListValue("Mode", arrayOf("Old", "Astra"), "Astra")
+        val mode = ListValue("Mode", arrayOf("Old", "Astra"), "Old")
 
         fun shouldBlock(): Boolean {
             val hitResult = IMinecraft.mc.player!!.raycast(5.0, 0.0f, false)
