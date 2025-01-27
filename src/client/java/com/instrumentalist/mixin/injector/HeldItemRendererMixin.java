@@ -83,7 +83,7 @@ public abstract class HeldItemRendererMixin {
                     case "astra":
                         matrices.translate(-0.05f, 0.08f, 0f);
 
-                        this.applyEquipOffset(matrices, arm, equipProgress / 1.6f);
+                        this.applyEquipOffset(matrices, arm, equipProgress / 1.42f);
                         this.applySwingOffset(matrices, arm, swingProgress);
 
                         final float var9 = MathHelper.sin(MathHelper.sqrt(swingProgress) * (float) Math.PI);
