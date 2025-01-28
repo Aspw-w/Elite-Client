@@ -1,5 +1,6 @@
 package com.instrumentalist.elite.hacks.features.world
 
+import com.instrumentalist.elite.events.features.MotionEvent
 import com.instrumentalist.elite.events.features.SendPacketEvent
 import com.instrumentalist.elite.events.features.UpdateEvent
 import com.instrumentalist.elite.hacks.Module
@@ -48,6 +49,7 @@ class Breaker : Module("Breaker", ModuleCategory.World, GLFW.GLFW_KEY_UNKNOWN, f
     }
 
     private var cachedBedPos: BlockPos? = null
+    private var cachedSecondPos: BlockPos? = null
     private var originalSlot: Int = -1
     private var progress = false
     private var secondProgress = false
@@ -55,13 +57,43 @@ class Breaker : Module("Breaker", ModuleCategory.World, GLFW.GLFW_KEY_UNKNOWN, f
     override fun onDisable() {
         if (IMinecraft.mc.player != null) {
             if (wasBreaking) {
+                IMinecraft.mc.interactionManager!!.currentBreakingProgress = 0f
                 TargetUtil.noKillAura = false
                 RotationUtil.reset()
+                if (secondProgress && cachedSecondPos != null) {
+                    if (IMinecraft.mc.world!!.getBlockState(cachedSecondPos).isAir)
+                        PacketUtil.sendPacketAsSilent(
+                            PlayerActionC2SPacket(
+                                PlayerActionC2SPacket.Action.STOP_DESTROY_BLOCK, cachedSecondPos, Direction.UP
+                            )
+                        )
+                    else
+                        PacketUtil.sendPacketAsSilent(
+                            PlayerActionC2SPacket(
+                                PlayerActionC2SPacket.Action.ABORT_DESTROY_BLOCK, cachedSecondPos, Direction.UP
+                            )
+                        )
+                }
+                if (progress && cachedBedPos != null) {
+                    if (IMinecraft.mc.world!!.getBlockState(cachedBedPos).isAir)
+                        PacketUtil.sendPacketAsSilent(
+                            PlayerActionC2SPacket(
+                                PlayerActionC2SPacket.Action.STOP_DESTROY_BLOCK, cachedBedPos, Direction.UP
+                            )
+                        )
+                    else
+                        PacketUtil.sendPacketAsSilent(
+                            PlayerActionC2SPacket(
+                                PlayerActionC2SPacket.Action.ABORT_DESTROY_BLOCK, cachedBedPos, Direction.UP
+                            )
+                        )
+                }
                 wasBreaking = false
             }
             if (originalSlot != -1 && originalSlot != IMinecraft.mc.player?.inventory!!.selectedSlot)
                 IMinecraft.mc.player!!.inventory.selectedSlot = originalSlot
         } else wasBreaking = false
+        cachedSecondPos = null
         cachedBedPos = null
         originalSlot = -1
         progress = false
@@ -75,11 +107,11 @@ class Breaker : Module("Breaker", ModuleCategory.World, GLFW.GLFW_KEY_UNKNOWN, f
 
         val packet = event.packet
 
-        if (wasBreaking && packet is PlayerActionC2SPacket && packet.action == PlayerActionC2SPacket.Action.ABORT_DESTROY_BLOCK)
+        if (wasBreaking && packet is PlayerActionC2SPacket && (packet.action == PlayerActionC2SPacket.Action.START_DESTROY_BLOCK || packet.action == PlayerActionC2SPacket.Action.ABORT_DESTROY_BLOCK || packet.action == PlayerActionC2SPacket.Action.STOP_DESTROY_BLOCK))
             event.cancel()
     }
 
-    override fun onUpdate(event: UpdateEvent) {
+    override fun onMotion(event: MotionEvent) {
         if (IMinecraft.mc.player == null || IMinecraft.mc.world == null || ModuleManager.getModuleState(Scaffold())) return
 
         if (cachedBedPos == null)
@@ -114,8 +146,12 @@ class Breaker : Module("Breaker", ModuleCategory.World, GLFW.GLFW_KEY_UNKNOWN, f
                     )
                     when (clickMode.get().lowercase(Locale.getDefault())) {
                         "break" -> {
-                            PlayerUtil.destroyBlock(hitResult)
-                            progress = true
+                            if (progress)
+                                PlayerUtil.destroyBlock(hitResult)
+                            else {
+                                PacketUtil.sendPacketAsSilent(PlayerActionC2SPacket(PlayerActionC2SPacket.Action.START_DESTROY_BLOCK, cachedBedPos, Direction.UP))
+                                progress = true
+                            }
                         }
                         "place" -> {
                             if (IMinecraft.mc.interactionManager!!.interactBlock(
@@ -131,10 +167,32 @@ class Breaker : Module("Breaker", ModuleCategory.World, GLFW.GLFW_KEY_UNKNOWN, f
 
                 "hypixel" -> {
                     TargetUtil.noKillAura = true
-                    val hypixelPos = BlockPos(cachedBedPos!!.x, cachedBedPos!!.y + 1, cachedBedPos!!.z)
-                    if (!IMinecraft.mc.world?.getBlockState(hypixelPos)?.isAir!! && (range.get() * 10) >= IMinecraft.mc.player!!.squaredDistanceTo(Vec3d(hypixelPos.x.toDouble(), hypixelPos.y.toDouble(), hypixelPos.z.toDouble()))) {
+                    if (cachedSecondPos == null)
+                        cachedSecondPos = BlockPos(cachedBedPos!!.x, cachedBedPos!!.y + 1, cachedBedPos!!.z)
+                    if (secondProgress && progress) {
+                        PacketUtil.sendPacketAsSilent(
+                            PlayerActionC2SPacket(
+                                PlayerActionC2SPacket.Action.ABORT_DESTROY_BLOCK, cachedBedPos, Direction.UP
+                            )
+                        )
+                        if (IMinecraft.mc.world!!.getBlockState(cachedSecondPos).isAir)
+                            PacketUtil.sendPacketAsSilent(
+                                PlayerActionC2SPacket(
+                                    PlayerActionC2SPacket.Action.STOP_DESTROY_BLOCK, cachedSecondPos, Direction.UP
+                                )
+                            )
+                        else
+                            PacketUtil.sendPacketAsSilent(
+                                PlayerActionC2SPacket(
+                                    PlayerActionC2SPacket.Action.ABORT_DESTROY_BLOCK, cachedSecondPos, Direction.UP
+                                )
+                            )
+                        cachedSecondPos = null
+                        secondProgress = false
+                        progress = false
+                    } else if (!IMinecraft.mc.world?.getBlockState(cachedSecondPos)?.isAir!! && (range.get() * 10) >= IMinecraft.mc.player!!.squaredDistanceTo(Vec3d(cachedSecondPos!!.x.toDouble(), cachedSecondPos!!.y.toDouble(), cachedSecondPos!!.z.toDouble()))) {
                         if (ModuleManager.getModuleState(AutoTool())) {
-                            val bestToolSlot = ToolUtil.findBestTool(hypixelPos)
+                            val bestToolSlot = ToolUtil.findBestTool(cachedSecondPos!!)
                             if (bestToolSlot != -1 && bestToolSlot != IMinecraft.mc.player!!.inventory.selectedSlot) {
                                 if (originalSlot == -1)
                                     originalSlot = IMinecraft.mc.player!!.inventory.selectedSlot
@@ -142,7 +200,7 @@ class Breaker : Module("Breaker", ModuleCategory.World, GLFW.GLFW_KEY_UNKNOWN, f
                             }
                         }
                         RotationUtil.aimAtBlock(
-                            Vec3d.ofCenter(hypixelPos),
+                            Vec3d.ofCenter(cachedSecondPos!!),
                             90f,
                             false,
                             10f,
@@ -150,20 +208,36 @@ class Breaker : Module("Breaker", ModuleCategory.World, GLFW.GLFW_KEY_UNKNOWN, f
                             0f
                         )
                         val hitResult = BlockHitResult(
-                            Vec3d(hypixelPos.x.toDouble(), hypixelPos.y.toDouble(), hypixelPos.z.toDouble()),
+                            Vec3d(cachedSecondPos!!.x.toDouble(), cachedSecondPos!!.y.toDouble(), cachedSecondPos!!.z.toDouble()),
                             Direction.UP,
-                            hypixelPos,
+                            cachedSecondPos!!,
                             false
                         )
-                        PlayerUtil.destroyBlock(hitResult)
-                        secondProgress = true
+                        if (secondProgress)
+                            PlayerUtil.destroyBlock(hitResult)
+                        else {
+                            PacketUtil.sendPacketAsSilent(PlayerActionC2SPacket(PlayerActionC2SPacket.Action.START_DESTROY_BLOCK, cachedSecondPos!!, Direction.UP))
+                            secondProgress = true
+                        }
                     } else {
-                        if (secondProgress) {
-                            PacketUtil.sendPacket(
-                                PlayerActionC2SPacket(
-                                    PlayerActionC2SPacket.Action.STOP_DESTROY_BLOCK, hypixelPos, Direction.UP
+                        if (secondProgress || cachedSecondPos != null) {
+                            if (IMinecraft.mc.world!!.getBlockState(cachedSecondPos).isAir)
+                                PacketUtil.sendPacketAsSilent(
+                                    PlayerActionC2SPacket(
+                                        PlayerActionC2SPacket.Action.STOP_DESTROY_BLOCK, cachedSecondPos, Direction.UP
+                                    )
                                 )
-                            )
+                            else
+                                PacketUtil.sendPacketAsSilent(
+                                    PlayerActionC2SPacket(
+                                        PlayerActionC2SPacket.Action.ABORT_DESTROY_BLOCK, cachedSecondPos, Direction.UP
+                                    )
+                                )
+                            if (originalSlot != -1 && originalSlot != IMinecraft.mc.player!!.inventory.selectedSlot) {
+                                IMinecraft.mc.player!!.inventory.selectedSlot = originalSlot
+                                originalSlot = -1
+                            }
+                            cachedSecondPos = null
                             secondProgress = false
                         }
                         if (ModuleManager.getModuleState(AutoTool())) {
@@ -188,17 +262,43 @@ class Breaker : Module("Breaker", ModuleCategory.World, GLFW.GLFW_KEY_UNKNOWN, f
                             cachedBedPos,
                             false
                         )
-                        PlayerUtil.destroyBlock(hitResult)
-                        progress = true
+                        if (progress)
+                            PlayerUtil.destroyBlock(hitResult)
+                        else {
+                            PacketUtil.sendPacketAsSilent(PlayerActionC2SPacket(PlayerActionC2SPacket.Action.START_DESTROY_BLOCK, cachedBedPos, Direction.UP))
+                            progress = true
+                        }
                     }
                 }
 
                 "cubecraft" -> {
                     TargetUtil.noKillAura = true
-                    val cubecraftPos = BlockPos(cachedBedPos!!.x, cachedBedPos!!.y + 1, cachedBedPos!!.z)
-                    if (!IMinecraft.mc.world?.getBlockState(cubecraftPos)?.isAir!! && (range.get() * 10) >= IMinecraft.mc.player!!.squaredDistanceTo(Vec3d(cubecraftPos.x.toDouble(), cubecraftPos.y.toDouble(), cubecraftPos.z.toDouble()))) {
+                    if (cachedSecondPos == null)
+                        cachedSecondPos = BlockPos(cachedBedPos!!.x, cachedBedPos!!.y + 1, cachedBedPos!!.z)
+                    if (secondProgress && progress) {
+                        PacketUtil.sendPacketAsSilent(
+                            PlayerActionC2SPacket(
+                                PlayerActionC2SPacket.Action.ABORT_DESTROY_BLOCK, cachedBedPos, Direction.UP
+                            )
+                        )
+                        if (IMinecraft.mc.world!!.getBlockState(cachedSecondPos).isAir)
+                            PacketUtil.sendPacketAsSilent(
+                                PlayerActionC2SPacket(
+                                    PlayerActionC2SPacket.Action.STOP_DESTROY_BLOCK, cachedSecondPos, Direction.UP
+                                )
+                            )
+                        else
+                            PacketUtil.sendPacketAsSilent(
+                                PlayerActionC2SPacket(
+                                    PlayerActionC2SPacket.Action.ABORT_DESTROY_BLOCK, cachedSecondPos, Direction.UP
+                                )
+                            )
+                        cachedSecondPos = null
+                        secondProgress = false
+                        progress = false
+                    } else if (!IMinecraft.mc.world?.getBlockState(cachedSecondPos!!)?.isAir!! && (range.get() * 10) >= IMinecraft.mc.player!!.squaredDistanceTo(Vec3d(cachedSecondPos!!.x.toDouble(), cachedSecondPos!!.y.toDouble(), cachedSecondPos!!.z.toDouble()))) {
                         if (ModuleManager.getModuleState(AutoTool())) {
-                            val bestToolSlot = ToolUtil.findBestTool(cubecraftPos)
+                            val bestToolSlot = ToolUtil.findBestTool(cachedSecondPos!!)
                             if (bestToolSlot != -1 && bestToolSlot != IMinecraft.mc.player!!.inventory.selectedSlot) {
                                 if (originalSlot == -1)
                                     originalSlot = IMinecraft.mc.player!!.inventory.selectedSlot
@@ -206,7 +306,7 @@ class Breaker : Module("Breaker", ModuleCategory.World, GLFW.GLFW_KEY_UNKNOWN, f
                             }
                         }
                         RotationUtil.aimAtBlock(
-                            Vec3d.ofCenter(cubecraftPos),
+                            Vec3d.ofCenter(cachedSecondPos!!),
                             45f,
                             true,
                             10f,
@@ -214,20 +314,36 @@ class Breaker : Module("Breaker", ModuleCategory.World, GLFW.GLFW_KEY_UNKNOWN, f
                             0f
                         )
                         val hitResult = BlockHitResult(
-                            Vec3d(cubecraftPos.x.toDouble(), cubecraftPos.y.toDouble(), cubecraftPos.z.toDouble()),
+                            Vec3d(cachedSecondPos!!.x.toDouble(), cachedSecondPos!!.y.toDouble(), cachedSecondPos!!.z.toDouble()),
                             Direction.UP,
-                            cubecraftPos,
+                            cachedSecondPos!!,
                             false
                         )
-                        PlayerUtil.destroyBlock(hitResult)
-                        secondProgress = true
+                        if (progress)
+                            PlayerUtil.destroyBlock(hitResult)
+                        else {
+                            PacketUtil.sendPacketAsSilent(PlayerActionC2SPacket(PlayerActionC2SPacket.Action.START_DESTROY_BLOCK, cachedSecondPos, Direction.UP))
+                            progress = true
+                        }
                     } else {
-                        if (secondProgress) {
-                            PacketUtil.sendPacket(
-                                PlayerActionC2SPacket(
-                                    PlayerActionC2SPacket.Action.STOP_DESTROY_BLOCK, cubecraftPos, Direction.UP
+                        if (secondProgress || cachedSecondPos != null) {
+                            if (IMinecraft.mc.world!!.getBlockState(cachedSecondPos).isAir)
+                                PacketUtil.sendPacketAsSilent(
+                                    PlayerActionC2SPacket(
+                                        PlayerActionC2SPacket.Action.STOP_DESTROY_BLOCK, cachedSecondPos, Direction.UP
+                                    )
                                 )
-                            )
+                            else
+                                PacketUtil.sendPacketAsSilent(
+                                    PlayerActionC2SPacket(
+                                        PlayerActionC2SPacket.Action.ABORT_DESTROY_BLOCK, cachedSecondPos, Direction.UP
+                                    )
+                                )
+                            if (originalSlot != -1 && originalSlot != IMinecraft.mc.player!!.inventory.selectedSlot) {
+                                IMinecraft.mc.player!!.inventory.selectedSlot = originalSlot
+                                originalSlot = -1
+                            }
+                            cachedSecondPos = null
                             secondProgress = false
                         }
                         RotationUtil.aimAtBlock(
@@ -259,11 +375,26 @@ class Breaker : Module("Breaker", ModuleCategory.World, GLFW.GLFW_KEY_UNKNOWN, f
                 IMinecraft.mc.player!!.inventory.selectedSlot = originalSlot
                 originalSlot = -1
             }
+            IMinecraft.mc.interactionManager!!.currentBreakingProgress = 0f
             TargetUtil.noKillAura = false
             RotationUtil.reset()
+            if (secondProgress && cachedSecondPos != null) {
+                if (IMinecraft.mc.world!!.getBlockState(cachedSecondPos).isAir)
+                    PacketUtil.sendPacketAsSilent(
+                        PlayerActionC2SPacket(
+                            PlayerActionC2SPacket.Action.STOP_DESTROY_BLOCK, cachedSecondPos, Direction.UP
+                        )
+                    )
+                else
+                    PacketUtil.sendPacketAsSilent(
+                        PlayerActionC2SPacket(
+                            PlayerActionC2SPacket.Action.ABORT_DESTROY_BLOCK, cachedSecondPos, Direction.UP
+                        )
+                    )
+            }
             if (progress && cachedBedPos != null) {
                 if (IMinecraft.mc.world!!.getBlockState(cachedBedPos).isAir)
-                    PacketUtil.sendPacket(
+                    PacketUtil.sendPacketAsSilent(
                         PlayerActionC2SPacket(
                             PlayerActionC2SPacket.Action.STOP_DESTROY_BLOCK, cachedBedPos, Direction.UP
                         )
@@ -274,11 +405,11 @@ class Breaker : Module("Breaker", ModuleCategory.World, GLFW.GLFW_KEY_UNKNOWN, f
                             PlayerActionC2SPacket.Action.ABORT_DESTROY_BLOCK, cachedBedPos, Direction.UP
                         )
                     )
-                IMinecraft.mc.interactionManager!!.currentBreakingProgress = 0f
             }
+            cachedSecondPos = null
             cachedBedPos = null
-            progress = false
             secondProgress = false
+            progress = false
             wasBreaking = false
         }
     }
@@ -291,7 +422,7 @@ class Breaker : Module("Breaker", ModuleCategory.World, GLFW.GLFW_KEY_UNKNOWN, f
                     val blockState = IMinecraft.mc.world?.getBlockState(pos)
 
                     if ((mode.get().equals("hypixel", true) || mode.get().equals("normal", true) && block.get()
-                            .equals("bed", true)) && blockState?.block is BedBlock && blockState.get(BedBlock.PART) == BedPart.HEAD || (mode.get()
+                            .equals("bed", true)) && blockState?.block is BedBlock || (mode.get()
                             .equals("cubecraft", true) || mode.get().equals("normal", true) && block.get()
                             .equals("egg", true)) && blockState?.block is DragonEggBlock
                     )

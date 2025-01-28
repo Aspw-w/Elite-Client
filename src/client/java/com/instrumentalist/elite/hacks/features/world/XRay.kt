@@ -5,12 +5,21 @@ import com.instrumentalist.elite.hacks.ModuleCategory
 import com.instrumentalist.elite.hacks.ModuleManager
 import com.instrumentalist.elite.utils.IMinecraft
 import com.instrumentalist.elite.utils.value.BooleanValue
+import com.instrumentalist.elite.utils.world.BlockUtil
 import net.minecraft.block.BlockState
 import net.minecraft.block.Blocks.*
+import net.minecraft.util.math.BlockPos
+import net.minecraft.util.math.Direction
+import net.minecraft.world.World
 import org.lwjgl.glfw.GLFW
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable
+
 
 class XRay : Module("XRay", ModuleCategory.World, GLFW.GLFW_KEY_F7, false, true) {
     companion object {
+        @Setting
+        private val bypassAntiXRay = BooleanValue("Bypass Anti XRay (Sodium only)", false)
+
         fun hookTransparentOre(blockState: BlockState, original: Boolean): Boolean {
             if (ModuleManager.getModuleState(XRay()))
                 return blocks.contains(blockState.block)
@@ -18,7 +27,17 @@ class XRay : Module("XRay", ModuleCategory.World, GLFW.GLFW_KEY_F7, false, true)
             return original
         }
 
-        val blocks = mutableSetOf(
+        fun hookSodiumTransparentOre(blockState: BlockState, pos: BlockPos, ci: CallbackInfoReturnable<Boolean>) {
+            if (ModuleManager.getModuleState(XRay())) {
+                if (blocks.contains(blockState.block) && (!bypassAntiXRay.get() || BlockUtil.isFullSurroundedBlock(IMinecraft.mc.world!!, pos)))
+                    ci.returnValue = hookTransparentOre(blockState, ci.returnValue)
+                else ci.returnValue = false
+
+                ci.cancel()
+            }
+        }
+
+        private val blocks = mutableSetOf(
             COAL_ORE,
             COPPER_ORE,
             DIAMOND_ORE,

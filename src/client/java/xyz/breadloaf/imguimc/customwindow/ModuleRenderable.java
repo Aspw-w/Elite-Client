@@ -35,6 +35,7 @@ import java.util.List;
 
 public class ModuleRenderable implements Renderable {
 
+    private static ImString searchQuery = new ImString(256);
     public static List<String> commandLogs = new ArrayList<>();
     public static boolean commandTabJustOpened = false;
     public static boolean isCommandTab = false;
@@ -103,6 +104,37 @@ public class ModuleRenderable implements Renderable {
                             } finally {
                                 ImGui.endTabItem();
                             }
+                        }
+                    }
+
+                    if (ImGui.beginTabItem("Search")) {
+                        try {
+                            ImGui.text("Search Modules:");
+
+                            ImGui.inputText("Search", searchQuery);
+
+                            String query = searchQuery.get().toLowerCase().replace(" ", "");
+                            ImGui.spacing();
+
+                            if (!query.isEmpty()) {
+                                for (Module module : ModuleManager.modules) {
+                                    if (module.moduleCategory == null) continue;
+
+                                    if (module.moduleName.replace(" ", "").toLowerCase().contains(query) || module.moduleCategory.name().toLowerCase().contains(query)) {
+                                        if (ImGui.collapsingHeader(module.moduleName))
+                                            renderModuleSettings(module);
+                                    }
+                                }
+                            } else {
+                                for (Module module : ModuleManager.modules) {
+                                    if (module.moduleCategory == null) continue;
+
+                                    if (ImGui.collapsingHeader(module.moduleName))
+                                        renderModuleSettings(module);
+                                }
+                            }
+                        } finally {
+                            ImGui.endTabItem();
                         }
                     }
 

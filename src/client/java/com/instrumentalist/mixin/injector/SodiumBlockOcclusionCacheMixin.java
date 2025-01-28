@@ -23,16 +23,6 @@ public class SodiumBlockOcclusionCacheMixin {
 
     @Inject(method = "shouldDrawSide", at = @At("RETURN"), cancellable = true)
     private void xRayHook(BlockState selfState, BlockView view, BlockPos pos, Direction facing, CallbackInfoReturnable<Boolean> ci) {
-        if (ModuleManager.getModuleState(new XRay()) && !XRay.Companion.getBlocks().contains(selfState.getBlock())) {
-            ci.setReturnValue(false);
-            ci.cancel();
-            return;
-        }
-
-        if (ModuleManager.getModuleState(new XRay())) {
-            Set<Block> blocks = XRay.Companion.getBlocks();
-            ci.setReturnValue(blocks.contains(selfState.getBlock()));
-            ci.cancel();
-        }
+        XRay.Companion.hookSodiumTransparentOre(selfState, pos, ci);
     }
 }
