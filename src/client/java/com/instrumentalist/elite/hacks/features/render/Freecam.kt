@@ -121,7 +121,7 @@ class Freecam : Module("Freecam", ModuleCategory.Render, GLFW.GLFW_KEY_F8, false
     }
 
     override fun onRender(event: RenderEvent) {
-        if (IMinecraft.mc.player == null || IMinecraft.mc.world == null || IMinecraft.mc.player!!.age < 50 || oldPos == null) return
+        if (IMinecraft.mc.player == null || IMinecraft.mc.world == null || IMinecraft.mc.player!!.age < 100f || oldPos == null) return
 
         GL11.glEnable(GL11.GL_BLEND)
         GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA)

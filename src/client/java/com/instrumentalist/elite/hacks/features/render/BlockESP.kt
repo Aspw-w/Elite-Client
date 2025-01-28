@@ -40,7 +40,7 @@ class BlockESP : Module("Block ESP", ModuleCategory.Render, GLFW.GLFW_KEY_UNKNOW
     override fun onEnable() {}
 
     override fun onRender(event: RenderEvent) {
-        if (IMinecraft.mc.player == null || IMinecraft.mc.world == null || IMinecraft.mc.player!!.age < 50) return
+        if (IMinecraft.mc.player == null || IMinecraft.mc.world == null || IMinecraft.mc.player!!.age < 100f) return
 
         val blockEntities = mutableListOf<BlockEntity>()
 
