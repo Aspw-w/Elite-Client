@@ -28,7 +28,7 @@ class ESP : Module("ESP", ModuleCategory.Render, GLFW.GLFW_KEY_UNKNOWN, false, t
     override fun onEnable() {}
 
     override fun onRender(event: RenderEvent) {
-        if (IMinecraft.mc.player == null || IMinecraft.mc.world == null || IMinecraft.mc.player!!.age < 100f) return
+        if (IMinecraft.mc.player == null || IMinecraft.mc.world == null) return
 
         val boxEntities = mutableListOf<Entity>()
 

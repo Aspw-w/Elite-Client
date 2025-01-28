@@ -48,7 +48,7 @@ class AntiVoid : Module(
     }
 
     override fun onUpdate(event: UpdateEvent) {
-        if (IMinecraft.mc.player == null || canTick > 0 || !IMinecraft.mc.player!!.isFallingToVoid() || IMinecraft.mc.player!!.age <= 100f || IMinecraft.mc.player!!.abilities.flying || IMinecraft.mc.player!!.isSneaking || IMinecraft.mc.player!!.isSpectator || IMinecraft.mc.player!!.isTouchingWater) {
+        if (IMinecraft.mc.player == null || canTick > 0 || !IMinecraft.mc.player!!.isFallingToVoid() || IMinecraft.mc.player!!.age <= 50 || IMinecraft.mc.player!!.abilities.flying || IMinecraft.mc.player!!.isSneaking || IMinecraft.mc.player!!.isSpectator || IMinecraft.mc.player!!.isTouchingWater) {
             if (unSafeY != null) {
                 BlinkUtil.sync(true, false)
                 BlinkUtil.stopBlink()
@@ -69,7 +69,7 @@ class AntiVoid : Module(
     }
 
     override fun onReceivedPacket(event: ReceivedPacketEvent) {
-        if (IMinecraft.mc.player == null || IMinecraft.mc.player!!.age <= 100f) return
+        if (IMinecraft.mc.player == null || IMinecraft.mc.player!!.age <= 50) return
 
         val packet = event.packet
 

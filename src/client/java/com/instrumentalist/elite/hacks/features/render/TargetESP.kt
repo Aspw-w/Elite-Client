@@ -36,7 +36,7 @@ class TargetESP : Module("Target ESP", ModuleCategory.Render, GLFW.GLFW_KEY_UNKN
     }
 
     override fun onRender(event: RenderEvent) {
-        if (IMinecraft.mc.player == null || IMinecraft.mc.world == null || IMinecraft.mc.player!!.age < 100f) return
+        if (IMinecraft.mc.player == null || IMinecraft.mc.world == null) return
 
         val targets: MutableList<Entity> = mutableListOf()
         if (ModuleManager.getModuleState(KillAura()) && KillAura.closestEntity != null)

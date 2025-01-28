@@ -18,8 +18,6 @@ public class RenderEvent extends EventArgument {
 
     @Override
     public void call(EventListener listener) {
-        GL11.glEnable(GL11.GL_LINE_SMOOTH);
         Objects.requireNonNull(listener).onRender(this);
-        GL11.glDisable(GL11.GL_LINE_SMOOTH);
     }
 }
