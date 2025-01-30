@@ -28,6 +28,7 @@ import net.minecraft.entity.decoration.ArmorStandEntity
 import net.minecraft.entity.player.PlayerEntity
 import org.lwjgl.glfw.GLFW
 import org.lwjgl.opengl.GL11
+import kotlin.streams.asSequence
 
 class BlockESP : Module("Block ESP", ModuleCategory.Render, GLFW.GLFW_KEY_UNKNOWN, false, true) {
     @Setting
@@ -42,11 +43,11 @@ class BlockESP : Module("Block ESP", ModuleCategory.Render, GLFW.GLFW_KEY_UNKNOW
     override fun onRender(event: RenderEvent) {
         if (IMinecraft.mc.player == null || IMinecraft.mc.world == null) return
 
-        val blockEntities = mutableListOf<BlockEntity>()
-
-        for (blockEntity in ChunkUtil.getLoadedBlockEntities()) {
-            if (shouldBoxRender(blockEntity)) blockEntities.add(blockEntity)
-        }
+        val blockEntities = ChunkUtil.getLoadedBlockEntities().asSequence()
+            .filter { shouldBoxRender(it) }
+            .sortedBy { it.pos.getSquaredDistance(IMinecraft.mc.player!!.pos) }
+            .take(5)
+            .toMutableList()
 
         if (blockEntities.isNotEmpty()) {
             GL11.glEnable(GL11.GL_BLEND)

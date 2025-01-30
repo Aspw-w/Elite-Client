@@ -9,6 +9,7 @@ import com.instrumentalist.elite.utils.IMinecraft
 import com.instrumentalist.elite.utils.render.RegionPos
 import com.instrumentalist.elite.utils.render.RenderUtil
 import com.instrumentalist.elite.utils.value.BooleanValue
+import com.instrumentalist.elite.utils.world.ChunkUtil
 import com.mojang.blaze3d.systems.RenderSystem
 import net.minecraft.client.network.ClientPlayerEntity
 import net.minecraft.entity.Entity
@@ -16,6 +17,7 @@ import net.minecraft.entity.decoration.ArmorStandEntity
 import net.minecraft.entity.player.PlayerEntity
 import org.lwjgl.glfw.GLFW
 import org.lwjgl.opengl.GL11
+import kotlin.streams.asSequence
 
 class ESP : Module("ESP", ModuleCategory.Render, GLFW.GLFW_KEY_UNKNOWN, false, true) {
     @Setting
@@ -30,11 +32,11 @@ class ESP : Module("ESP", ModuleCategory.Render, GLFW.GLFW_KEY_UNKNOWN, false, t
     override fun onRender(event: RenderEvent) {
         if (IMinecraft.mc.player == null || IMinecraft.mc.world == null) return
 
-        val boxEntities = mutableListOf<Entity>()
-
-        for (entity in IMinecraft.mc.world!!.entities) {
-            if (shouldBoxRender(entity)) boxEntities.add(entity)
-        }
+        val boxEntities = IMinecraft.mc.world!!.entities.asSequence()
+            .filter { shouldBoxRender(it) }
+            .sortedBy { it.pos.squaredDistanceTo(IMinecraft.mc.player!!.pos) }
+            .take(5)
+            .toMutableList()
 
         if (boxEntities.isNotEmpty()) {
             GL11.glEnable(GL11.GL_BLEND)

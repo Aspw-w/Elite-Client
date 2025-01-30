@@ -15,7 +15,10 @@ import imgui.ImGui;
 import imgui.flag.ImGuiInputTextFlags;
 import imgui.type.ImInt;
 import imgui.type.ImString;
+import net.minecraft.client.network.AbstractClientPlayerEntity;
+import net.minecraft.client.network.PlayerListEntry;
 import net.minecraft.client.util.InputUtil;
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.network.packet.c2s.play.PlayerMoveC2SPacket;
 import org.lwjgl.glfw.GLFW;
 import xyz.breadloaf.imguimc.interfaces.Renderable;
@@ -336,6 +339,34 @@ public class ModuleRenderable implements Renderable {
                                 if (IMinecraft.mc.world != null)
                                     IMinecraft.mc.world.disconnect();
                             }
+
+                            ImGui.text("Player List");
+                            ImGui.beginChild("PlayerList", 0, 500, true);
+
+                            if (IMinecraft.mc.world != null && IMinecraft.mc.getNetworkHandler() != null) {
+                                List<AbstractClientPlayerEntity> sortedPlayerEntities = IMinecraft.mc.world.getPlayers().stream().sorted(Comparator.comparing(playerEntity -> playerEntity.getName().getString(), String.CASE_INSENSITIVE_ORDER)).toList();
+                                for (AbstractClientPlayerEntity playerEntity : sortedPlayerEntities) {
+                                    PlayerListEntry entry = IMinecraft.mc.getNetworkHandler().getPlayerListEntry(playerEntity.getUuid());
+                                    String showString = entry != null ? "Name: " + playerEntity.getName().getString() + ", Ping: " + entry.getLatency() : "Name: " + playerEntity.getName().getString() + ", Ping: null";
+                                    if (ImGui.collapsingHeader(showString)) {
+                                        ImGui.separator();
+                                        ImGui.indent();
+
+                                        if (ImGui.button("Kill##"))
+                                            IMinecraft.mc.getNetworkHandler().sendChatCommand("kill " + playerEntity.getName().getString());
+                                        if (ImGui.button("Teleport##"))
+                                            IMinecraft.mc.getNetworkHandler().sendChatCommand("tp " + playerEntity.getName().getString());
+                                        if (ImGui.button("Crash##"))
+                                            IMinecraft.mc.getNetworkHandler().sendChatCommand("execute at " + playerEntity.getName().getString() + " run particle minecraft:explosion ~ ~ ~ 0.1 0.1 0.1 0.01 100000000 force");
+
+                                        ImGui.unindent();
+                                        ImGui.separator();
+                                        ImGui.spacing();
+                                    }
+                                }
+                            }
+
+                            ImGui.endChild();
                         } finally {
                             ImGui.endTabItem();
                         }
