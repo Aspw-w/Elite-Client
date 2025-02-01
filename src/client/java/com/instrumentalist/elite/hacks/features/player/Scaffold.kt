@@ -252,7 +252,7 @@ class Scaffold : Module("Scaffold", ModuleCategory.Player, GLFW.GLFW_KEY_UNKNOWN
         if (noSprint.get())
             IMinecraft.mc.player!!.isSprinting = false
 
-        if (MovementUtil.isDiagonal(40f) && (rotationMode.get().equals("hypixel", true) || rotationMode.get().equals("math", true) && hypixelMode.get()))
+        if (MovementUtil.isDiagonal(39f) && (rotationMode.get().equals("hypixel", true) || rotationMode.get().equals("math", true) && hypixelMode.get()))
             MovementUtil.strafe(0.03f)
 
         if (!jumped && (rotationMode.get().equals("math", true) && hypixelMode.get() || rotationMode.get().equals("hypixel", true))) {
