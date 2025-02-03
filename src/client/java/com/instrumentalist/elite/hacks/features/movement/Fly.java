@@ -29,7 +29,7 @@ public class Fly extends Module {
     @Setting
     private static final ListValue flyMode = new ListValue(
             "Fly Mode",
-            Arrays.asList("Vanilla", "Creative", "Cubecraft", "Miniblox", "Verus 1.8", "Verus JetPack", "Float").toArray(new String[0]),
+            Arrays.asList("Vanilla", "Creative", "Hypixel Prediction", "Cubecraft", "Miniblox", "Verus 1.8", "Verus JetPack", "Float").toArray(new String[0]),
             "Vanilla"
     );
 

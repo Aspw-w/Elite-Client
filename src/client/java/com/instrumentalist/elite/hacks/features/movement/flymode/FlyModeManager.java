@@ -25,6 +25,9 @@ public class FlyModeManager {
             case "creative":
                 currentMode = new CreativeFly();
                 break;
+            case "hypixel prediction":
+                currentMode = new HypixelPredictionFly();
+                break;
             case "cubecraft":
                 currentMode = new CubecraftFly();
                 break;

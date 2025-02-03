@@ -89,6 +89,9 @@ public class Interface extends Module {
     public void onRenderHud(RenderHudEvent event) {
         if (IMinecraft.mc.player == null || IMinecraft.mc.world == null) return;
 
+        float bgOpacity = IMinecraft.mc.options.getTextBackgroundOpacity(0.3F);
+        int bgColor = (int)(bgOpacity * 255F) << 24;
+
         if (cachedTextRenderer == null)
             cachedTextRenderer = event.textRenderer;
 
@@ -102,34 +105,34 @@ public class Interface extends Module {
         float infoY = 4f;
 
         if (waterMark.get()) {
-            cachedTextRenderer.draw(Text.of("§f" + waterMarkText.get() + " (§c" + formattedNow + "§f)"), 4f, infoY, Color.WHITE.getRGB(), fontShadow.get(), matrix4f, vertexConsumerProvider, TextRenderer.TextLayerType.SEE_THROUGH, 0, 0);
+            cachedTextRenderer.draw(Text.of("§f" + waterMarkText.get() + " (§c" + formattedNow + "§f)"), 4f, infoY, Color.WHITE.getRGB(), fontShadow.get(), matrix4f, vertexConsumerProvider, TextRenderer.TextLayerType.SEE_THROUGH, bgColor, 0);
             infoY += 10f;
         }
 
         if (information.get()) {
-            cachedTextRenderer.draw(Text.of("§f[§cFPS§f]§7: " + IMinecraft.mc.getCurrentFps()), 4f, infoY, Color.WHITE.getRGB(), fontShadow.get(), matrix4f, vertexConsumerProvider, TextRenderer.TextLayerType.SEE_THROUGH, 0, 0);
+            cachedTextRenderer.draw(Text.of("§f[§cFPS§f]§7: " + IMinecraft.mc.getCurrentFps()), 4f, infoY, Color.WHITE.getRGB(), fontShadow.get(), matrix4f, vertexConsumerProvider, TextRenderer.TextLayerType.SEE_THROUGH, bgColor, 0);
             infoY += 10f;
 
-            cachedTextRenderer.draw(Text.of("§f[§cBPS§f]§7: " + ModuleManager.bps), 4f, infoY, Color.WHITE.getRGB(), fontShadow.get(), matrix4f, vertexConsumerProvider, TextRenderer.TextLayerType.SEE_THROUGH, 0, 0);
+            cachedTextRenderer.draw(Text.of("§f[§cBPS§f]§7: " + ModuleManager.bps), 4f, infoY, Color.WHITE.getRGB(), fontShadow.get(), matrix4f, vertexConsumerProvider, TextRenderer.TextLayerType.SEE_THROUGH, bgColor, 0);
             infoY += 10f;
 
-            cachedTextRenderer.draw(Text.of("§f[§cServer§f]§7: " + IMinecraft.mc.player.networkHandler.getBrand()), 4f, infoY, Color.WHITE.getRGB(), fontShadow.get(), matrix4f, vertexConsumerProvider, TextRenderer.TextLayerType.SEE_THROUGH, 0, 0);
+            cachedTextRenderer.draw(Text.of("§f[§cServer§f]§7: " + IMinecraft.mc.player.networkHandler.getBrand()), 4f, infoY, Color.WHITE.getRGB(), fontShadow.get(), matrix4f, vertexConsumerProvider, TextRenderer.TextLayerType.SEE_THROUGH, bgColor, 0);
             infoY += 10f;
 
             if (IMinecraft.mc.player.networkHandler.getServerInfo() != null) {
-                cachedTextRenderer.draw(Text.of("§f[§cVersion§f]§7: " + IMinecraft.mc.player.networkHandler.getServerInfo().version.getString()), 4f, infoY, Color.WHITE.getRGB(), fontShadow.get(), matrix4f, vertexConsumerProvider, TextRenderer.TextLayerType.SEE_THROUGH, 0, 0);
+                cachedTextRenderer.draw(Text.of("§f[§cVersion§f]§7: " + IMinecraft.mc.player.networkHandler.getServerInfo().version.getString()), 4f, infoY, Color.WHITE.getRGB(), fontShadow.get(), matrix4f, vertexConsumerProvider, TextRenderer.TextLayerType.SEE_THROUGH, bgColor, 0);
                 infoY += 10f;
 
-                cachedTextRenderer.draw(Text.of("§f[§cPing§f]§7: " + IMinecraft.mc.player.networkHandler.getServerInfo().ping), 4f, infoY, Color.WHITE.getRGB(), fontShadow.get(), matrix4f, vertexConsumerProvider, TextRenderer.TextLayerType.SEE_THROUGH, 0, 0);
+                cachedTextRenderer.draw(Text.of("§f[§cPing§f]§7: " + IMinecraft.mc.player.networkHandler.getServerInfo().ping), 4f, infoY, Color.WHITE.getRGB(), fontShadow.get(), matrix4f, vertexConsumerProvider, TextRenderer.TextLayerType.SEE_THROUGH, bgColor, 0);
             } else {
-                cachedTextRenderer.draw(Text.of("§f[§cVersion§f]§7: null"), 4f, infoY, Color.WHITE.getRGB(), fontShadow.get(), matrix4f, vertexConsumerProvider, TextRenderer.TextLayerType.SEE_THROUGH, 0, 0);
+                cachedTextRenderer.draw(Text.of("§f[§cVersion§f]§7: null"), 4f, infoY, Color.WHITE.getRGB(), fontShadow.get(), matrix4f, vertexConsumerProvider, TextRenderer.TextLayerType.SEE_THROUGH, bgColor, 0);
                 infoY += 10f;
 
-                cachedTextRenderer.draw(Text.of("§f[§cPing§f]§7: null"), 4f, infoY, Color.WHITE.getRGB(), fontShadow.get(), matrix4f, vertexConsumerProvider, TextRenderer.TextLayerType.SEE_THROUGH, 0, 0);
+                cachedTextRenderer.draw(Text.of("§f[§cPing§f]§7: null"), 4f, infoY, Color.WHITE.getRGB(), fontShadow.get(), matrix4f, vertexConsumerProvider, TextRenderer.TextLayerType.SEE_THROUGH, bgColor, 0);
             }
             infoY += 10f;
 
-            cachedTextRenderer.draw(Text.of("§f[§cPlayers§f]§7: " + IMinecraft.mc.player.networkHandler.getCommandSource().getPlayerNames().size()), 4f, infoY, Color.WHITE.getRGB(), fontShadow.get(), matrix4f, vertexConsumerProvider, TextRenderer.TextLayerType.SEE_THROUGH, 0, 0);
+            cachedTextRenderer.draw(Text.of("§f[§cPlayers§f]§7: " + IMinecraft.mc.player.networkHandler.getCommandSource().getPlayerNames().size()), 4f, infoY, Color.WHITE.getRGB(), fontShadow.get(), matrix4f, vertexConsumerProvider, TextRenderer.TextLayerType.SEE_THROUGH, bgColor, 0);
 
             if (ModuleManager.getModuleState(new Scaffold())) {
                 String scaffoldText = Scaffold.Companion.getHotbarStackSize() + " Blocks";
@@ -186,7 +189,7 @@ public class Interface extends Module {
             }
 
             if (ModuleManager.getModuleState(new Breaker()) && Breaker.Companion.getWasBreaking() || ModuleManager.getModuleState(new CivBreak()) && CivBreak.Companion.getWasBreaking() || ModuleManager.getModuleState(new Nuker()) && Nuker.Companion.getWasBreaking()) {
-                String breakingText = "Breaking...";
+                String breakingText = "Breaking... " + IMinecraft.mc.interactionManager.getBlockBreakingProgress();
 
                 String[] breakingStrings = breakingText.split("");
 
@@ -287,9 +290,6 @@ public class Interface extends Module {
 
                     if (module.tag() != null)
                         text += "§7 " + module.tag();
-
-                    float bgOpacity = IMinecraft.mc.options.getTextBackgroundOpacity(0.3F);
-                    int bgColor = (int)(bgOpacity * 255F) << 24;
 
                     cachedTextRenderer.draw(Text.of(text), IMinecraft.mc.getWindow().getScaledWidth() - 4f - cachedTextRenderer.getWidth(Text.of(text)), listY, new Color(color.getRed(), color.getGreen(), color.getBlue(), alpha).getRGB(), fontShadow.get(), matrix4f, vertexConsumerProvider, TextRenderer.TextLayerType.SEE_THROUGH, bgColor, 0);
 

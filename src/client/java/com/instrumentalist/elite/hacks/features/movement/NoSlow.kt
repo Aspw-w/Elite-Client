@@ -20,6 +20,7 @@ import net.minecraft.item.BowItem
 import net.minecraft.item.Items
 import net.minecraft.item.PotionItem
 import net.minecraft.item.SwordItem
+import net.minecraft.item.consume.UseAction
 import net.minecraft.network.packet.c2s.play.PlayerInteractBlockC2SPacket
 import net.minecraft.network.packet.c2s.play.PlayerInteractItemC2SPacket
 import net.minecraft.util.Hand
@@ -35,9 +36,10 @@ class NoSlow : Module("No Slow", ModuleCategory.Movement, GLFW.GLFW_KEY_UNKNOWN,
 
         fun noSlowHook(): Boolean {
             if (ModuleManager.getModuleState(NoSlow())) {
+                val nonSneakFast = IMinecraft.mc.player!!.activeItem.useAction == UseAction.SPYGLASS || IMinecraft.mc.player!!.activeItem.useAction == UseAction.TOOT_HORN || IMinecraft.mc.player!!.activeItem.useAction == UseAction.BUNDLE || IMinecraft.mc.player!!.activeItem.useAction == UseAction.DRINK || IMinecraft.mc.player!!.activeItem.useAction == UseAction.BRUSH || IMinecraft.mc.player!!.activeItem.useAction == UseAction.BLOCK || IMinecraft.mc.player!!.activeItem.useAction == UseAction.EAT || IMinecraft.mc.player!!.activeItem.useAction == UseAction.CROSSBOW || IMinecraft.mc.player!!.activeItem.useAction == UseAction.SPEAR || IMinecraft.mc.player!!.activeItem.useAction == UseAction.BOW
                 when (mode.get().lowercase()) {
-                    "vanilla" -> return sneak.get() || !IMinecraft.mc.player!!.isSneaking
-                    "hypixel" -> return IMinecraft.mc.player!!.mainHandStack.item !is SwordItem && !IMinecraft.mc.player!!.isSneaking
+                    "vanilla" -> return sneak.get() && IMinecraft.mc.player!!.isSneaking || nonSneakFast
+                    "hypixel" -> return IMinecraft.mc.player!!.mainHandStack.item !is SwordItem && !IMinecraft.mc.player!!.isSneaking && nonSneakFast
                 }
             }
 
