@@ -43,7 +43,7 @@ public abstract class EntityRendererMixin<T extends Entity, S extends EntityRend
 
     @Inject(at = @At("HEAD"), method = "render", cancellable = true)
     public void render(S state, MatrixStack matrices, VertexConsumerProvider vertexConsumers, int light, CallbackInfo ci) {
-        if (ModuleManager.getModuleState(new NameTags()) && IMinecraft.mc.player != null && IMinecraft.mc.player.age >= 50) {
+        if (ModuleManager.getModuleState(new NameTags())) {
             ci.cancel();
 
             EntityRenderState.LeashData leashData = state.leashData;
