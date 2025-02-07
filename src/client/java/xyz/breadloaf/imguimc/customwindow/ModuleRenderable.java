@@ -377,7 +377,7 @@ public class ModuleRenderable implements Renderable {
                             isCommandTab = false;
                             commandTabJustOpened = false;
 
-                            ImGui.text("Made by Aspw");
+                            ImGui.text("Made by Aspw and Noah");
                             ImGui.text("YouTube: https://www.youtube.com/@Hadveen");
                             ImGui.text("GitHub: https://github.com/Aspw-w");
                             ImGui.text("Discord: https://discord.gg/y8ZDqRxSCy");
