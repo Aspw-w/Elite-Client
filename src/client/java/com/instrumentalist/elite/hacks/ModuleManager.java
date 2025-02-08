@@ -111,6 +111,7 @@ public class ModuleManager implements EventListener {
         modules.add(new NameTags());
         modules.add(new NoJumpCooldown());
         modules.add(new BlockESP());
+        modules.add(new NoEffectsHud());
 
         // Not shown for click gui (category is NULL)
         modules.add(new PluginsDetector());
