@@ -16,6 +16,7 @@ import imgui.flag.ImGuiInputTextFlags;
 import imgui.type.ImInt;
 import imgui.type.ImString;
 import net.minecraft.client.network.AbstractClientPlayerEntity;
+import net.minecraft.client.network.ClientPlayerEntity;
 import net.minecraft.client.network.PlayerListEntry;
 import net.minecraft.client.util.InputUtil;
 import net.minecraft.entity.player.PlayerEntity;
@@ -347,7 +348,7 @@ public class ModuleRenderable implements Renderable {
                                 List<AbstractClientPlayerEntity> sortedPlayerEntities = IMinecraft.mc.world.getPlayers().stream().sorted(Comparator.comparing(playerEntity -> playerEntity.getName().getString(), String.CASE_INSENSITIVE_ORDER)).toList();
                                 for (AbstractClientPlayerEntity playerEntity : sortedPlayerEntities) {
                                     PlayerListEntry entry = IMinecraft.mc.getNetworkHandler().getPlayerListEntry(playerEntity.getUuid());
-                                    String showString = entry != null ? "Name: " + playerEntity.getName().getString() + ", Ping: " + entry.getLatency() : "Name: " + playerEntity.getName().getString() + ", Ping: null";
+                                    String showString = entry != null && playerEntity instanceof ClientPlayerEntity ? "[You] Name: " + playerEntity.getName().getString() + ", Ping: " + entry.getLatency() : entry != null ? "Name: " + playerEntity.getName().getString() + ", Ping: " + entry.getLatency() : "Name: " + playerEntity.getName().getString() + ", Ping: null";
                                     if (ImGui.collapsingHeader(showString)) {
                                         ImGui.separator();
                                         ImGui.indent();
