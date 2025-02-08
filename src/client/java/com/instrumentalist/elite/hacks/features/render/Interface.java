@@ -35,20 +35,20 @@ public class Interface extends Module {
 
     @Setting
     private final BooleanValue waterMark = new BooleanValue(
-            "Water Mark",
+            "Watermark",
             true
     );
 
     @Setting
     private final TextValue waterMarkText = new TextValue(
-            "Water Mark Text",
+            "Clientname",
             "Elite",
             waterMark::get
     );
 
     @Setting
     private final BooleanValue information = new BooleanValue(
-            "Information",
+            "Extra Info",
             true
     );
 
@@ -60,7 +60,7 @@ public class Interface extends Module {
 
     @Setting
     private final BooleanValue fontShadow = new BooleanValue(
-            "Font Shadow",
+            "Text Shadow",
             true,
             () -> waterMark.get() || information.get() || moduleList.get()
     );
