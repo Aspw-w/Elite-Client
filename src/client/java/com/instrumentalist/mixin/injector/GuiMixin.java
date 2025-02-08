@@ -15,7 +15,7 @@ public class GuiMixin {
     @Inject(method = "renderStatusEffectOverlay", at = @At("HEAD"), cancellable = true)
     private void disableStatusEffectOverlay(DrawContext context, RenderTickCounter tickCounter, CallbackInfo ci) {
         if (NoEffectsHud.isEnabled()) {
-            ci.cancel(); // Cancels the rendering of status effects when the module is active
+            ci.cancel();
         }
     }
 }

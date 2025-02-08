@@ -13,15 +13,12 @@ public class NoEffectsHud extends Module {
 
     @Override
     public void onEnable() {
-        // Placeholder, add logic for when the module is enabled if necessary
     }
 
     @Override
     public void onDisable() {
-        // Placeholder, add logic for when the module is disabled if necessary
     }
 
-    // Utility method to get module state
     public static boolean isEnabled() {
         return ModuleManager.getModuleState(new NoEffectsHud());
     }
