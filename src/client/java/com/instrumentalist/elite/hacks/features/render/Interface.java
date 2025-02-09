@@ -40,14 +40,14 @@ public class Interface extends Module {
     );
 
     @Setting
-    private final TextValue waterMarkText = new TextValue(
-            "Clientname",
+    private final TextValue clientName = new TextValue(
+            "Client Name",
             "Elite",
             waterMark::get
     );
 
     @Setting
-    private final BooleanValue information = new BooleanValue(
+    private final BooleanValue extraInfo = new BooleanValue(
             "Extra Info",
             true
     );
@@ -62,7 +62,7 @@ public class Interface extends Module {
     private final BooleanValue fontShadow = new BooleanValue(
             "Text Shadow",
             true,
-            () -> waterMark.get() || information.get() || moduleList.get()
+            () -> waterMark.get() || extraInfo.get() || moduleList.get()
     );
 
     public static TextRenderer cachedTextRenderer = null;
@@ -105,11 +105,11 @@ public class Interface extends Module {
         float infoY = 4f;
 
         if (waterMark.get()) {
-            cachedTextRenderer.draw(Text.of("§f" + waterMarkText.get() + " (§c" + formattedNow + "§f)"), 4f, infoY, Color.WHITE.getRGB(), fontShadow.get(), matrix4f, vertexConsumerProvider, TextRenderer.TextLayerType.SEE_THROUGH, bgColor, 0);
+            cachedTextRenderer.draw(Text.of("§f" + clientName.get() + " (§c" + formattedNow + "§f)"), 4f, infoY, Color.WHITE.getRGB(), fontShadow.get(), matrix4f, vertexConsumerProvider, TextRenderer.TextLayerType.SEE_THROUGH, bgColor, 0);
             infoY += 10f;
         }
 
-        if (information.get()) {
+        if (extraInfo.get()) {
             cachedTextRenderer.draw(Text.of("§f[§cFPS§f]§7: " + IMinecraft.mc.getCurrentFps()), 4f, infoY, Color.WHITE.getRGB(), fontShadow.get(), matrix4f, vertexConsumerProvider, TextRenderer.TextLayerType.SEE_THROUGH, bgColor, 0);
             infoY += 10f;
 
@@ -188,7 +188,7 @@ public class Interface extends Module {
                 }
             }
 
-            if (ModuleManager.getModuleState(new Breaker()) && Breaker.Companion.getWasBreaking() || ModuleManager.getModuleState(new CivBreak()) && CivBreak.Companion.getWasBreaking() || ModuleManager.getModuleState(new Nuker()) && Nuker.Companion.getWasBreaking()) {
+            if (IMinecraft.mc.interactionManager != null && (ModuleManager.getModuleState(new Breaker()) && Breaker.Companion.getWasBreaking() || ModuleManager.getModuleState(new CivBreak()) && CivBreak.Companion.getWasBreaking() || ModuleManager.getModuleState(new Nuker()) && Nuker.Companion.getWasBreaking())) {
                 String breakingText = "Breaking... " + IMinecraft.mc.interactionManager.getBlockBreakingProgress();
 
                 String[] breakingStrings = breakingText.split("");
