@@ -75,7 +75,6 @@ public class ModuleManager implements EventListener {
         modules.add(new Sprint());
         modules.add(new ESP());
         modules.add(new LightningDetector());
-        modules.add(new TargetESP());
         modules.add(new CameraNoClip());
         modules.add(new LowFireOverlay());
         modules.add(new Breaker());
@@ -90,7 +89,7 @@ public class ModuleManager implements EventListener {
         modules.add(new FullBright());
         modules.add(new TargetStrafe());
         modules.add(new Disabler());
-        modules.add(new LegacyCombat());
+        modules.add(new Animations());
         modules.add(new Freecam());
         modules.add(new Cape());
         modules.add(new Predicter());
@@ -111,11 +110,11 @@ public class ModuleManager implements EventListener {
         modules.add(new NoJumpCooldown());
         modules.add(new BlockESP());
         modules.add(new HudPoser());
-
-        // Not shown for click gui (category is NULL)
+        modules.add(new TimeChanger());
         modules.add(new PluginsDetector());
 
-        // Sort with alphabet
+        modules.add(new Scoreboard());
+
         modules.sort(Comparator.comparing(module -> module.moduleName));
 
         Client.eventManager.register(new ModuleManager());
@@ -130,8 +129,10 @@ public class ModuleManager implements EventListener {
     }
 
     public static boolean getModuleState(Module module) {
-        for (Module i : modules) {
-            if (Objects.equals(i.moduleName, module.moduleName)) return i.tempEnabled;
+        for (Module m : modules) {
+            if (m.getClass().equals(module.getClass())) {
+                return m.tempEnabled;
+            }
         }
         return false;
     }
