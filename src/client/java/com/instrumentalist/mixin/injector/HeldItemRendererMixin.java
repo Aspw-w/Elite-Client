@@ -2,8 +2,9 @@ package com.instrumentalist.mixin.injector;
 
 import com.instrumentalist.elite.hacks.ModuleManager;
 import com.instrumentalist.elite.hacks.features.player.Scaffold;
+import com.instrumentalist.elite.hacks.features.render.Animations;
 import com.instrumentalist.elite.hacks.features.render.ItemView;
-import com.instrumentalist.elite.hacks.features.render.LegacyCombat;
+import com.instrumentalist.elite.hacks.features.render.Animations;
 import com.instrumentalist.elite.utils.ChatUtil;
 import com.instrumentalist.elite.utils.IMinecraft;
 import net.minecraft.client.MinecraftClient;
@@ -50,12 +51,19 @@ public abstract class HeldItemRendererMixin {
 
     @Shadow protected abstract void renderArmHoldingItem(MatrixStack matrices, VertexConsumerProvider vertexConsumers, int light, float equipProgress, float swingProgress, Arm arm);
 
+    private static void applyBlockTransformation(final MatrixStack matrices) {
+        matrices.translate(-0.15F, 0.16F, 0.15F);
+        matrices.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(-18.0F));
+        matrices.multiply(RotationAxis.POSITIVE_Z.rotationDegrees(82.0F));
+        matrices.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(112.0F));
+    }
+
     @Inject(method = "renderFirstPersonItem", at = @At("HEAD"), cancellable = true)
     private void itemRendererHook(AbstractClientPlayerEntity player, float tickDelta, float pitch, Hand hand, float swingProgress, ItemStack item, float equipProgress, MatrixStack matrices, VertexConsumerProvider vertexConsumers, int light, CallbackInfo ci) {
         if (ModuleManager.getModuleState(new ItemView()) && ItemView.Companion.getLowOffHand().get() && hand == Hand.OFF_HAND)
             matrices.translate(0f, -0.16f, 0f);
 
-        if (LegacyCombat.Companion.shouldBlock()) {
+        if (Animations.Companion.shouldBlock()) {
             if (hand == Hand.MAIN_HAND) {
                 ci.cancel();
 
@@ -63,7 +71,7 @@ public abstract class HeldItemRendererMixin {
 
                 Arm arm = player.getMainArm();
 
-                switch (LegacyCombat.Companion.getMode().get().toLowerCase(Locale.ROOT)) {
+                switch (Animations.Companion.getMode().get().toLowerCase(Locale.ROOT)) {
                     case "old":
                         matrices.translate(-0.05f, 0f, 0f);
 
@@ -95,6 +103,42 @@ public abstract class HeldItemRendererMixin {
                         matrices.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(77f));
                         matrices.multiply(RotationAxis.POSITIVE_Z.rotationDegrees(-10f));
                         matrices.multiply(RotationAxis.POSITIVE_X.rotationDegrees(-80f));
+                        break;
+                    case "slide":
+                        matrices.translate(-0.05f, 0.08f, 0f);
+
+                        this.applyEquipOffset(matrices, arm, equipProgress / 1.42f);
+                        this.applySwingOffset(matrices, arm, swingProgress);
+                        final float var111 = MathHelper.sin(MathHelper.sqrt(swingProgress) * (float) Math.PI);
+                        matrices.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(-var111 * -30f));
+                        matrices.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(77f));
+                        matrices.multiply(RotationAxis.POSITIVE_Z.rotationDegrees(-10f));
+                        matrices.multiply(RotationAxis.POSITIVE_X.rotationDegrees(-80f));
+                        break;
+                    case "swank":
+                        matrices.translate(-0.05f, 0.08f, 0f);
+
+                        this.applyEquipOffset(matrices, arm, MathHelper.sin(equipProgress / 1.42f * (float) Math.PI / 2f));
+
+                        this.applySwingOffset(matrices, arm, swingProgress);
+
+                        float swingFactor = MathHelper.sin(MathHelper.sqrt(swingProgress) * (float) Math.PI);
+                        float swingExaggeration = swingFactor * 1.5f;
+
+                        matrices.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(-swingExaggeration * -30f));
+                        matrices.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(77f + swingExaggeration * 10f));
+                        matrices.multiply(RotationAxis.POSITIVE_Z.rotationDegrees(-10f + swingExaggeration * 5f));
+                        matrices.multiply(RotationAxis.POSITIVE_X.rotationDegrees(-80f + swingExaggeration * 15f));
+
+                        if (swingProgress > 0.8f) {
+                            float bounce = MathHelper.sin((swingProgress - 0.8f) * 5f * (float) Math.PI) * 0.1f;
+                            matrices.translate(0f, bounce, 0f);
+                        }
+
+                        if (swingProgress > 0.9f) {
+                            float spin = MathHelper.sin((swingProgress - 0.9f) * 10f * (float) Math.PI) * 45f;
+                            matrices.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(spin));
+                        }
                         break;
                 }
 
@@ -147,8 +191,8 @@ public abstract class HeldItemRendererMixin {
 
     @Inject(method = "updateHeldItems", at = @At("HEAD"), cancellable = true)
     public void itemSpoofHook(CallbackInfo ci) {
-        if (LegacyCombat.Companion.shouldBlock()) {
-            if (LegacyCombat.Companion.getMode().get().equalsIgnoreCase("astra")) {
+        if (Animations.Companion.shouldBlock()) {
+            if (Animations.Companion.getMode().get().equalsIgnoreCase("astra")) {
                 ci.cancel();
 
                 this.prevEquipProgressMainHand = this.equipProgressMainHand;

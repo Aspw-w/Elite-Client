@@ -1,8 +1,6 @@
 package com.instrumentalist.mixin.injector;
 
-import com.instrumentalist.elite.hacks.features.render.LegacyCombat;
-import com.instrumentalist.elite.utils.math.Interpolation;
-import com.instrumentalist.elite.utils.rotation.RotationUtil;
+import com.instrumentalist.elite.hacks.features.render.Animations;
 import com.instrumentalist.mixin.oringo.IEntityRenderState;
 import net.minecraft.client.model.ModelPart;
 import net.minecraft.client.network.ClientPlayerEntity;
@@ -16,7 +14,6 @@ import net.minecraft.util.math.MathHelper;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
-import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
@@ -67,7 +64,7 @@ public abstract class BipedEntityModelMixin<T extends BipedEntityRenderState> ex
             float g = bipedEntityRenderState.limbFrequency;
             float h = bipedEntityRenderState.limbAmplitudeMultiplier;
 
-            if (LegacyCombat.Companion.shouldBlock()) {
+            if (Animations.Companion.shouldBlock()) {
                 this.rightArm.pitch = this.rightArm.pitch * 0.5F - 0.9424779F;
                 this.rightArm.yaw = -0.5F;
                 this.rightArm.roll = 0.1F;
@@ -94,7 +91,7 @@ public abstract class BipedEntityModelMixin<T extends BipedEntityRenderState> ex
                 this.leftLeg.roll = -0.07853982F;
             }
 
-            if (!LegacyCombat.Companion.shouldBlock()) {
+            if (!Animations.Companion.shouldBlock()) {
                 boolean bl2 = bipedEntityRenderState.mainArm == Arm.RIGHT;
                 boolean bl3;
                 if (bipedEntityRenderState.isUsingItem) {

@@ -5,7 +5,6 @@ import com.instrumentalist.elite.hacks.ModuleCategory
 import com.instrumentalist.elite.hacks.ModuleManager
 import com.instrumentalist.elite.hacks.features.combat.KillAura
 import com.instrumentalist.elite.utils.IMinecraft
-import com.instrumentalist.elite.utils.value.FloatValue
 import com.instrumentalist.elite.utils.value.ListValue
 import net.minecraft.block.*
 import net.minecraft.item.SwordItem
@@ -13,10 +12,10 @@ import net.minecraft.util.hit.BlockHitResult
 import net.minecraft.util.hit.HitResult
 import org.lwjgl.glfw.GLFW
 
-class LegacyCombat : Module("Legacy Combat", ModuleCategory.Render, GLFW.GLFW_KEY_UNKNOWN, true, true) {
+class Animations : Module("Animations", ModuleCategory.Render, GLFW.GLFW_KEY_UNKNOWN, true, true) {
     companion object {
         @Setting
-        val mode = ListValue("Mode", arrayOf("Old", "Astra"), "Old")
+        val mode = ListValue("Mode", arrayOf("Old", "Astra", "Slide", "Swank"), "Swank")
 
         fun shouldBlock(): Boolean {
             val hitResult = IMinecraft.mc.player!!.raycast(5.0, 0.0f, false)
@@ -27,7 +26,7 @@ class LegacyCombat : Module("Legacy Combat", ModuleCategory.Render, GLFW.GLFW_KE
                     return false
             }
 
-            return IMinecraft.mc.player != null && IMinecraft.mc.world != null && ModuleManager.getModuleState(LegacyCombat()) && IMinecraft.mc.player!!.mainHandStack.item is SwordItem && (IMinecraft.mc.options.useKey.isPressed || ModuleManager.getModuleState(KillAura()) && KillAura.isBlocking)
+            return IMinecraft.mc.player != null && IMinecraft.mc.world != null && ModuleManager.getModuleState(Animations()) && IMinecraft.mc.player!!.mainHandStack.item is SwordItem && (IMinecraft.mc.options.useKey.isPressed || ModuleManager.getModuleState(KillAura()) && KillAura.isBlocking)
         }
     }
 
