@@ -116,29 +116,16 @@ public abstract class HeldItemRendererMixin {
                         matrices.multiply(RotationAxis.POSITIVE_X.rotationDegrees(-80f));
                         break;
                     case "swank":
-                        matrices.translate(-0.05f, 0.08f, 0f);
+                        matrices.translate(-0.05f, 0.15f, 0f);
 
-                        this.applyEquipOffset(matrices, arm, MathHelper.sin(equipProgress / 1.42f * (float) Math.PI / 2f));
-
+                        this.applyEquipOffset(matrices, arm, equipProgress / 1.42f);
                         this.applySwingOffset(matrices, arm, swingProgress);
 
-                        float swingFactor = MathHelper.sin(MathHelper.sqrt(swingProgress) * (float) Math.PI);
-                        float swingExaggeration = swingFactor * 1.5f;
-
-                        matrices.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(-swingExaggeration * -30f));
-                        matrices.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(77f + swingExaggeration * 10f));
-                        matrices.multiply(RotationAxis.POSITIVE_Z.rotationDegrees(-10f + swingExaggeration * 5f));
-                        matrices.multiply(RotationAxis.POSITIVE_X.rotationDegrees(-80f + swingExaggeration * 15f));
-
-                        if (swingProgress > 0.8f) {
-                            float bounce = MathHelper.sin((swingProgress - 0.8f) * 5f * (float) Math.PI) * 0.1f;
-                            matrices.translate(0f, bounce, 0f);
-                        }
-
-                        if (swingProgress > 0.9f) {
-                            float spin = MathHelper.sin((swingProgress - 0.9f) * 10f * (float) Math.PI) * 45f;
-                            matrices.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(spin));
-                        }
+                        final float var69 = MathHelper.sin(MathHelper.sqrt(swingProgress));
+                        matrices.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(-var69 * -1f));
+                        matrices.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(77f));
+                        matrices.multiply(RotationAxis.POSITIVE_Z.rotationDegrees(-2f));
+                        matrices.multiply(RotationAxis.POSITIVE_X.rotationDegrees(-80f));
                         break;
                 }
 
