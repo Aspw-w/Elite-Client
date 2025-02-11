@@ -5,7 +5,7 @@
 ### Need more features?
 [Account Switcher Mod](https://github.com/The-Fireplace-Minecraft-Mods/In-Game-Account-Switcher)
 
-[Via Version Mod](https://github.com/ViaVersion/ViaFabricPlus)
+[Via Fabric Plus Mod](https://github.com/ViaVersion/ViaFabricPlus)
 
 ### Credits
 
