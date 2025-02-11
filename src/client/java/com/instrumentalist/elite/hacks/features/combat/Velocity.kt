@@ -35,19 +35,15 @@ class Velocity : Module("Velocity", ModuleCategory.Combat, GLFW.GLFW_KEY_UNKNOWN
 
         when (mode.get().lowercase(Locale.getDefault())) {
             "standard" -> {
-                if (packet is EntityVelocityUpdateS2CPacket && packet.entityId == IMinecraft.mc.player!!.id) {
+                if (packet is EntityVelocityUpdateS2CPacket && packet.entityId == IMinecraft.mc.player!!.id)
                     event.cancel()
-                }
             }
 
             "hypixel" -> {
                 if (!ModuleManager.getModuleState(Fly()) && packet is EntityVelocityUpdateS2CPacket && packet.entityId == IMinecraft.mc.player!!.id) {
                     event.cancel()
-                    IMinecraft.mc.player!!.setVelocity(
-                        IMinecraft.mc.player!!.velocity.x,
-                        packet.velocityY / 8000.0,
-                        IMinecraft.mc.player!!.velocity.z
-                    )
+                    if ((!ModuleManager.getModuleState(Speed()) || MovementUtil.fallTicks >= 4) && IMinecraft.mc.player!!.velocity.y >= 0 || IMinecraft.mc.player!!.isOnGround)
+                        MovementUtil.setVelocityY(packet.velocityY / 8000.0)
                 }
             }
         }

@@ -12,10 +12,10 @@ import net.minecraft.util.hit.BlockHitResult
 import net.minecraft.util.hit.HitResult
 import org.lwjgl.glfw.GLFW
 
-class Animations : Module("Animations", ModuleCategory.Render, GLFW.GLFW_KEY_UNKNOWN, true, true) {
+class LegacyCombat : Module("Legacy Combat", ModuleCategory.Render, GLFW.GLFW_KEY_UNKNOWN, true, true) {
     companion object {
         @Setting
-        val mode = ListValue("Mode", arrayOf("Old", "Astra", "Slide", "Swank"), "Swank")
+        val mode = ListValue("Mode", arrayOf("Old", "Astra", "Slide", "Swank"), "Old")
 
         fun shouldBlock(): Boolean {
             val hitResult = IMinecraft.mc.player!!.raycast(5.0, 0.0f, false)
@@ -26,7 +26,7 @@ class Animations : Module("Animations", ModuleCategory.Render, GLFW.GLFW_KEY_UNK
                     return false
             }
 
-            return IMinecraft.mc.player != null && IMinecraft.mc.world != null && ModuleManager.getModuleState(Animations()) && IMinecraft.mc.player!!.mainHandStack.item is SwordItem && (IMinecraft.mc.options.useKey.isPressed || ModuleManager.getModuleState(KillAura()) && KillAura.isBlocking)
+            return IMinecraft.mc.player != null && IMinecraft.mc.world != null && ModuleManager.getModuleState(LegacyCombat()) && IMinecraft.mc.player!!.mainHandStack.item is SwordItem && (IMinecraft.mc.options.useKey.isPressed || ModuleManager.getModuleState(KillAura()) && KillAura.isBlocking)
         }
     }
 

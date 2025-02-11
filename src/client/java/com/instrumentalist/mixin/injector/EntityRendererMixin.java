@@ -31,9 +31,6 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(EntityRenderer.class)
 public abstract class EntityRendererMixin<T extends Entity, S extends EntityRenderState> implements IEntityRenderState {
-    @Shadow
-    private static void renderLeash(MatrixStack matrices, VertexConsumerProvider vertexConsumers, EntityRenderState.LeashData leashData) {
-    }
 
     @Shadow protected abstract void renderLabelIfPresent(S state, Text text, MatrixStack matrices, VertexConsumerProvider vertexConsumers, int light);
 
@@ -45,10 +42,6 @@ public abstract class EntityRendererMixin<T extends Entity, S extends EntityRend
     public void render(S state, MatrixStack matrices, VertexConsumerProvider vertexConsumers, int light, CallbackInfo ci) {
         if (ModuleManager.getModuleState(new NameTags())) {
             ci.cancel();
-
-            EntityRenderState.LeashData leashData = state.leashData;
-            if (leashData != null)
-                renderLeash(matrices, vertexConsumers, leashData);
 
             Entity entity = ((IEntityRenderState) state).client$getEntity();
             Text renderText = state.displayName != null ? state.displayName : entity.getName();

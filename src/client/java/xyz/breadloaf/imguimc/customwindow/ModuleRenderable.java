@@ -580,6 +580,17 @@ public class ModuleRenderable implements Renderable {
                     intValue.set(currentInt[0]);
                 }
             }
+            case ColorValue colorValue -> {
+                float[] currentColor = {
+                        colorValue.value.getRed(),
+                        colorValue.value.getGreen(),
+                        colorValue.value.getBlue()
+                };
+                if (ImGui.colorPicker3(colorValue.name + "##" + moduleName, currentColor)) {
+                    Color newColor = new Color(currentColor[0], currentColor[1], currentColor[2]);
+                    colorValue.set(newColor);
+                }
+            }
             case KeyBindValue keyBindValue -> {
                 String shownKey;
                 ImString currentKey = new ImString(String.valueOf(keyBindValue.get()).toUpperCase(), 256);

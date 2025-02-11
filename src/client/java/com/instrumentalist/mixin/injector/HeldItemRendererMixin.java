@@ -2,10 +2,8 @@ package com.instrumentalist.mixin.injector;
 
 import com.instrumentalist.elite.hacks.ModuleManager;
 import com.instrumentalist.elite.hacks.features.player.Scaffold;
-import com.instrumentalist.elite.hacks.features.render.Animations;
+import com.instrumentalist.elite.hacks.features.render.LegacyCombat;
 import com.instrumentalist.elite.hacks.features.render.ItemView;
-import com.instrumentalist.elite.hacks.features.render.Animations;
-import com.instrumentalist.elite.utils.ChatUtil;
 import com.instrumentalist.elite.utils.IMinecraft;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.network.AbstractClientPlayerEntity;
@@ -17,14 +15,12 @@ import net.minecraft.entity.LivingEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.ModelTransformationMode;
 import net.minecraft.item.ShieldItem;
-import net.minecraft.item.consume.UseAction;
 import net.minecraft.util.Arm;
 import net.minecraft.util.Hand;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.RotationAxis;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
-import org.spongepowered.asm.mixin.Overwrite;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
@@ -63,7 +59,7 @@ public abstract class HeldItemRendererMixin {
         if (ModuleManager.getModuleState(new ItemView()) && ItemView.Companion.getLowOffHand().get() && hand == Hand.OFF_HAND)
             matrices.translate(0f, -0.16f, 0f);
 
-        if (Animations.Companion.shouldBlock()) {
+        if (LegacyCombat.Companion.shouldBlock()) {
             if (hand == Hand.MAIN_HAND) {
                 ci.cancel();
 
@@ -71,7 +67,7 @@ public abstract class HeldItemRendererMixin {
 
                 Arm arm = player.getMainArm();
 
-                switch (Animations.Companion.getMode().get().toLowerCase(Locale.ROOT)) {
+                switch (LegacyCombat.Companion.getMode().get().toLowerCase(Locale.ROOT)) {
                     case "old":
                         matrices.translate(-0.05f, 0f, 0f);
 
@@ -104,17 +100,21 @@ public abstract class HeldItemRendererMixin {
                         matrices.multiply(RotationAxis.POSITIVE_Z.rotationDegrees(-10f));
                         matrices.multiply(RotationAxis.POSITIVE_X.rotationDegrees(-80f));
                         break;
+
                     case "slide":
                         matrices.translate(-0.05f, 0.08f, 0f);
 
                         this.applyEquipOffset(matrices, arm, equipProgress / 1.42f);
                         this.applySwingOffset(matrices, arm, swingProgress);
+
                         final float var111 = MathHelper.sin(MathHelper.sqrt(swingProgress) * (float) Math.PI);
+
                         matrices.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(-var111 * -30f));
                         matrices.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(77f));
                         matrices.multiply(RotationAxis.POSITIVE_Z.rotationDegrees(-10f));
                         matrices.multiply(RotationAxis.POSITIVE_X.rotationDegrees(-80f));
                         break;
+
                     case "swank":
                         matrices.translate(-0.05f, 0.15f, 0f);
 
@@ -122,6 +122,7 @@ public abstract class HeldItemRendererMixin {
                         this.applySwingOffset(matrices, arm, swingProgress);
 
                         final float var69 = MathHelper.sin(MathHelper.sqrt(swingProgress));
+
                         matrices.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(-var69 * -1f));
                         matrices.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(77f));
                         matrices.multiply(RotationAxis.POSITIVE_Z.rotationDegrees(-2f));
@@ -178,8 +179,8 @@ public abstract class HeldItemRendererMixin {
 
     @Inject(method = "updateHeldItems", at = @At("HEAD"), cancellable = true)
     public void itemSpoofHook(CallbackInfo ci) {
-        if (Animations.Companion.shouldBlock()) {
-            if (Animations.Companion.getMode().get().equalsIgnoreCase("astra")) {
+        if (LegacyCombat.Companion.shouldBlock()) {
+            if (LegacyCombat.Companion.getMode().get().equalsIgnoreCase("astra")) {
                 ci.cancel();
 
                 this.prevEquipProgressMainHand = this.equipProgressMainHand;

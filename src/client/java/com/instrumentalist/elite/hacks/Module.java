@@ -22,9 +22,6 @@ public abstract class Module implements EventListener {
 
     public ConfigObject configObject = new ConfigObject(this);
 
-    public void onSettingChange() {
-    }
-
     @Target(ElementType.FIELD)
     @Retention(RetentionPolicy.RUNTIME)
     public @interface Setting {
