@@ -24,7 +24,7 @@ public class InventoryMove extends Module {
     private static final BooleanValue inventoryOnly = new BooleanValue("Inventory Only", false);
 
     public static void moveFreely() {
-        if (!ModuleRenderable.isCommandTab && (ModuleManager.getModuleState(new InventoryMove()) && IMinecraft.mc.currentScreen != null && (!inventoryOnly.get() || IMinecraft.mc.currentScreen instanceof InventoryScreen) && !(IMinecraft.mc.currentScreen instanceof ChatScreen) || IMinecraft.mc.currentScreen instanceof EmptyScreen)) {
+        if (ModuleManager.getModuleState(new InventoryMove()) && IMinecraft.mc.currentScreen != null && (!inventoryOnly.get() || IMinecraft.mc.currentScreen instanceof InventoryScreen) && !(IMinecraft.mc.currentScreen instanceof ChatScreen) || IMinecraft.mc.currentScreen instanceof EmptyScreen) {
             KeyBinding.updatePressedStates();
             KeyBinding sneakKey = IMinecraft.mc.options.sneakKey;
             sneakKey.setPressed(false);

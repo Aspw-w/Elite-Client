@@ -112,6 +112,7 @@ public class ModuleManager implements EventListener {
         modules.add(new HudPoser());
         modules.add(new TimeChanger());
         modules.add(new Scoreboard());
+        modules.add(new TargetESP());
 
         // Not shown for click gui (category is NULL)
         modules.add(new PluginsDetector());
@@ -143,8 +144,6 @@ public class ModuleManager implements EventListener {
         if (IMinecraft.mc.currentScreen instanceof EmptyScreen)
             IMinecraft.mc.setScreen(null);
         isDebugRendering = false;
-        ModuleRenderable.commandTabJustOpened = false;
-        ModuleRenderable.isCommandTab = false;
         transactionCounter = 0;
         gettingTransactions = false;
     }

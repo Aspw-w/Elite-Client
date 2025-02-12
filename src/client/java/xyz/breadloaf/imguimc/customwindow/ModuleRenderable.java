@@ -12,7 +12,7 @@ import com.instrumentalist.elite.utils.IMinecraft;
 import com.instrumentalist.elite.utils.packet.PacketUtil;
 import com.instrumentalist.elite.utils.value.*;
 import imgui.ImGui;
-import imgui.flag.ImGuiColorEditFlags;
+import imgui.flag.ImGuiCond;
 import imgui.flag.ImGuiInputTextFlags;
 import imgui.type.ImInt;
 import imgui.type.ImString;
@@ -42,8 +42,6 @@ public class ModuleRenderable implements Renderable {
 
     private static ImString searchQuery = new ImString(256);
     public static List<String> commandLogs = new ArrayList<>();
-    public static boolean commandTabJustOpened = false;
-    public static boolean isCommandTab = false;
     public static boolean startUpped = false;
 
     @Override
@@ -58,15 +56,13 @@ public class ModuleRenderable implements Renderable {
 
     @Override
     public void render() {
-        ImGui.begin("Elite Client");
+        if (!FileUtil.INSTANCE.isLatestClient()) {
+            try {
+                ImGui.begin("Updates Window", ImGuiCond.Always);
 
-        try {
-            if (!startUpped) {
-                ImGui.setWindowSize(1000f, 800f);
-                startUpped = true;
-            }
+                if (!startUpped)
+                    ImGui.setWindowSize(400f, 60f);
 
-            if (!FileUtil.INSTANCE.isLatestClient()) {
                 ImGui.text("Your client is OUTDATED! Please check network, updates");
 
                 if (Desktop.isDesktopSupported()) {
@@ -82,23 +78,26 @@ public class ModuleRenderable implements Renderable {
                 } else {
                     ImGui.text("Check updates (github.com/Aspw-w/Elite-Client/releases)");
                 }
-            } else {
-                ImGui.text("Hello, everyone!");
+            } finally {
+                ImGui.end();
+            }
+        }
+
+        try {
+            ImGui.begin("Modules Window", ImGuiCond.Always);
+
+            if (!startUpped) {
+                ImGui.setWindowSize(420f, 500f);
+                ImGui.setWindowPos(520f, 200f);
             }
 
-            ImGui.separator();
-            ImGui.spacing();
-
-            if (ImGui.beginTabBar("Categories")) {
+            if (ImGui.beginTabBar("Module Categories")) {
                 try {
                     for (ModuleCategory category : ModuleCategory.values()) {
                         if (category == null) continue;
 
                         if (ImGui.beginTabItem(category.name())) {
                             try {
-                                isCommandTab = false;
-                                commandTabJustOpened = false;
-
                                 for (Module module : ModuleManager.modules) {
                                     if (module.moduleCategory != category) continue;
 
@@ -142,162 +141,29 @@ public class ModuleRenderable implements Renderable {
                             ImGui.endTabItem();
                         }
                     }
+                } finally {
+                    ImGui.endTabBar();
+                }
+            }
+        } finally {
+            ImGui.end();
+        }
 
-                    if (ImGui.beginTabItem("Module Configs")) {
-                        try {
-                            isCommandTab = false;
-                            commandTabJustOpened = false;
+        try {
+            ImGui.begin("Command Window", ImGuiCond.Always);
 
-                            List<Path> moduleConfigs = FileUtil.INSTANCE.getModuleFiles();
-                            if (!moduleConfigs.isEmpty()) {
-                                ImGui.text("Available Module Configs:");
-                                ImGui.beginChild("ModuleConfigsList", 0, 500, true);
+            if (!startUpped) {
+                ImGui.setWindowSize(420f, 400f);
+                ImGui.setWindowPos(950f, 200f);
+            }
 
-                                for (Path config : moduleConfigs) {
-                                    String configName = config.getFileName().toString().replace(".json", "");
-
-                                    String showConfigName = configName;
-                                    if (showConfigName.equalsIgnoreCase(Client.configManager.configCurrent))
-                                        showConfigName = configName + " <- Current";
-
-                                    if (ImGui.selectable(showConfigName)) {
-                                        File prevBase = new File(Client.configManager.BASE_DIR, "module-configs");
-                                        File prevModuleFile = new File(prevBase, Client.configManager.configCurrent + ".json");
-                                        if (prevBase.exists() && prevModuleFile.exists())
-                                            Client.configManager.saveConfigFile(Client.configManager.configCurrent, false);
-
-                                        Client.configManager.loadConfig(configName, false);
-
-                                        File base = new File(Client.configManager.BASE_DIR, "module-configs");
-                                        File moduleFile = new File(base, configName + ".json");
-                                        if (base.exists() && moduleFile.exists())
-                                            Client.configManager.saveConfigFile(configName, true);
-                                    }
-                                }
-
-                                ImGui.endChild();
-                            } else {
-                                ImGui.text("No module configs found.");
-                            }
-
-                            ImGui.spacing();
-                            ImGui.separator();
-
-                            ImGui.text("Create a new Module Config:");
-                            ImString newConfigName = new ImString(256);
-                            if (ImGui.inputText("New Config Name (Enter to create)", newConfigName, ImGuiInputTextFlags.EnterReturnsTrue)) {
-                                String configName = newConfigName.get();
-                                if (!configName.isEmpty())
-                                    Client.configManager.saveConfigFile(configName, true);
-                            }
-                        } finally {
-                            ImGui.endTabItem();
-                        }
-                    }
-
-                    if (ImGui.beginTabItem("Bind Configs")) {
-                        try {
-                            isCommandTab = false;
-                            commandTabJustOpened = false;
-
-                            List<Path> bindConfigs = FileUtil.INSTANCE.getBindFiles();
-                            if (!bindConfigs.isEmpty()) {
-                                ImGui.text("Available Bind Configs:");
-                                ImGui.beginChild("BindConfigsList", 0, 500, true);
-
-                                for (Path config : bindConfigs) {
-                                    String configName = config.getFileName().toString().replace(".json", "");
-
-                                    String showConfigName = configName;
-                                    if (showConfigName.equalsIgnoreCase(Client.configManager.bindCurrent))
-                                        showConfigName = configName + " <- Current";
-
-                                    if (ImGui.selectable(showConfigName)) {
-                                        File prevBase = new File(Client.configManager.BASE_DIR, "bind-configs");
-                                        File prevBindFile = new File(prevBase, Client.configManager.bindCurrent + ".json");
-                                        if (prevBase.exists() && prevBindFile.exists())
-                                            Client.configManager.saveBindFile(Client.configManager.bindCurrent, false);
-
-                                        Client.configManager.loadBind(configName);
-
-                                        File base = new File(Client.configManager.BASE_DIR, "bind-configs");
-                                        File bindFile = new File(base, configName + ".json");
-                                        if (base.exists() && bindFile.exists())
-                                            Client.configManager.saveBindFile(configName, true);
-                                    }
-                                }
-
-                                ImGui.endChild();
-                            } else {
-                                ImGui.text("No bind configs found.");
-                            }
-
-                            ImGui.spacing();
-                            ImGui.separator();
-
-                            ImGui.text("Create a new Bind Config:");
-                            ImString newConfigName = new ImString(256);
-                            if (ImGui.inputText("New Config Name (Enter to create)", newConfigName, ImGuiInputTextFlags.EnterReturnsTrue)) {
-                                String configName = newConfigName.get();
-                                if (!configName.isEmpty())
-                                    Client.configManager.saveBindFile(configName, true);
-                            }
-                        } finally {
-                            ImGui.endTabItem();
-                        }
-                    }
-
-                    if (ImGui.beginTabItem("Online Configs")) {
-                        try {
-                            isCommandTab = false;
-                            commandTabJustOpened = false;
-
-                            List<String> moduleConfigs = FileUtil.INSTANCE.getOnlineCfgs();
-                            if (!moduleConfigs.isEmpty()) {
-                                ImGui.text("Available Online Configs:");
-                                ImGui.beginChild("OnlineConfigsList", 0, 500, true);
-
-                                for (String config : moduleConfigs) {
-                                    String configName = config.replace(".json", "");
-
-                                    if (ImGui.selectable(configName)) {
-                                        File prevBase = new File(Client.configManager.BASE_DIR, "module-configs");
-                                        File prevModuleFile = new File(prevBase, Client.configManager.configCurrent + ".json");
-                                        if (prevBase.exists() && prevModuleFile.exists())
-                                            Client.configManager.saveConfigFile(Client.configManager.configCurrent, false);
-
-                                        Client.configManager.loadConfig(configName, true);
-
-                                        File base = new File(Client.configManager.BASE_DIR, "module-configs");
-                                        File moduleFile = new File(base, configName + ".json");
-                                        if (base.exists() && moduleFile.exists())
-                                            Client.configManager.saveConfigFile(configName, true);
-                                    }
-                                }
-
-                                ImGui.endChild();
-                            } else {
-                                ImGui.text("No online configs found.");
-                            }
-                        } finally {
-                            ImGui.endTabItem();
-                        }
-                    }
-
+            if (ImGui.beginTabBar("Command Categories")) {
+                try {
                     if (ImGui.beginTabItem("Command")) {
                         try {
-                            isCommandTab = true;
-
-                            if (!commandTabJustOpened) {
-                                if (commandLogs.isEmpty())
-                                    ImGui.setKeyboardFocusHere();
-                                else ImGui.setKeyboardFocusHere(3);
-                                commandTabJustOpened = true;
-                            }
-
                             ImGui.text("Command Execution");
 
-                            ImGui.beginChild("LogWindow", 0, 500, true);
+                            ImGui.beginChild("LogWindow", 0, 250, true);
 
                             for (String log : commandLogs)
                                 ImGui.textWrapped(log);
@@ -334,16 +200,13 @@ public class ModuleRenderable implements Renderable {
 
                     if (ImGui.beginTabItem("Multi Play")) {
                         try {
-                            isCommandTab = false;
-                            commandTabJustOpened = false;
-
                             if (ImGui.button("Force disconnect from server")) {
                                 if (IMinecraft.mc.world != null)
                                     IMinecraft.mc.world.disconnect();
                             }
 
                             ImGui.text("Player List");
-                            ImGui.beginChild("PlayerList", 0, 500, true);
+                            ImGui.beginChild("PlayerList", 0, 250, true);
 
                             if (IMinecraft.mc.world != null && IMinecraft.mc.getNetworkHandler() != null) {
                                 List<AbstractClientPlayerEntity> sortedPlayerEntities = IMinecraft.mc.world.getPlayers().stream().sorted(Comparator.comparing(playerEntity -> playerEntity.getName().getString(), String.CASE_INSENSITIVE_ORDER)).toList();
@@ -376,13 +239,160 @@ public class ModuleRenderable implements Renderable {
 
                     if (ImGui.beginTabItem("Credits")) {
                         try {
-                            isCommandTab = false;
-                            commandTabJustOpened = false;
-
                             ImGui.text("Made by Aspw and Noah");
                             ImGui.text("YouTube: https://www.youtube.com/@Hadveen");
                             ImGui.text("GitHub: https://github.com/Aspw-w");
                             ImGui.text("Discord: https://discord.gg/y8ZDqRxSCy");
+                        } finally {
+                            ImGui.endTabItem();
+                        }
+                    }
+                } finally {
+                    ImGui.endTabBar();
+                }
+            }
+        } finally {
+            ImGui.end();
+        }
+
+        try {
+            ImGui.begin("Configs Window", ImGuiCond.Always);
+
+            if (!startUpped) {
+                ImGui.setWindowSize(420f, 400f);
+                ImGui.setWindowPos(1380f, 200f);
+                startUpped = true;
+            }
+
+            if (ImGui.beginTabBar("Config Categories")) {
+                try {
+                    if (ImGui.beginTabItem("Module Configs")) {
+                        try {
+                            List<Path> moduleConfigs = FileUtil.INSTANCE.getModuleFiles();
+                            if (!moduleConfigs.isEmpty()) {
+                                ImGui.text("Available Module Configs:");
+                                ImGui.beginChild("ModuleConfigsList", 0, 250, true);
+
+                                for (Path config : moduleConfigs) {
+                                    String configName = config.getFileName().toString().replace(".json", "");
+
+                                    String showConfigName = configName;
+                                    if (showConfigName.equalsIgnoreCase(Client.configManager.configCurrent))
+                                        showConfigName = configName + " <- Current";
+
+                                    if (ImGui.selectable(showConfigName)) {
+                                        File prevBase = new File(Client.configManager.BASE_DIR, "module-configs");
+                                        File prevModuleFile = new File(prevBase, Client.configManager.configCurrent + ".json");
+                                        if (prevBase.exists() && prevModuleFile.exists())
+                                            Client.configManager.saveConfigFile(Client.configManager.configCurrent, false);
+
+                                        Client.configManager.loadConfig(configName, false);
+
+                                        File base = new File(Client.configManager.BASE_DIR, "module-configs");
+                                        File moduleFile = new File(base, configName + ".json");
+                                        if (base.exists() && moduleFile.exists())
+                                            Client.configManager.saveConfigFile(configName, true);
+                                    }
+                                }
+
+                                ImGui.endChild();
+                            } else {
+                                ImGui.text("No module configs found.");
+                            }
+
+                            ImGui.spacing();
+                            ImGui.separator();
+
+                            ImGui.text("Create a new Module Config:");
+                            ImString newConfigName = new ImString(256);
+                            if (ImGui.inputText("New Config Name", newConfigName, ImGuiInputTextFlags.EnterReturnsTrue)) {
+                                String configName = newConfigName.get();
+                                if (!configName.isEmpty())
+                                    Client.configManager.saveConfigFile(configName, true);
+                            }
+                        } finally {
+                            ImGui.endTabItem();
+                        }
+                    }
+
+                    if (ImGui.beginTabItem("Bind Configs")) {
+                        try {
+                            List<Path> bindConfigs = FileUtil.INSTANCE.getBindFiles();
+                            if (!bindConfigs.isEmpty()) {
+                                ImGui.text("Available Bind Configs:");
+                                ImGui.beginChild("BindConfigsList", 0, 250, true);
+
+                                for (Path config : bindConfigs) {
+                                    String configName = config.getFileName().toString().replace(".json", "");
+
+                                    String showConfigName = configName;
+                                    if (showConfigName.equalsIgnoreCase(Client.configManager.bindCurrent))
+                                        showConfigName = configName + " <- Current";
+
+                                    if (ImGui.selectable(showConfigName)) {
+                                        File prevBase = new File(Client.configManager.BASE_DIR, "bind-configs");
+                                        File prevBindFile = new File(prevBase, Client.configManager.bindCurrent + ".json");
+                                        if (prevBase.exists() && prevBindFile.exists())
+                                            Client.configManager.saveBindFile(Client.configManager.bindCurrent, false);
+
+                                        Client.configManager.loadBind(configName);
+
+                                        File base = new File(Client.configManager.BASE_DIR, "bind-configs");
+                                        File bindFile = new File(base, configName + ".json");
+                                        if (base.exists() && bindFile.exists())
+                                            Client.configManager.saveBindFile(configName, true);
+                                    }
+                                }
+
+                                ImGui.endChild();
+                            } else {
+                                ImGui.text("No bind configs found.");
+                            }
+
+                            ImGui.spacing();
+                            ImGui.separator();
+
+                            ImGui.text("Create a new Bind Config:");
+                            ImString newConfigName = new ImString(256);
+                            if (ImGui.inputText("New Config Name", newConfigName, ImGuiInputTextFlags.EnterReturnsTrue)) {
+                                String configName = newConfigName.get();
+                                if (!configName.isEmpty())
+                                    Client.configManager.saveBindFile(configName, true);
+                            }
+                        } finally {
+                            ImGui.endTabItem();
+                        }
+                    }
+
+                    if (ImGui.beginTabItem("Online Configs")) {
+                        try {
+                            List<String> moduleConfigs = FileUtil.INSTANCE.getOnlineCfgs();
+                            if (!moduleConfigs.isEmpty()) {
+                                ImGui.text("Available Online Configs:");
+                                ImGui.beginChild("OnlineConfigsList", 0, 250, true);
+
+                                for (String config : moduleConfigs) {
+                                    String configName = config.replace(".json", "");
+
+                                    if (ImGui.selectable(configName)) {
+                                        File prevBase = new File(Client.configManager.BASE_DIR, "module-configs");
+                                        File prevModuleFile = new File(prevBase, Client.configManager.configCurrent + ".json");
+                                        if (prevBase.exists() && prevModuleFile.exists())
+                                            Client.configManager.saveConfigFile(Client.configManager.configCurrent, false);
+
+                                        Client.configManager.loadConfig(configName, true);
+
+                                        File base = new File(Client.configManager.BASE_DIR, "module-configs");
+                                        File moduleFile = new File(base, configName + ".json");
+                                        if (base.exists() && moduleFile.exists())
+                                            Client.configManager.saveConfigFile(configName, true);
+                                    }
+                                }
+
+                                ImGui.endChild();
+                            } else {
+                                ImGui.text("No online configs found.");
+                            }
                         } finally {
                             ImGui.endTabItem();
                         }
@@ -583,19 +593,12 @@ public class ModuleRenderable implements Renderable {
             }
             case ColorValue colorValue -> {
                 float[] currentColor = {
-                        colorValue.value.getRed() / 255f,
-                        colorValue.value.getGreen() / 255f,
-                        colorValue.value.getBlue() / 255f
+                        colorValue.value.getRed(),
+                        colorValue.value.getGreen(),
+                        colorValue.value.getBlue()
                 };
-
-                ImGui.setNextItemWidth(ImGui.getWindowWidth() * 0.5f);
-
-                if (ImGui.colorEdit3(colorValue.name + "##" + moduleName, currentColor)) {
-                    Color newColor = new Color(
-                            (int) (currentColor[0] * 255),
-                            (int) (currentColor[1] * 255),
-                            (int) (currentColor[2] * 255)
-                    );
+                if (ImGui.colorPicker3(colorValue.name + "##" + moduleName, currentColor)) {
+                    Color newColor = new Color(currentColor[0], currentColor[1], currentColor[2]);
                     colorValue.set(newColor);
                 }
             }
