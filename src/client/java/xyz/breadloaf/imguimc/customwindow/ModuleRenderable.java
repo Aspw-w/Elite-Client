@@ -12,6 +12,7 @@ import com.instrumentalist.elite.utils.IMinecraft;
 import com.instrumentalist.elite.utils.packet.PacketUtil;
 import com.instrumentalist.elite.utils.value.*;
 import imgui.ImGui;
+import imgui.flag.ImGuiCond;
 import imgui.flag.ImGuiInputTextFlags;
 import imgui.type.ImInt;
 import imgui.type.ImString;
@@ -57,7 +58,7 @@ public class ModuleRenderable implements Renderable {
 
     @Override
     public void render() {
-        ImGui.begin("Elite Client");
+        ImGui.begin("Elite Client", ImGuiCond.Always);
 
         try {
             if (!startUpped) {
@@ -81,12 +82,7 @@ public class ModuleRenderable implements Renderable {
                 } else {
                     ImGui.text("Check updates (github.com/Aspw-w/Elite-Client/releases)");
                 }
-            } else {
-                ImGui.text("Hello, everyone!");
             }
-
-            ImGui.separator();
-            ImGui.spacing();
 
             if (ImGui.beginTabBar("Categories")) {
                 try {
