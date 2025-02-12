@@ -138,10 +138,9 @@ public class Interface extends Module {
 
                 fadeProgress = 0.5f - 0.5f * (float) Math.cos(fadeProgress * 2 * Math.PI);
 
-                Color darkRed = new Color(22, 255, 173);
-                Color brightRed = new Color(255, 0, 128);
-                return smoothLoopingColorTransition(darkRed, brightRed, fadeProgress);
-
+                Color primary = primaryColor.get();
+                Color secondary = secondaryColor.get();
+                return smoothLoopingColorTransition(primary, secondary, fadeProgress);
             case "rainbow":
                 float hueProgress = (time % (long) fadeCycleDuration) / fadeCycleDuration;
                 hueProgress = (hueProgress + (float) index / totalModules) % 1.0f;
@@ -303,11 +302,6 @@ public class Interface extends Module {
 
         int bgColor = 0;
 
-        if (backGround.get()) {
-            float bgOpacity = IMinecraft.mc.options.getTextBackgroundOpacity(0.3F);
-            bgColor = (int) (bgOpacity * 255F) << 24;
-        }
-
         if (cachedTextRenderer == null)
             cachedTextRenderer = event.textRenderer;
 
@@ -328,11 +322,16 @@ public class Interface extends Module {
             switch (watermarkMode.get().toLowerCase()) {
                 case "normal":
                     watermarkText = "§f" + clientName.get() + " (§c" + formattedNow + "§f)";
+                    if (backGround.get()) {
+                        float bgOpacity = IMinecraft.mc.options.getTextBackgroundOpacity(0.3F);
+                        bgColor = (int) (bgOpacity * 255F) << 24;
+                    }
                     break;
 
                 case "radium":
                     watermarkText = clientName.get();
                     textColor = getModuleColor(0, 1);
+                    bgColor = 0x00000000;
                     break;
             }
 
@@ -352,6 +351,11 @@ public class Interface extends Module {
         }
 
         if (extraInfo.get()) {
+            if (backGround.get()) {
+                float bgOpacity = IMinecraft.mc.options.getTextBackgroundOpacity(0.3F);
+                bgColor = (int) (bgOpacity * 255F) << 24;
+            }
+
             cachedTextRenderer.draw(Text.of("§f[§cFPS§f]§7: " + IMinecraft.mc.getCurrentFps()), infoX, infoY, Color.WHITE.getRGB(), fontShadow.get(), matrix4f, vertexConsumerProvider, TextRenderer.TextLayerType.SEE_THROUGH, bgColor, 0);
             infoY += 10f;
 
@@ -378,6 +382,11 @@ public class Interface extends Module {
         }
 
         if (moduleList.get()) {
+            if (backGround.get()) {
+                float bgOpacity = IMinecraft.mc.options.getTextBackgroundOpacity(0.3F);
+                bgColor = (int) (bgOpacity * 255F) << 24;
+            }
+
             if (sortedModules == null)
                 reloadSortedModules(cachedTextRenderer);
 

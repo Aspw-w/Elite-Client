@@ -12,6 +12,7 @@ import com.instrumentalist.elite.utils.IMinecraft;
 import com.instrumentalist.elite.utils.packet.PacketUtil;
 import com.instrumentalist.elite.utils.value.*;
 import imgui.ImGui;
+import imgui.flag.ImGuiColorEditFlags;
 import imgui.flag.ImGuiInputTextFlags;
 import imgui.type.ImInt;
 import imgui.type.ImString;
@@ -582,12 +583,19 @@ public class ModuleRenderable implements Renderable {
             }
             case ColorValue colorValue -> {
                 float[] currentColor = {
-                        colorValue.value.getRed(),
-                        colorValue.value.getGreen(),
-                        colorValue.value.getBlue()
+                        colorValue.value.getRed() / 255f,
+                        colorValue.value.getGreen() / 255f,
+                        colorValue.value.getBlue() / 255f
                 };
-                if (ImGui.colorPicker3(colorValue.name + "##" + moduleName, currentColor)) {
-                    Color newColor = new Color(currentColor[0], currentColor[1], currentColor[2]);
+
+                ImGui.setNextItemWidth(ImGui.getWindowWidth() * 0.5f);
+
+                if (ImGui.colorEdit3(colorValue.name + "##" + moduleName, currentColor)) {
+                    Color newColor = new Color(
+                            (int) (currentColor[0] * 255),
+                            (int) (currentColor[1] * 255),
+                            (int) (currentColor[2] * 255)
+                    );
                     colorValue.set(newColor);
                 }
             }
