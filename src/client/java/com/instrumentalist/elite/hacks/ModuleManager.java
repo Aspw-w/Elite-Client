@@ -144,8 +144,6 @@ public class ModuleManager implements EventListener {
         if (IMinecraft.mc.currentScreen instanceof EmptyScreen)
             IMinecraft.mc.setScreen(null);
         isDebugRendering = false;
-        ModuleRenderable.commandTabJustOpened = false;
-        ModuleRenderable.isCommandTab = false;
         transactionCounter = 0;
         gettingTransactions = false;
     }

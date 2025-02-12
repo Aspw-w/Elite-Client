@@ -50,7 +50,7 @@ public class TargetRenderable implements Renderable {
                 ImGui.begin("Target Info", ImGuiCond.Always);
 
                 if (!startUpped) {
-                    ImGui.setWindowSize(500f, 200f);
+                    ImGui.setWindowSize(300f, 160f);
                     ImGui.setWindowPos(200f, 200f);
                     startUpped = true;
                 }
