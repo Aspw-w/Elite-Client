@@ -593,12 +593,17 @@ public class ModuleRenderable implements Renderable {
             }
             case ColorValue colorValue -> {
                 float[] currentColor = {
-                        colorValue.value.getRed(),
-                        colorValue.value.getGreen(),
-                        colorValue.value.getBlue()
+                        colorValue.value.getRed() / 255f,
+                        colorValue.value.getGreen() / 255f,
+                        colorValue.value.getBlue() / 255f
                 };
+                ImGui.setNextItemWidth(150);
                 if (ImGui.colorPicker3(colorValue.name + "##" + moduleName, currentColor)) {
-                    Color newColor = new Color(currentColor[0], currentColor[1], currentColor[2]);
+                    Color newColor = new Color(
+                            (int) (currentColor[0] * 255),
+                            (int) (currentColor[1] * 255),
+                            (int) (currentColor[2] * 255)
+                    );
                     colorValue.set(newColor);
                 }
             }
