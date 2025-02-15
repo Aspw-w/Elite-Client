@@ -5,6 +5,7 @@ import com.instrumentalist.elite.hacks.ModuleCategory
 import com.instrumentalist.elite.hacks.ModuleManager
 import com.instrumentalist.elite.hacks.features.combat.KillAura
 import com.instrumentalist.elite.utils.IMinecraft
+import com.instrumentalist.elite.utils.value.BooleanValue
 import com.instrumentalist.elite.utils.value.ListValue
 import net.minecraft.block.*
 import net.minecraft.item.SwordItem
@@ -16,6 +17,9 @@ class LegacyCombat : Module("Legacy Combat", ModuleCategory.Render, GLFW.GLFW_KE
     companion object {
         @Setting
         val mode = ListValue("Mode", arrayOf("Old", "Astra", "Slide", "Swank"), "Old")
+
+        @Setting
+        val equipment = BooleanValue("Equipment", true) { mode.get().equals("old", true) }
 
         fun shouldBlock(): Boolean {
             val hitResult = IMinecraft.mc.player!!.raycast(5.0, 0.0f, false)

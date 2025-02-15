@@ -131,12 +131,7 @@ public class ModuleManager implements EventListener {
     }
 
     public static boolean getModuleState(Module module) {
-        for (Module m : modules) {
-            if (m.getClass().equals(module.getClass())) {
-                return m.tempEnabled;
-            }
-        }
-        return false;
+        return modules.stream().anyMatch(m -> m.getClass() == module.getClass() && m.tempEnabled);
     }
 
     public static void pullDebugScreen() {

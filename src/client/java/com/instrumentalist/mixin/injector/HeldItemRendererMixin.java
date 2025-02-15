@@ -76,7 +76,12 @@ public abstract class HeldItemRendererMixin {
 
                         matrices.translate(n, 0f, f);
 
-                        this.applyEquipOffset(matrices, arm, 0f);
+                        float equip = 0f;
+
+                        if (LegacyCombat.Companion.getEquipment().get())
+                            equip = equipProgress;
+
+                        this.applyEquipOffset(matrices, arm, equip);
                         this.applySwingOffset(matrices, arm, swingProgress);
 
                         matrices.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(77f));
@@ -180,7 +185,7 @@ public abstract class HeldItemRendererMixin {
     @Inject(method = "updateHeldItems", at = @At("HEAD"), cancellable = true)
     public void itemSpoofHook(CallbackInfo ci) {
         if (LegacyCombat.Companion.shouldBlock()) {
-            if (LegacyCombat.Companion.getMode().get().equalsIgnoreCase("astra")) {
+            if (LegacyCombat.Companion.getMode().get().equalsIgnoreCase("old") && LegacyCombat.Companion.getEquipment().get() || LegacyCombat.Companion.getMode().get().equalsIgnoreCase("astra") || LegacyCombat.Companion.getMode().get().equalsIgnoreCase("slide") || LegacyCombat.Companion.getMode().get().equalsIgnoreCase("swank")) {
                 ci.cancel();
 
                 this.prevEquipProgressMainHand = this.equipProgressMainHand;

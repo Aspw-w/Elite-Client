@@ -55,7 +55,7 @@ public abstract class PlayerEntityRendererMixin {
             else if (showYaw <= -360f)
                 showYaw = -360f;
 
-            float yaw = showYaw >= 0f && (showYaw >= 315f || showYaw <= 45f) || showYaw <= 0f && (showYaw <= -315f || showYaw >= -45f) ? showYaw : Interpolation.INSTANCE.lerpWithTime(this.prevYaw, ModuleManager.interpolatedYaw, 18f, deltaTime);
+            float yaw = Interpolation.INSTANCE.valueLimitedLerpWithTime(this.prevYaw, showYaw, 18f, deltaTime, 320);
             float pitch = Interpolation.INSTANCE.lerpWithTime(this.prevPitch, ModuleManager.interpolatedPitch, 14f, deltaTime);
 
             state.bodyYaw = yaw;

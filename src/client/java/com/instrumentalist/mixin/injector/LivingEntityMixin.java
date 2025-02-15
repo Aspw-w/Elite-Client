@@ -26,19 +26,20 @@ public abstract class LivingEntityMixin extends EntityMixin {
 
     @Inject(method = "jump", at = @At("HEAD"), cancellable = true)
     public void jumpEvent(CallbackInfo ci) {
+        if (!((Object) this instanceof ClientPlayerEntity)) return;
+
         ci.cancel();
 
         float f = this.getJumpVelocity();
         if (!(f <= 1.0E-5F)) {
             Vec3d vec3d = this.getVelocity();
-            this.setVelocity(vec3d.x, Math.max((double) f, vec3d.y), vec3d.z);
+            this.setVelocity(vec3d.x, Math.max((double)f, vec3d.y), vec3d.z);
             if (this.isSprinting()) {
-                float g = this.getYaw() * 0.017453292F;
-
-                if ((Object) this instanceof ClientPlayerEntity && (ModuleManager.getModuleState(new Sprint()) && Sprint.Companion.getMultiDirection().get() && IMinecraft.mc.player.isSprinting() || TargetStrafe.targetStrafeHook()))
-                    g = MovementUtil.getPlayerDirection() * 0.017453292F;
-
-                this.addVelocityInternal(new Vec3d((double) (-MathHelper.sin(g)) * 0.2, 0.0, (double) MathHelper.cos(g) * 0.2));
+                float directionYaw = this.getYaw();
+                if (ModuleManager.getModuleState(new Sprint()) && Sprint.Companion.getMultiDirection().get() && IMinecraft.mc.player.isSprinting() || TargetStrafe.targetStrafeHook())
+                    directionYaw = MovementUtil.getPlayerDirection();
+                float g = directionYaw * ((float)Math.PI / 180F);
+                this.addVelocityInternal(new Vec3d((double)(-MathHelper.sin(g)) * 0.2, (double)0.0F, (double)MathHelper.cos(g) * 0.2));
             }
 
             this.velocityDirty = true;

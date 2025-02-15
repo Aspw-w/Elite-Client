@@ -176,102 +176,60 @@ public class Interface extends Module {
     }
 
     private void renderModuleInformation(Matrix4f matrix4f, VertexConsumerProvider vertexConsumerProvider) {
+        int screenWidth = IMinecraft.mc.getWindow().getScaledWidth();
+        int screenHeight = IMinecraft.mc.getWindow().getScaledHeight();
+        long currentTime = System.currentTimeMillis();
+        long cycleDuration = 3600L;
+
         if (ModuleManager.getModuleState(new Scaffold())) {
             String scaffoldText = Scaffold.Companion.getHotbarStackSize() + " Blocks";
-            String[] scaffoldStrings = scaffoldText.split("");
-            int index = 0;
-            float textLen = IMinecraft.mc.getWindow().getScaledWidth() / 2f;
-            for (String text : scaffoldStrings) {
-                float saturation = 1.0f;
-                float brightness = 1.0f;
-                int alpha = 255;
-                long cycleDuration = 3600L;
-                long currentTime = System.currentTimeMillis();
-                float hueShift = ((currentTime % cycleDuration) / (float) cycleDuration) + (index / (float) scaffoldStrings.length);
-                hueShift %= 1.0f;
-                Color color = Color.getHSBColor(hueShift, saturation, brightness);
-                cachedTextRenderer.draw(Text.of(text), textLen - (cachedTextRenderer.getWidth(Text.of(scaffoldText)) / 2f), IMinecraft.mc.getWindow().getScaledHeight() / 2f - 40f, new Color(color.getRed(), color.getGreen(), color.getBlue(), alpha).getRGB(), fontShadow.get(), matrix4f, vertexConsumerProvider, TextRenderer.TextLayerType.SEE_THROUGH, 0, 0);
-                textLen += cachedTextRenderer.getWidth(text);
-                index++;
-            }
+            renderColoredText(scaffoldText, screenWidth / 2f, screenHeight / 2f - 40f, currentTime, cycleDuration, matrix4f, vertexConsumerProvider);
         }
 
         if (ModuleManager.getModuleState(new Disabler()) && HypixelDisabler.stuckOnAir && HypixelDisabler.airTicks >= 9 && !HypixelDisabler.watchDogDisabled) {
             String disablingText = "Disabling... " + HypixelDisabler.airStuckTicks + "/20";
-            String[] disablerStrings = disablingText.split("");
-            int index = 0;
-            float textLen = IMinecraft.mc.getWindow().getScaledWidth() / 2f;
-            for (String text : disablerStrings) {
-                float saturation = 1.0f;
-                float brightness = 1.0f;
-                int alpha = 255;
-                long cycleDuration = 3600L;
-                long currentTime = System.currentTimeMillis();
-                float hueShift = ((currentTime % cycleDuration) / (float) cycleDuration) + (index / (float) disablerStrings.length);
-                hueShift %= 1.0f;
-                Color color = Color.getHSBColor(hueShift, saturation, brightness);
-                cachedTextRenderer.draw(Text.of(text), textLen - (cachedTextRenderer.getWidth(Text.of(disablingText)) / 2f), IMinecraft.mc.getWindow().getScaledHeight() / 2f - 60f, new Color(color.getRed(), color.getGreen(), color.getBlue(), alpha).getRGB(), fontShadow.get(), matrix4f, vertexConsumerProvider, TextRenderer.TextLayerType.SEE_THROUGH, 0, 0);
-                textLen += cachedTextRenderer.getWidth(text);
-                index++;
-            }
+            renderColoredText(disablingText, screenWidth / 2f, screenHeight / 2f - 60f, currentTime, cycleDuration, matrix4f, vertexConsumerProvider);
         }
 
-        if (IMinecraft.mc.interactionManager != null && (ModuleManager.getModuleState(new Breaker()) && Breaker.Companion.getWasBreaking() || ModuleManager.getModuleState(new CivBreak()) && CivBreak.Companion.getWasBreaking() || ModuleManager.getModuleState(new Nuker()) && Nuker.Companion.getWasBreaking())) {
+        if (IMinecraft.mc.interactionManager != null &&
+                (ModuleManager.getModuleState(new Breaker()) && Breaker.Companion.getWasBreaking() ||
+                        ModuleManager.getModuleState(new CivBreak()) && CivBreak.Companion.getWasBreaking() ||
+                        ModuleManager.getModuleState(new Nuker()) && Nuker.Companion.getWasBreaking())) {
             String breakingText = "Breaking... " + IMinecraft.mc.interactionManager.getBlockBreakingProgress();
-            String[] breakingStrings = breakingText.split("");
-            int index = 0;
-            float textLen = IMinecraft.mc.getWindow().getScaledWidth() / 2f;
-            for (String text : breakingStrings) {
-                float saturation = 1.0f;
-                float brightness = 1.0f;
-                int alpha = 255;
-                long cycleDuration = 3600L;
-                long currentTime = System.currentTimeMillis();
-                float hueShift = ((currentTime % cycleDuration) / (float) cycleDuration) + (index / (float) breakingStrings.length);
-                hueShift %= 1.0f;
-                Color color = Color.getHSBColor(hueShift, saturation, brightness);
-                cachedTextRenderer.draw(Text.of(text), textLen - (cachedTextRenderer.getWidth(Text.of(breakingText)) / 2f), IMinecraft.mc.getWindow().getScaledHeight() / 2f - 80f, new Color(color.getRed(), color.getGreen(), color.getBlue(), alpha).getRGB(), fontShadow.get(), matrix4f, vertexConsumerProvider, TextRenderer.TextLayerType.SEE_THROUGH, 0, 0);
-                textLen += cachedTextRenderer.getWidth(text);
-                index++;
-            }
+            renderColoredText(breakingText, screenWidth / 2f, screenHeight / 2f - 80f, currentTime, cycleDuration, matrix4f, vertexConsumerProvider);
         }
 
         if (BlinkUtil.INSTANCE.getBlinking()) {
             String blinkText = "Blinking... (x" + BlinkUtil.INSTANCE.getPackets().size() + ")";
-            String[] blinkStrings = blinkText.split("");
-            int index = 0;
-            float textLen = IMinecraft.mc.getWindow().getScaledWidth() / 2f;
-            for (String text : blinkStrings) {
-                float saturation = 1.0f;
-                float brightness = 1.0f;
-                int alpha = 255;
-                long cycleDuration = 3600L;
-                long currentTime = System.currentTimeMillis();
-                float hueShift = ((currentTime % cycleDuration) / (float) cycleDuration) + (index / (float) blinkStrings.length);
-                hueShift %= 1.0f;
-                Color color = Color.getHSBColor(hueShift, saturation, brightness);
-                cachedTextRenderer.draw(Text.of(text), textLen - (cachedTextRenderer.getWidth(Text.of(blinkText)) / 2f), IMinecraft.mc.getWindow().getScaledHeight() / 2f - 100f, new Color(color.getRed(), color.getGreen(), color.getBlue(), alpha).getRGB(), fontShadow.get(), matrix4f, vertexConsumerProvider, TextRenderer.TextLayerType.SEE_THROUGH, 0, 0);
-                textLen += cachedTextRenderer.getWidth(text);
-                index++;
-            }
+            renderColoredText(blinkText, screenWidth / 2f, screenHeight / 2f - 100f, currentTime, cycleDuration, matrix4f, vertexConsumerProvider);
         }
 
         if (ModuleManager.getModuleState(new MurdererDetector())) {
-            float murdererTextY = IMinecraft.mc.getWindow().getScaledHeight() / 2f - 220f;
+            float murdererTextY = screenHeight / 2f - 220f;
             List<PlayerEntity> murdererList = MurdererDetector.murderers;
-            cachedTextRenderer.draw(Text.of("§f[§cMurderers§f]: " + murdererList.size()), IMinecraft.mc.getWindow().getScaledWidth() / 2f - (cachedTextRenderer.getWidth(Text.of("[Murderers]: " + murdererList.size())) / 2f), murdererTextY, Color.WHITE.getRGB(), fontShadow.get(), matrix4f, vertexConsumerProvider, TextRenderer.TextLayerType.SEE_THROUGH, 0, 0);
-            if (!murdererList.isEmpty()) {
-                for (PlayerEntity murderer : murdererList) {
-                    murdererTextY += 10f;
-                    String distance = ModuleManager.decimalFormat.format(IMinecraft.mc.player.distanceTo(murderer));
-                    try {
-                        Integer.parseInt(distance);
-                        distance += ".00";
-                    } catch (NumberFormatException ignored) {
-                    }
-                    cachedTextRenderer.draw(Text.of("§f> " + murderer.getName().getString() + "§7 (" + distance + "m)"), IMinecraft.mc.getWindow().getScaledWidth() / 2f - (cachedTextRenderer.getWidth(Text.of("> " + murderer.getName().getString() + " (" + distance + "m)")) / 2f), murdererTextY, Color.WHITE.getRGB(), fontShadow.get(), matrix4f, vertexConsumerProvider, TextRenderer.TextLayerType.SEE_THROUGH, 0, 0);
-                }
+            String murdererHeader = "§f[§cMurderers§f]: " + murdererList.size();
+            cachedTextRenderer.draw(Text.of(murdererHeader), screenWidth / 2f - (cachedTextRenderer.getWidth(Text.of(murdererHeader)) / 2f), murdererTextY, Color.WHITE.getRGB(), fontShadow.get(), matrix4f, vertexConsumerProvider, TextRenderer.TextLayerType.SEE_THROUGH, 0, 0);
+
+            for (PlayerEntity murderer : murdererList) {
+                murdererTextY += 10f;
+                String distance = ModuleManager.decimalFormat.format(IMinecraft.mc.player.distanceTo(murderer));
+                cachedTextRenderer.draw(Text.of("§f> " + murderer.getName().getString() + "§7 (" + distance + "m)"),
+                        screenWidth / 2f - (cachedTextRenderer.getWidth(Text.of("> " + murderer.getName().getString() + " (" + distance + "m)")) / 2f),
+                        murdererTextY, Color.WHITE.getRGB(), fontShadow.get(), matrix4f, vertexConsumerProvider, TextRenderer.TextLayerType.SEE_THROUGH, 0, 0);
             }
+        }
+    }
+
+    private void renderColoredText(String text, float centerX, float y, long currentTime, long cycleDuration, Matrix4f matrix4f, VertexConsumerProvider vertexConsumerProvider) {
+        float textWidth = cachedTextRenderer.getWidth(Text.of(text));
+        float startX = centerX - textWidth / 2f;
+        float hueBase = (currentTime % cycleDuration) / (float) cycleDuration;
+
+        for (int i = 0; i < text.length(); i++) {
+            float hueShift = (hueBase + i / (float) text.length()) % 1.0f;
+            Color color = Color.getHSBColor(hueShift, 1.0f, 1.0f);
+            cachedTextRenderer.draw(Text.of(String.valueOf(text.charAt(i))), startX, y, new Color(color.getRed(), color.getGreen(), color.getBlue(), 255).getRGB(), fontShadow.get(), matrix4f, vertexConsumerProvider, TextRenderer.TextLayerType.SEE_THROUGH, 0, 0);
+            startX += cachedTextRenderer.getWidth(String.valueOf(text.charAt(i)));
         }
     }
 
@@ -315,6 +273,11 @@ public class Interface extends Module {
         float infoX = getSpacingSize();
         float infoY = getSpacingSize();
 
+        if (backGround.get()) {
+            float bgOpacity = IMinecraft.mc.options.getTextBackgroundOpacity(0.3F);
+            bgColor = (int) (bgOpacity * 255F) << 24;
+        }
+
         if (waterMark.get()) {
             String watermarkText = null;
             Color textColor = Color.WHITE;
@@ -322,10 +285,6 @@ public class Interface extends Module {
             switch (watermarkMode.get().toLowerCase()) {
                 case "normal":
                     watermarkText = "§f" + clientName.get() + " (§c" + formattedNow + "§f)";
-                    if (backGround.get()) {
-                        float bgOpacity = IMinecraft.mc.options.getTextBackgroundOpacity(0.3F);
-                        bgColor = (int) (bgOpacity * 255F) << 24;
-                    }
                     break;
 
                 case "radium":
@@ -351,11 +310,6 @@ public class Interface extends Module {
         }
 
         if (extraInfo.get()) {
-            if (backGround.get()) {
-                float bgOpacity = IMinecraft.mc.options.getTextBackgroundOpacity(0.3F);
-                bgColor = (int) (bgOpacity * 255F) << 24;
-            }
-
             cachedTextRenderer.draw(Text.of("§f[§cFPS§f]§7: " + IMinecraft.mc.getCurrentFps()), infoX, infoY, Color.WHITE.getRGB(), fontShadow.get(), matrix4f, vertexConsumerProvider, TextRenderer.TextLayerType.SEE_THROUGH, bgColor, 0);
             infoY += 10f;
 
@@ -382,11 +336,6 @@ public class Interface extends Module {
         }
 
         if (moduleList.get()) {
-            if (backGround.get()) {
-                float bgOpacity = IMinecraft.mc.options.getTextBackgroundOpacity(0.3F);
-                bgColor = (int) (bgOpacity * 255F) << 24;
-            }
-
             if (sortedModules == null)
                 reloadSortedModules(cachedTextRenderer);
 

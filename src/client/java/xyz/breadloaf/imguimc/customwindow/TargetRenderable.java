@@ -2,6 +2,7 @@ package xyz.breadloaf.imguimc.customwindow;
 
 import com.instrumentalist.elite.hacks.ModuleManager;
 import com.instrumentalist.elite.hacks.features.combat.KillAura;
+import com.instrumentalist.elite.hacks.features.render.Interface;
 import com.instrumentalist.elite.utils.IMinecraft;
 import com.instrumentalist.elite.utils.math.TargetUtil;
 import imgui.ImGui;
@@ -34,7 +35,7 @@ public class TargetRenderable implements Renderable {
 
     @Override
     public void render() {
-        if (IMinecraft.mc.player == null || IMinecraft.mc.world == null || IMinecraft.mc.currentScreen instanceof EmptyScreen) return;
+        if (IMinecraft.mc.player == null || IMinecraft.mc.world == null || IMinecraft.mc.currentScreen instanceof EmptyScreen || !ModuleManager.getModuleState(new Interface())) return;
 
         List<Entity> targets = TargetUtil.getSingletonTargetsAsList();
         if (targets.isEmpty()) return;
