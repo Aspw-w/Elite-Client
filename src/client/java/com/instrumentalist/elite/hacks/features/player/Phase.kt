@@ -1,5 +1,7 @@
 package com.instrumentalist.elite.hacks.features.player
 
+import com.instrumentalist.elite.events.features.ReceivedPacketEvent
+import com.instrumentalist.elite.events.features.SendPacketEvent
 import com.instrumentalist.elite.events.features.UpdateEvent
 import com.instrumentalist.elite.hacks.Module
 import com.instrumentalist.elite.hacks.ModuleCategory
@@ -9,16 +11,20 @@ import com.instrumentalist.elite.utils.math.TimerUtil
 import com.instrumentalist.elite.utils.move.MovementUtil
 import com.instrumentalist.elite.utils.packet.PacketUtil
 import com.instrumentalist.elite.utils.value.ListValue
+import net.minecraft.network.packet.c2s.play.PlayerActionC2SPacket
 import net.minecraft.network.packet.c2s.play.PlayerMoveC2SPacket
+import net.minecraft.util.math.Direction
 import net.minecraft.util.math.MathHelper
 import net.minecraft.util.math.Vec3d
+import net.minecraft.world.GameMode
 import org.lwjgl.glfw.GLFW
 import java.util.*
 
 class Phase : Module("Phase", ModuleCategory.Player, GLFW.GLFW_KEY_UNKNOWN, false, true) {
     @Setting
-    private val mode = ListValue("Mode", arrayOf("NCP", "AAC 4"), "NCP")
+    private val mode = ListValue("Mode", arrayOf("NCP", "AAC 4", "Hypixel"), "NCP")
 
+    private var hypTick = 0
     private var isNcpClipping = false
     private val ncpTickTimer = TickTimer()
 
@@ -29,6 +35,7 @@ class Phase : Module("Phase", ModuleCategory.Player, GLFW.GLFW_KEY_UNKNOWN, fals
     override fun onDisable() {
         isNcpClipping = false
         ncpTickTimer.reset()
+        hypTick = 0
 
         if (IMinecraft.mc.player == null) return
 
@@ -91,5 +98,17 @@ class Phase : Module("Phase", ModuleCategory.Player, GLFW.GLFW_KEY_UNKNOWN, fals
                 IMinecraft.mc.player!!.setPosition(newPos.x, newPos.y, newPos.z)
             }
         }
+
+        if (mode.get().equals("hypixel", true)) {
+
+        }
+    }
+
+    override fun onSendPacket(event: SendPacketEvent) {
+
+    }
+
+    override fun onReceivedPacket(event: ReceivedPacketEvent) {
+
     }
 }
