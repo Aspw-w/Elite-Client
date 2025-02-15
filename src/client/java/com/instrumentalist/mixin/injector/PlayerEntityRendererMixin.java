@@ -58,10 +58,16 @@ public abstract class PlayerEntityRendererMixin {
             float yaw = Interpolation.INSTANCE.valueLimitedLerpWithTime(this.prevYaw, showYaw, 18f, deltaTime, 320);
             float pitch = Interpolation.INSTANCE.lerpWithTime(this.prevPitch, ModuleManager.interpolatedPitch, 14f, deltaTime);
 
-            state.bodyYaw = yaw;
-            this.prevYaw = state.bodyYaw;
+            if (Float.isInfinite(yaw) || Float.isNaN(yaw) || Float.isInfinite(pitch) || Float.isNaN(pitch)) {
+                state.bodyYaw = showYaw;
+                state.pitch = ModuleManager.interpolatedPitch;
+                return;
+            } else {
+                state.bodyYaw = yaw;
+                state.pitch = pitch;
+            }
 
-            state.pitch = pitch;
+            this.prevYaw = state.bodyYaw;
             this.prevPitch = state.pitch;
         } else if (lastFrameTime != 0) {
             prevYaw = null;
