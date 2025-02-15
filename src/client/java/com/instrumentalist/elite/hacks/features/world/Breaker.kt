@@ -217,7 +217,7 @@ class Breaker : Module("Breaker", ModuleCategory.World, GLFW.GLFW_KEY_UNKNOWN, f
                         hypTick++
                         if (secondProgress) {
                             PlayerUtil.destroyBlock(hitResult)
-                            if (hypTick >= 3) {
+                            if (hypTick >= 6) {
                                 TargetUtil.noKillAura = false
                                 if (!ModuleManager.getModuleState(KillAura()) || KillAura.closestEntity == null)
                                     RotationUtil.aimAtBlock(
@@ -283,7 +283,7 @@ class Breaker : Module("Breaker", ModuleCategory.World, GLFW.GLFW_KEY_UNKNOWN, f
                         hypTick++
                         if (progress) {
                             PlayerUtil.destroyBlock(hitResult)
-                            if (hypTick >= 3) {
+                            if (hypTick >= 6) {
                                 TargetUtil.noKillAura = false
                                 if (!ModuleManager.getModuleState(KillAura()) || KillAura.closestEntity == null)
                                     RotationUtil.aimAtBlock(
@@ -518,7 +518,7 @@ class Breaker : Module("Breaker", ModuleCategory.World, GLFW.GLFW_KEY_UNKNOWN, f
                     val blockState = IMinecraft.mc.world?.getBlockState(pos)
 
                     if ((mode.get().equals("hypixel", true) || mode.get().equals("normal", true) && block.get()
-                            .equals("bed", true)) && blockState?.block is BedBlock || (mode.get()
+                            .equals("bed", true)) && blockState?.block is BedBlock && blockState.get(BedBlock.PART) == BedPart.HEAD || (mode.get()
                             .equals("cubecraft", true) || mode.get().equals("normal", true) && block.get()
                             .equals("egg", true)) && blockState?.block is DragonEggBlock
                     )

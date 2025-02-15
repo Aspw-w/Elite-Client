@@ -8,6 +8,7 @@ import com.instrumentalist.elite.utils.IMinecraft;
 import net.minecraft.client.network.ClientPlayerEntity;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
+import net.minecraft.entity.decoration.ArmorStandEntity;
 import net.minecraft.entity.player.PlayerEntity;
 
 import java.util.Collections;
@@ -30,7 +31,7 @@ public class TargetUtil {
     public static List<Entity> getSingletonTargetsAsList() {
         if (ModuleManager.getModuleState(new KillAura()) && KillAura.closestEntity != null) {
             return Collections.singletonList(KillAura.closestEntity);
-        } else if (IMinecraft.mc.targetedEntity instanceof LivingEntity) {
+        } else if (IMinecraft.mc.targetedEntity instanceof LivingEntity && !(IMinecraft.mc.targetedEntity instanceof ArmorStandEntity)) {
             return Collections.singletonList(IMinecraft.mc.targetedEntity);
         }
         return Collections.emptyList();

@@ -39,7 +39,7 @@ class Velocity : Module("Velocity", ModuleCategory.Combat, GLFW.GLFW_KEY_UNKNOWN
 
             "hypixel" -> {
                 if (!ModuleManager.getModuleState(Fly()) && packet is EntityVelocityUpdateS2CPacket && packet.entityId == IMinecraft.mc.player!!.id) {
-                    if ((!ModuleManager.getModuleState(Speed()) || MovementUtil.fallTicks >= 4) && IMinecraft.mc.player!!.velocity.y >= 0 || IMinecraft.mc.player!!.isOnGround)
+                    if (ModuleManager.getModuleState(Speed()) && (MovementUtil.fallTicks >= 7 || IMinecraft.mc.player!!.isOnGround) || !ModuleManager.getModuleState(Speed()))
                         MovementUtil.setVelocityY(packet.velocityY / 8000.0)
                     else PacketUtil.sendPacket(PlayerMoveC2SPacket.OnGroundOnly(IMinecraft.mc.player!!.isOnGround, IMinecraft.mc.player!!.horizontalCollision))
                     event.cancel()
