@@ -173,8 +173,10 @@ class Breaker : Module("Breaker", ModuleCategory.World, GLFW.GLFW_KEY_UNKNOWN, f
                 }
 
                 "hypixel" -> {
-                    if (cachedSecondPos == null)
+                    if (cachedSecondPos == null) {
                         cachedSecondPos = BlockPos(cachedBedPos!!.x, cachedBedPos!!.y + 1, cachedBedPos!!.z)
+                        hypTick = 0
+                    }
                     if (secondProgress && progress) {
                         PacketUtil.sendPacketAsSilent(
                             PlayerActionC2SPacket(
@@ -215,10 +217,17 @@ class Breaker : Module("Breaker", ModuleCategory.World, GLFW.GLFW_KEY_UNKNOWN, f
                         hypTick++
                         if (secondProgress) {
                             PlayerUtil.destroyBlock(hitResult)
-                            if (hypTick >= 5) {
+                            if (hypTick >= 3) {
                                 TargetUtil.noKillAura = false
                                 if (!ModuleManager.getModuleState(KillAura()) || KillAura.closestEntity == null)
-                                    RotationUtil.reset()
+                                    RotationUtil.aimAtBlock(
+                                        Vec3d.ofCenter(cachedSecondPos),
+                                        90f,
+                                        false,
+                                        10f,
+                                        0f,
+                                        0f
+                                    )
                             }
                         } else {
                             TargetUtil.noKillAura = true
@@ -274,10 +283,17 @@ class Breaker : Module("Breaker", ModuleCategory.World, GLFW.GLFW_KEY_UNKNOWN, f
                         hypTick++
                         if (progress) {
                             PlayerUtil.destroyBlock(hitResult)
-                            if (hypTick >= 5) {
+                            if (hypTick >= 3) {
                                 TargetUtil.noKillAura = false
                                 if (!ModuleManager.getModuleState(KillAura()) || KillAura.closestEntity == null)
-                                    RotationUtil.reset()
+                                    RotationUtil.aimAtBlock(
+                                        Vec3d.ofCenter(cachedBedPos),
+                                        90f,
+                                        false,
+                                        10f,
+                                        0f,
+                                        0f
+                                    )
                             }
                         } else {
                             TargetUtil.noKillAura = true
@@ -429,12 +445,15 @@ class Breaker : Module("Breaker", ModuleCategory.World, GLFW.GLFW_KEY_UNKNOWN, f
                     )
                     IMinecraft.mc.player!!.swingHand(Hand.MAIN_HAND)
                     IMinecraft.mc.interactionManager!!.breakBlock(cachedSecondPos)
-                } else
+                } else {
                     PacketUtil.sendPacketAsSilent(
                         PlayerActionC2SPacket(
                             PlayerActionC2SPacket.Action.ABORT_DESTROY_BLOCK, cachedSecondPos, Direction.UP
                         )
                     )
+                    if (mode.get().equals("hypixel", true))
+                        hypTick = 810
+                }
             }
             if (progress && cachedBedPos != null) {
                 if (IMinecraft.mc.world!!.getBlockState(cachedBedPos).isAir) {
@@ -459,12 +478,15 @@ class Breaker : Module("Breaker", ModuleCategory.World, GLFW.GLFW_KEY_UNKNOWN, f
                     )
                     IMinecraft.mc.player!!.swingHand(Hand.MAIN_HAND)
                     IMinecraft.mc.interactionManager!!.breakBlock(cachedBedPos)
-                } else
+                } else {
                     PacketUtil.sendPacketAsSilent(
                         PlayerActionC2SPacket(
                             PlayerActionC2SPacket.Action.ABORT_DESTROY_BLOCK, cachedBedPos, Direction.DOWN
                         )
                     )
+                    if (mode.get().equals("hypixel", true))
+                        hypTick = 810
+                }
             }
             cachedSecondPos = null
             cachedBedPos = null
@@ -478,7 +500,7 @@ class Breaker : Module("Breaker", ModuleCategory.World, GLFW.GLFW_KEY_UNKNOWN, f
                 if (mode.get().equals("hypixel", true)) {
                     if (hypTick >= 810)
                         hypTick++
-                    if (hypTick >= 817) {
+                    if (hypTick >= 820) {
                         TargetUtil.noKillAura = false
                         RotationUtil.reset()
                         hypTick = 0

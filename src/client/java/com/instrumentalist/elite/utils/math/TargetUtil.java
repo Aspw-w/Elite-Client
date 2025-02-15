@@ -30,7 +30,7 @@ public class TargetUtil {
     public static List<Entity> getSingletonTargetsAsList() {
         if (ModuleManager.getModuleState(new KillAura()) && KillAura.closestEntity != null) {
             return Collections.singletonList(KillAura.closestEntity);
-        } else if (IMinecraft.mc.targetedEntity != null) {
+        } else if (IMinecraft.mc.targetedEntity instanceof LivingEntity) {
             return Collections.singletonList(IMinecraft.mc.targetedEntity);
         }
         return Collections.emptyList();
