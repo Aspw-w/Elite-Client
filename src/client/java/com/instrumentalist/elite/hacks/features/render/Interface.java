@@ -256,7 +256,7 @@ public class Interface extends Module {
 
     @Override
     public void onRenderHud(RenderHudEvent event) {
-        if (IMinecraft.mc.player == null || IMinecraft.mc.world == null) return;
+        if (IMinecraft.mc.player == null || IMinecraft.mc.world == null || IMinecraft.mc.options.hudHidden) return;
 
         int bgColor = 0;
 
