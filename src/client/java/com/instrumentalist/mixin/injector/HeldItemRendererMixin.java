@@ -78,7 +78,7 @@ public abstract class HeldItemRendererMixin {
 
                         float equip = 0f;
 
-                        if (LegacyCombat.Companion.getEquipment().get())
+                        if (LegacyCombat.Companion.getSwordEquip().get())
                             equip = equipProgress;
 
                         this.applyEquipOffset(matrices, arm, equip);
@@ -185,22 +185,20 @@ public abstract class HeldItemRendererMixin {
     @Inject(method = "updateHeldItems", at = @At("HEAD"), cancellable = true)
     public void itemSpoofHook(CallbackInfo ci) {
         if (LegacyCombat.Companion.shouldBlock()) {
-            if (LegacyCombat.Companion.getMode().get().equalsIgnoreCase("old") && LegacyCombat.Companion.getEquipment().get() || LegacyCombat.Companion.getMode().get().equalsIgnoreCase("astra") || LegacyCombat.Companion.getMode().get().equalsIgnoreCase("slide") || LegacyCombat.Companion.getMode().get().equalsIgnoreCase("swank")) {
-                ci.cancel();
+            ci.cancel();
 
-                this.prevEquipProgressMainHand = this.equipProgressMainHand;
-                ClientPlayerEntity clientPlayerEntity = this.client.player;
-                if (clientPlayerEntity == null) return;
-                ItemStack itemStack = clientPlayerEntity.getMainHandStack();
+            this.prevEquipProgressMainHand = this.equipProgressMainHand;
+            ClientPlayerEntity clientPlayerEntity = this.client.player;
+            if (clientPlayerEntity == null) return;
+            ItemStack itemStack = clientPlayerEntity.getMainHandStack();
 
-                if (ItemStack.areEqual(this.mainHand, itemStack))
-                    this.mainHand = itemStack;
+            if (ItemStack.areEqual(this.mainHand, itemStack))
+                this.mainHand = itemStack;
 
-                this.equipProgressMainHand += MathHelper.clamp((this.mainHand == itemStack ? 1f : 0.0F) - this.equipProgressMainHand, -0.4F, 0.4F);
+            this.equipProgressMainHand += MathHelper.clamp((this.mainHand == itemStack ? 1f : 0.0F) - this.equipProgressMainHand, -0.4F, 0.4F);
 
-                if (this.equipProgressMainHand < 0.1F)
-                    this.mainHand = itemStack;
-            }
+            if (this.equipProgressMainHand < 0.1F)
+                this.mainHand = itemStack;
         } else if (Scaffold.Companion.getLastSlot() != null && IMinecraft.mc.player != null) {
             ci.cancel();
 

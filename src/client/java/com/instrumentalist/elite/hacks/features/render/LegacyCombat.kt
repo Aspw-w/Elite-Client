@@ -19,7 +19,7 @@ class LegacyCombat : Module("Legacy Combat", ModuleCategory.Render, GLFW.GLFW_KE
         val mode = ListValue("Mode", arrayOf("Old", "Astra", "Slide", "Swank"), "Old")
 
         @Setting
-        val equipment = BooleanValue("Equipment", true) { mode.get().equals("old", true) }
+        val swordEquip = BooleanValue("Sword Equip", false) { mode.get().equals("old", true) }
 
         fun shouldBlock(): Boolean {
             val hitResult = IMinecraft.mc.player!!.raycast(5.0, 0.0f, false)
