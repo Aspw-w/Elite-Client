@@ -7,6 +7,7 @@ import com.instrumentalist.elite.hacks.ModuleManager;
 import com.instrumentalist.elite.utils.value.*;
 import com.mojang.datafixers.util.Pair;
 
+import java.awt.*;
 import java.util.Objects;
 
 public class ConfigObject {
@@ -43,6 +44,14 @@ public class ConfigObject {
                     case IntValue intValue -> jsonObject.addProperty(intValue.name, intValue.value);
                     case ListValue listValue -> jsonObject.addProperty(listValue.name, listValue.value);
                     case KeyBindValue keyBindValue -> jsonObject.addProperty(keyBindValue.name, keyBindValue.value);
+                    case ColorValue colorValue -> {
+                        JsonObject colorJson = new JsonObject();
+                        colorJson.addProperty("Red", colorValue.value.getRed());
+                        colorJson.addProperty("Green", colorValue.value.getGreen());
+                        colorJson.addProperty("Blue", colorValue.value.getBlue());
+                        colorJson.addProperty("Alpha", colorValue.value.getAlpha());
+                        jsonObject.add(colorValue.name, colorJson);
+                    }
                     default -> {
                     }
                 }
@@ -80,6 +89,14 @@ public class ConfigObject {
                                 listValue.set(setting.getValue().getAsString());
                         case KeyBindValue keyBindValue when Objects.equals(keyBindValue.name, setting.getKey()) ->
                                 keyBindValue.set(setting.getValue().getAsInt());
+                        case ColorValue colorValue when Objects.equals(colorValue.name, setting.getKey()) -> {
+                            JsonObject colorJson = setting.getValue().getAsJsonObject();
+                            int r = colorJson.get("Red").getAsInt();
+                            int g = colorJson.get("Green").getAsInt();
+                            int b = colorJson.get("Blue").getAsInt();
+                            int a = colorJson.get("Alpha").getAsInt();
+                            colorValue.set(new Color(r, g, b, a));
+                        }
                         default -> {
                         }
                     }

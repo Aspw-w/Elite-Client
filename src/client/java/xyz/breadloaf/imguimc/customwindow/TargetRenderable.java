@@ -3,6 +3,7 @@ package xyz.breadloaf.imguimc.customwindow;
 import com.instrumentalist.elite.hacks.ModuleManager;
 import com.instrumentalist.elite.hacks.features.combat.KillAura;
 import com.instrumentalist.elite.utils.IMinecraft;
+import com.instrumentalist.elite.utils.math.TargetUtil;
 import imgui.ImGui;
 import imgui.flag.ImGuiCond;
 import net.minecraft.client.network.AbstractClientPlayerEntity;
@@ -12,6 +13,7 @@ import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import xyz.breadloaf.imguimc.interfaces.Renderable;
 import xyz.breadloaf.imguimc.interfaces.Theme;
+import xyz.breadloaf.imguimc.screen.EmptyScreen;
 import xyz.breadloaf.imguimc.theme.ImGuiClassicTheme;
 
 import java.util.Collections;
@@ -32,9 +34,9 @@ public class TargetRenderable implements Renderable {
 
     @Override
     public void render() {
-        if (IMinecraft.mc.player == null || IMinecraft.mc.world == null) return;
+        if (IMinecraft.mc.player == null || IMinecraft.mc.world == null || IMinecraft.mc.currentScreen instanceof EmptyScreen) return;
 
-        List<Entity> targets = getTargets();
+        List<Entity> targets = TargetUtil.getSingletonTargetsAsList();
         if (targets.isEmpty()) return;
 
         ImGui.begin("Target Info", ImGuiCond.Always);
@@ -52,15 +54,6 @@ public class TargetRenderable implements Renderable {
         }
 
         ImGui.end();
-    }
-
-    private List<Entity> getTargets() {
-        if (ModuleManager.getModuleState(new KillAura()) && KillAura.closestEntity != null) {
-            return Collections.singletonList(KillAura.closestEntity);
-        } else if (IMinecraft.mc.targetedEntity != null) {
-            return Collections.singletonList(IMinecraft.mc.targetedEntity);
-        }
-        return Collections.emptyList();
     }
 
     private void renderTargetInfo(LivingEntity target) {
