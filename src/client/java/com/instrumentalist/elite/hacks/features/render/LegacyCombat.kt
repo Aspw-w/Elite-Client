@@ -16,10 +16,19 @@ import org.lwjgl.glfw.GLFW
 class LegacyCombat : Module("Legacy Combat", ModuleCategory.Render, GLFW.GLFW_KEY_UNKNOWN, true, true) {
     companion object {
         @Setting
-        val mode = ListValue("Mode", arrayOf("Old", "Astra", "Slide", "Swank"), "Old")
+        val mode = ListValue("Mode", arrayOf("God", "Old", "Astra", "Slide", "Swank"), "God")
 
         @Setting
         val swordEquip = BooleanValue("Sword Equip", false) { mode.get().equals("old", true) }
+
+        @Setting
+        val oldEatSwing = BooleanValue("1.7 Eat Swing", true)
+
+        @Setting
+        val oldItemPosition = BooleanValue("1.7 Item Position", true)
+
+        @Setting
+        val swingHandWhileDigging = BooleanValue("Swing Hand While Digging", true)
 
         fun shouldBlock(): Boolean {
             val hitResult = IMinecraft.mc.player!!.raycast(5.0, 0.0f, false)

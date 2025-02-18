@@ -12,9 +12,11 @@ import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.render.item.HeldItemRenderer;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.entity.LivingEntity;
+import net.minecraft.item.BlockItem;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.ModelTransformationMode;
 import net.minecraft.item.ShieldItem;
+import net.minecraft.item.consume.UseAction;
 import net.minecraft.util.Arm;
 import net.minecraft.util.Hand;
 import net.minecraft.util.math.MathHelper;
@@ -22,6 +24,7 @@ import net.minecraft.util.math.RotationAxis;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
+import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
@@ -47,11 +50,48 @@ public abstract class HeldItemRendererMixin {
 
     @Shadow protected abstract void renderArmHoldingItem(MatrixStack matrices, VertexConsumerProvider vertexConsumers, int light, float equipProgress, float swingProgress, Arm arm);
 
-    private static void applyBlockTransformation(final MatrixStack matrices) {
+    @Unique
+    private void applyBlockTransformation(final MatrixStack matrices) {
         matrices.translate(-0.15F, 0.16F, 0.15F);
         matrices.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(-18.0F));
         matrices.multiply(RotationAxis.POSITIVE_Z.rotationDegrees(82.0F));
         matrices.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(112.0F));
+    }
+
+    @Inject(method = "renderFirstPersonItem", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/render/item/HeldItemRenderer;applyEquipOffset(Lnet/minecraft/client/util/math/MatrixStack;Lnet/minecraft/util/Arm;F)V", ordinal = 2, shift = At.Shift.AFTER))
+    private void applyFoodSwingOffset(AbstractClientPlayerEntity player, float tickDelta, float pitch, Hand hand, float swingProgress, ItemStack item, float equipProgress, MatrixStack matrices, VertexConsumerProvider vertexConsumers, int light, CallbackInfo ci) {
+        this.customApplySwingOffset(player, hand, swingProgress, matrices);
+    }
+
+    @Inject(method = "renderFirstPersonItem", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/render/item/HeldItemRenderer;applyEquipOffset(Lnet/minecraft/client/util/math/MatrixStack;Lnet/minecraft/util/Arm;F)V", ordinal = 4, shift = At.Shift.AFTER))
+    private void applyBowSwingOffset(AbstractClientPlayerEntity player, float tickDelta, float pitch, Hand hand, float swingProgress, ItemStack item, float equipProgress, MatrixStack matrices, VertexConsumerProvider vertexConsumers, int light, CallbackInfo ci) {
+        this.customApplySwingOffset(player, hand, swingProgress, matrices);
+    }
+
+    @Unique
+    private void customApplySwingOffset(AbstractClientPlayerEntity player, Hand hand, float swingProgress, MatrixStack matrices) {
+        if (ModuleManager.getModuleState(new LegacyCombat()) && LegacyCombat.Companion.getOldEatSwing().get()) {
+            final Arm arm = hand == Hand.MAIN_HAND ? player.getMainArm() : player.getMainArm().getOpposite();
+            applySwingOffset(matrices, arm, swingProgress);
+        }
+    }
+
+    @Unique
+    private void slightlyTiltItemPosition(AbstractClientPlayerEntity player, Hand hand, ItemStack stack, MatrixStack matrices, boolean legacyCombatToggleCheck) {
+        if ((!legacyCombatToggleCheck || ModuleManager.getModuleState(new LegacyCombat()) && LegacyCombat.Companion.getOldItemPosition().get()) && !(stack.getItem() instanceof BlockItem)) {
+            final Arm arm = hand == Hand.MAIN_HAND ? player.getMainArm() : player.getMainArm().getOpposite();
+            final int direction = arm == Arm.RIGHT ? 1 : -1;
+
+            final float scale = 0.7585F / 0.86F;
+            matrices.scale(scale, scale, scale);
+            matrices.translate(direction * -0.084F, 0.059F, 0.08F);
+            matrices.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(direction * 5.0F));
+        }
+    }
+
+    @Inject(method = "renderFirstPersonItem", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/render/item/HeldItemRenderer;renderItem(Lnet/minecraft/entity/LivingEntity;Lnet/minecraft/item/ItemStack;Lnet/minecraft/item/ModelTransformationMode;ZLnet/minecraft/client/util/math/MatrixStack;Lnet/minecraft/client/render/VertexConsumerProvider;I)V", ordinal = 1))
+    private void hookSlightlyTiltItemPosition(AbstractClientPlayerEntity player, float tickDelta, float pitch, Hand hand, float swingProgress, ItemStack stack, float equipProgress, MatrixStack matrices, VertexConsumerProvider vertexConsumers, int light, CallbackInfo ci) {
+        this.slightlyTiltItemPosition(player, hand, stack, matrices, true);
     }
 
     @Inject(method = "renderFirstPersonItem", at = @At("HEAD"), cancellable = true)
@@ -66,8 +106,20 @@ public abstract class HeldItemRendererMixin {
                 matrices.push();
 
                 Arm arm = player.getMainArm();
+                float equip = 0f;
+
+                if (LegacyCombat.Companion.getSwordEquip().get())
+                    equip = equipProgress;
 
                 switch (LegacyCombat.Companion.getMode().get().toLowerCase(Locale.ROOT)) {
+                    case "god":
+                        this.applyEquipOffset(matrices, arm, equipProgress);
+                        this.applySwingOffset(matrices, arm, swingProgress);
+
+                        this.slightlyTiltItemPosition(player, hand, item, matrices, false);
+                        this.applyBlockTransformation(matrices);
+                        break;
+
                     case "old":
                         matrices.translate(-0.05f, 0f, 0f);
 
@@ -75,11 +127,6 @@ public abstract class HeldItemRendererMixin {
                         float f = -0.1f * MathHelper.sin(swingProgress * 3.1415927F);
 
                         matrices.translate(n, 0f, f);
-
-                        float equip = 0f;
-
-                        if (LegacyCombat.Companion.getSwordEquip().get())
-                            equip = equipProgress;
 
                         this.applyEquipOffset(matrices, arm, equip);
                         this.applySwingOffset(matrices, arm, swingProgress);
@@ -164,6 +211,9 @@ public abstract class HeldItemRendererMixin {
 
                     this.applyEquipOffset(matrices, arm, equipProgress);
                     this.applySwingOffset(matrices, arm, swingProgress);
+
+                    this.slightlyTiltItemPosition(player, hand, item, matrices, true);
+
                     this.renderItem(player, IMinecraft.mc.player.getInventory().getStack(Scaffold.Companion.getLastSlot()), ModelTransformationMode.FIRST_PERSON_RIGHT_HAND, false, matrices, vertexConsumers, light);
                 } else if (!player.isInvisible()) {
                     this.renderArmHoldingItem(matrices, vertexConsumers, light, equipProgress, swingProgress, arm);
@@ -184,7 +234,7 @@ public abstract class HeldItemRendererMixin {
 
     @Inject(method = "updateHeldItems", at = @At("HEAD"), cancellable = true)
     public void itemSpoofHook(CallbackInfo ci) {
-        if (LegacyCombat.Companion.shouldBlock()) {
+        if (LegacyCombat.Companion.shouldBlock() || ModuleManager.getModuleState(new LegacyCombat()) && LegacyCombat.Companion.getOldEatSwing().get() && IMinecraft.mc.player.isUsingItem() && (IMinecraft.mc.player.getActiveItem().getUseAction() == UseAction.EAT || IMinecraft.mc.player.getActiveItem().getUseAction() == UseAction.DRINK || IMinecraft.mc.player.getActiveItem().getUseAction() == UseAction.BOW)) {
             ci.cancel();
 
             this.prevEquipProgressMainHand = this.equipProgressMainHand;

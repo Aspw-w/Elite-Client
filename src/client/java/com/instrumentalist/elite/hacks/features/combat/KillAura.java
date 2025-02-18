@@ -7,6 +7,7 @@ import com.instrumentalist.elite.hacks.Module;
 import com.instrumentalist.elite.hacks.ModuleCategory;
 import com.instrumentalist.elite.utils.ChatUtil;
 import com.instrumentalist.elite.utils.IMinecraft;
+import com.instrumentalist.elite.utils.entity.PlayerUtil;
 import com.instrumentalist.elite.utils.math.TargetUtil;
 import com.instrumentalist.elite.utils.move.MovementUtil;
 import com.instrumentalist.elite.utils.packet.BlinkUtil;
@@ -356,19 +357,16 @@ public class KillAura extends Module {
             unBlockTick++;
 
             switch (unBlockTick) {
-                case 5:
-                    if (IMinecraft.mc.player != null && IMinecraft.mc.player.getMainHandStack().getItem() instanceof SwordItem)
-                        IMinecraft.mc.gameRenderer.firstPersonRenderer.resetEquipProgress(Hand.MAIN_HAND);
-
-                    isBlocking = false;
+                case 1, 2, 3, 4, 5:
+                    PlayerUtil.INSTANCE.swingHandWithoutPacket(Hand.MAIN_HAND);
                     break;
 
                 case 6:
-                    isBlocking = true;
+                    isBlocking = false;
                     break;
             }
 
-            if (unBlockTick >= 8) {
+            if (unBlockTick >= 9) {
                 isBlocking = false;
                 unBlockTick = 0;
                 wasTargeting = false;
