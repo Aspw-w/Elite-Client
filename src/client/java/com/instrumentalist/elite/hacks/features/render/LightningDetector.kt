@@ -25,7 +25,7 @@ class LightningDetector : Module("Lightning Detector", ModuleCategory.Render, GL
         val packet = event.packet
 
         if (packet is EntitySpawnS2CPacket && packet.entityType == EntityType.LIGHTNING_BOLT) {
-            val tpMessage = Text.literal("§7[§eM§7] (§eClick to Teleport§7) §eDetected lightning at ${packet.x.toInt()} ${packet.y.toInt()} ${packet.z.toInt()} (${
+            val tpMessage = Text.literal("§e> §7(§eClick to Teleport§7) §eDetected lightning at ${packet.x.toInt()} ${packet.y.toInt()} ${packet.z.toInt()} (${
                 IMinecraft.mc.player!!.squaredDistanceToWithoutY(
                     packet.x,
                     packet.z

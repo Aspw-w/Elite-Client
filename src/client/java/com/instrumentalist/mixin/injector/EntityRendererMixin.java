@@ -41,7 +41,10 @@ public abstract class EntityRendererMixin<T extends Entity, S extends EntityRend
     @Inject(at = @At("HEAD"), method = "render", cancellable = true)
     public void render(S state, MatrixStack matrices, VertexConsumerProvider vertexConsumers, int light, CallbackInfo ci) {
         EntityRenderState.LeashData leashData = state.leashData;
-        if (leashData != null) return;
+        if (leashData != null) {
+            ci.cancel();
+            return;
+        }
 
         if (ModuleManager.getModuleState(new NameTags())) {
             ci.cancel();
