@@ -75,8 +75,10 @@ class NoSlow : Module("No Slow", ModuleCategory.Movement, GLFW.GLFW_KEY_UNKNOWN,
             if (packet is PlayerInteractItemC2SPacket) {
                 event.cancel()
 
-                if (IMinecraft.mc.player!!.isOnGround)
+                if (IMinecraft.mc.player!!.isOnGround) {
+                    IMinecraft.mc.options.jumpKey.isPressed = false
                     IMinecraft.mc.player!!.jump()
+                }
 
                 waitingPacket = true
             }

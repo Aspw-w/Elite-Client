@@ -1,5 +1,6 @@
 package com.instrumentalist.elite.utils.entity
 
+import com.instrumentalist.elite.hacks.features.render.ItemView
 import com.instrumentalist.elite.utils.IMinecraft
 import com.instrumentalist.elite.utils.packet.PacketUtil
 import net.minecraft.entity.effect.StatusEffectUtil
@@ -47,11 +48,12 @@ object PlayerUtil {
     }
 
     private fun getSnglSwingHandDuration(): Int {
+        val baseSpeed = ItemView.hookSwingSpeed(6, IMinecraft.mc.player!!)
         return if (StatusEffectUtil.hasHaste(IMinecraft.mc.player)) {
-            6 - (1 + StatusEffectUtil.getHasteAmplifier(IMinecraft.mc.player))
+            baseSpeed - (1 + StatusEffectUtil.getHasteAmplifier(IMinecraft.mc.player))
         } else {
-            if (IMinecraft.mc.player!!.hasStatusEffect(StatusEffects.MINING_FATIGUE)) 6 + (1 + IMinecraft.mc.player!!.getStatusEffect(StatusEffects.MINING_FATIGUE)
-                !!.amplifier) * 2 else 6
+            if (IMinecraft.mc.player!!.hasStatusEffect(StatusEffects.MINING_FATIGUE)) baseSpeed + (1 + IMinecraft.mc.player!!.getStatusEffect(StatusEffects.MINING_FATIGUE)
+                !!.amplifier) * 2 else baseSpeed
         }
     }
 }

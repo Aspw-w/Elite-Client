@@ -25,7 +25,7 @@ class ItemView : Module("Item View", ModuleCategory.Render, GLFW.GLFW_KEY_UNKNOW
             if (ModuleManager.getModuleState(ItemView()) && slowSwing.get() && entity is ClientPlayerEntity)
                 return 6 + setSwingSpeed.get()
 
-            return original;
+            return original
         }
     }
 
