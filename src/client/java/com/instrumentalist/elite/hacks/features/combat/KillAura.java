@@ -311,6 +311,8 @@ public class KillAura extends Module {
                     }
                     break;
             }
+        } else {
+            PlayerUtil.INSTANCE.swingHandWithoutPacket(Hand.MAIN_HAND);
         }
     }
 
@@ -357,11 +359,12 @@ public class KillAura extends Module {
             unBlockTick++;
 
             switch (unBlockTick) {
-                case 1, 2, 3, 4, 5:
+                case 1, 2, 3, 4, 5, 7, 8:
                     PlayerUtil.INSTANCE.swingHandWithoutPacket(Hand.MAIN_HAND);
                     break;
 
                 case 6:
+                    PlayerUtil.INSTANCE.swingHandWithoutPacket(Hand.MAIN_HAND);
                     isBlocking = false;
                     break;
             }
