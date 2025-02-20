@@ -62,9 +62,10 @@ object RotationUtil {
     }
 
     private fun smoothRotate(current: Float, target: Float, speed: Float): Float {
-        val delta = target - current
-        val step = delta.coerceIn(-speed, speed)
-        return current + step
+        val diff = ((target - current + 540) % 360) - 180
+        val randomOffset = Random.nextFloat() * 0.2f - 0.1f
+        val maxStep = abs(diff).coerceAtMost(speed) + randomOffset
+        return (current + maxStep * (diff / abs(diff))) % 360
     }
 
     private fun calculateRotations(
@@ -105,13 +106,10 @@ object RotationUtil {
     }
 
     fun setRotation(targetYaw: Float, targetPitch: Float, speed: Float = 90f, setRotationStatus: Boolean = true) {
-        if (currentYaw == null)
-            currentYaw = baseYaw + 0.001f
-        if (currentPitch == null)
-            currentPitch = basePitch + 0.001f
+        if (currentYaw == null) currentYaw = baseYaw + 0.001f
+        if (currentPitch == null) currentPitch = basePitch + 0.001f
 
-        if (setRotationStatus)
-            isRotating = true
+        if (setRotationStatus) isRotating = true
 
         val rotYaw = smoothRotation(currentYaw!!, targetYaw, speed)
         val rotPitch = smoothRotation(currentPitch!!, targetPitch, speed)
@@ -123,14 +121,26 @@ object RotationUtil {
         return Random.nextFloat() * maxOffset - maxOffset / 2
     }
 
+    private fun addJitter(value: Float, jitterAmount: Float): Float {
+        return value + (Random.nextFloat() * jitterAmount - jitterAmount / 2)
+}
+
+    private fun getGCDValue(angle: Float): Float {
+        return (8.0f - MathHelper.floor(8.0f / angle) * 8.0f).coerceAtLeast(1.0f)
+    }
+
+    private fun applyGCDToRotation(current: Float, target: Float): Float {
+        val delta = (target - current).wrapDegrees()
+        val gcd = getGCDValue(abs(delta))
+        return current + (MathHelper.floor(delta / gcd) * gcd)
+    }
+
     private fun smoothRotation(current: Float, target: Float, speed: Float): Float {
         val diff = ((target - current + 540) % 360) - 180
         val maxStep = abs(diff).coerceAtMost(speed)
-        return (current + maxStep * (diff / abs(diff))) % 360
-    }
+        val smoothValue = current + maxStep * (diff / abs(diff))
 
-    private fun addJitter(value: Float, jitterAmount: Float): Float {
-        return value + (Random.nextFloat() * jitterAmount - jitterAmount / 2)
+        return applyGCDToRotation(current, smoothValue)
     }
 
     private fun humanizeRotation(
@@ -141,18 +151,21 @@ object RotationUtil {
         speed: Float,
         jitterAmount: Float,
     ): Pair<Float, Float> {
-        val newYaw = smoothRotation(currentYaw, addJitter(targetYaw, jitterAmount), speed)
-        val newPitch = smoothRotation(currentPitch, addJitter(targetPitch, jitterAmount), speed)
+        val newYaw = applyGCDToRotation(currentYaw, addJitter(targetYaw, jitterAmount))
+        val newPitch = applyGCDToRotation(currentPitch, addJitter(targetPitch, jitterAmount))
+
         return Pair(newYaw, newPitch)
     }
 
     private fun applyHumanLikeRotation(yaw: Float, pitch: Float) {
-        currentYaw = yaw + getRandomOffset(0.1f)
-        currentPitch = pitch + getRandomOffset(0.1f)
+        val jitterYaw = getRandomOffset(0.3f)
+        val jitterPitch = getRandomOffset(0.2f)
+        currentYaw = yaw + jitterYaw
+        currentPitch = pitch + jitterPitch
     }
 
     private fun applyTimingDelay(minDelay: Long, maxDelay: Long) {
-        val delay = Random.nextLong(minDelay, maxDelay)
+        val delay = Random.nextLong(minDelay, maxDelay + Random.nextLong(0, 50))
         Thread.sleep(delay)
     }
 
