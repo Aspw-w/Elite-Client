@@ -26,11 +26,15 @@ public class HypixelPredictionFly implements FlyEvent {
         tick++;
 
         if (tick >= 2) {
-            TimerUtil.reset();
+            if (IMinecraft.mc.player.isOnGround() && MovementUtil.isMoving())
+                IMinecraft.mc.player.jump();
+            else event.cancel();
+            TimerUtil.timerSpeed = 1.1f;
             tick = 0;
         } else {
-            IMinecraft.mc.player.getAbilities().flying = true;
-            TimerUtil.timerSpeed = 0.1f;
+            if (!IMinecraft.mc.player.isOnGround() && MovementUtil.isMoving())
+                MovementUtil.smoothStrafe(0.6f);
+            TimerUtil.timerSpeed = 0.6f;
         }
     }
 
@@ -40,5 +44,9 @@ public class HypixelPredictionFly implements FlyEvent {
 
     @Override
     public void onTick(TickEvent event) {
+        if (IMinecraft.mc.player == null) return;
+
+        if (IMinecraft.mc.player.isOnGround() && MovementUtil.isMoving())
+            IMinecraft.mc.options.jumpKey.setPressed(false);
     }
 }

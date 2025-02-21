@@ -87,6 +87,11 @@ public class Fly extends Module {
                 if (!IMinecraft.mc.player.isCreative())
                     IMinecraft.mc.player.getAbilities().flying = false;
             }
+        } else if (flyModeManager.currentMode instanceof HypixelPredictionFly) {
+            HypixelPredictionFly.awa = 0;
+            HypixelPredictionFly.man = 0;
+            HypixelPredictionFly.tick = 0;
+            TimerUtil.reset();
         }
     }
 
