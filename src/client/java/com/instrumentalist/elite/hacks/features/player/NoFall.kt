@@ -60,7 +60,7 @@ class NoFall : Module("No Fall", ModuleCategory.Player, GLFW.GLFW_KEY_UNKNOWN, f
                     when (timerStage) {
                         0 -> {
                             TimerUtil.timerSpeed = 0.5f
-                            PacketUtil.sendPacket(PlayerMoveC2SPacket.OnGroundOnly(true, IMinecraft.mc.player!!.horizontalCollision))
+                            PacketUtil.sendPacket(PlayerMoveC2SPacket.OnGroundOnly(true, false))
                             timerStage++
                             timered = true
                         }
