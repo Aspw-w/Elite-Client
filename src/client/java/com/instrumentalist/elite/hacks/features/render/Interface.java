@@ -121,6 +121,7 @@ public class Interface extends Module {
             () -> !colorMode.get().equalsIgnoreCase("static")
     );
 
+
     public static TextRenderer cachedTextRenderer = null;
     public static List<Module> sortedModules;
 
@@ -282,6 +283,8 @@ public class Interface extends Module {
             String watermarkText = null;
             Color textColor = Color.WHITE;
 
+            int originalBgColor = bgColor;
+
             switch (watermarkMode.get().toLowerCase()) {
                 case "normal":
                     watermarkText = "§f" + clientName.get() + " (§c" + formattedNow + "§f)";
@@ -306,6 +309,9 @@ public class Interface extends Module {
                     bgColor,
                     0
             );
+
+            bgColor = originalBgColor;
+
             infoY += 10f;
         }
 

@@ -7,7 +7,6 @@ import imgui.flag.*;
 import imgui.gl3.ImGuiImplGl3;
 import imgui.glfw.ImGuiImplGlfw;
 import net.minecraft.client.util.Window;
-import xyz.breadloaf.imguimc.customwindow.TargetRenderable;
 import xyz.breadloaf.imguimc.interfaces.Renderable;
 import imgui.flag.ImGuiCol;
 import imgui.flag.ImGuiConfigFlags;
@@ -44,11 +43,6 @@ public class ImguiLoader {
             renderable.render();
             renderable.getTheme().postRender();
         }
-
-        Renderable targetInfo = new TargetRenderable();
-        targetInfo.getTheme().preRender();
-        targetInfo.render();
-        targetInfo.getTheme().postRender();
 
         //end of user code
 
