@@ -49,12 +49,6 @@ public class FlyModeManager {
     }
 
     public void onUpdate(UpdateEvent event) {
-        if (!flyMode.get().equals(currentMode.getName())) {
-            Fly.onDisableFunctions();
-            updateCurrentMode();
-            Fly.onEnableFunctions();
-        }
-
         if (currentMode != null)
             currentMode.onUpdate(event);
     }
@@ -65,6 +59,12 @@ public class FlyModeManager {
     }
 
     public void onTick(TickEvent event) {
+        if (!flyMode.get().equals(currentMode.getName())) {
+            Fly.onDisableFunctions();
+            updateCurrentMode();
+            Fly.onEnableFunctions();
+        }
+
         if (currentMode != null)
             currentMode.onTick(event);
     }

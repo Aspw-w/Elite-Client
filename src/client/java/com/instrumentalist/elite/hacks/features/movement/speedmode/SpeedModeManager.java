@@ -43,12 +43,6 @@ public class SpeedModeManager {
     }
 
     public void onUpdate(UpdateEvent event) {
-        if (!speedMode.get().equals(currentMode.getName())) {
-            Speed.onDisableFunctions();
-            updateCurrentMode();
-            Speed.onEnableFunctions();
-        }
-
         if (currentMode != null)
             currentMode.onUpdate(event);
     }
@@ -59,6 +53,12 @@ public class SpeedModeManager {
     }
 
     public void onTick(TickEvent event) {
+        if (!speedMode.get().equals(currentMode.getName())) {
+            Speed.onDisableFunctions();
+            updateCurrentMode();
+            Speed.onEnableFunctions();
+        }
+
         if (currentMode != null)
             currentMode.onTick(event);
     }
