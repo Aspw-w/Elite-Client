@@ -7,6 +7,7 @@
     "BipedEntityModelMixin",
     "BlockMixin",
     "CameraMixin",
+    "ChatScreenMixin",
     "ChunkOcclusionGraphBuilderMixin",
     "ClientConnectionMixin",
     "ClientPlayerEntityMixin",

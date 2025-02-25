@@ -10,6 +10,7 @@ import com.instrumentalist.elite.utils.IMinecraft
 import com.instrumentalist.elite.utils.math.TargetUtil
 import com.instrumentalist.elite.utils.render.RegionPos
 import com.instrumentalist.elite.utils.render.RenderUtil
+import com.instrumentalist.elite.utils.value.BooleanValue
 import net.minecraft.entity.Entity
 import net.minecraft.entity.LivingEntity
 import net.minecraft.util.math.BlockPos
@@ -17,6 +18,11 @@ import org.lwjgl.glfw.GLFW
 import org.lwjgl.opengl.GL11
 
 class TargetESP : Module("Target ESP", ModuleCategory.Render, GLFW.GLFW_KEY_UNKNOWN, true, true) {
+    @Setting
+    private val ring = BooleanValue("Ring", true)
+
+    @Setting
+    private val star = BooleanValue("Star", true)
 
     override fun onDisable() {
         if (IMinecraft.mc.player == null) return
@@ -37,7 +43,7 @@ class TargetESP : Module("Target ESP", ModuleCategory.Render, GLFW.GLFW_KEY_UNKN
     }
 
     override fun onRender(event: RenderEvent) {
-        if (IMinecraft.mc.player == null || IMinecraft.mc.world == null) return
+        if (IMinecraft.mc.player == null || IMinecraft.mc.world == null || !ring.get() && !star.get()) return
 
         val targets: MutableList<Entity> = TargetUtil.getSingletonTargetsAsList()
 
@@ -62,8 +68,10 @@ class TargetESP : Module("Target ESP", ModuleCategory.Render, GLFW.GLFW_KEY_UNKN
         RenderUtil.applyRegionalRenderOffset(matrixStack, region)
 
         for (i in targets) {
-            RenderUtil.drawStarAtEntity(i, matrixStack, partialTicks)
-            RenderUtil.drawRisingRingAroundEntity(i, matrixStack, partialTicks)
+            if (star.get())
+                RenderUtil.drawStarAtEntity(i, matrixStack, partialTicks)
+            if (ring.get())
+                RenderUtil.drawRisingRingAroundEntity(i, matrixStack, partialTicks)
         }
 
         matrixStack.pop()

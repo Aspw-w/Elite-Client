@@ -113,6 +113,7 @@ public class ModuleManager implements EventListener {
         modules.add(new TimeChanger());
         modules.add(new Scoreboard());
         modules.add(new TargetESP());
+        modules.add(new ChatCommands());
 
         // Not shown for click gui (category is NULL)
         modules.add(new PluginsDetector());

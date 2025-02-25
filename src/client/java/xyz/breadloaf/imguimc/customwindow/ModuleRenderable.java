@@ -6,6 +6,7 @@ import com.instrumentalist.elite.hacks.ModuleCategory;
 import com.instrumentalist.elite.hacks.ModuleManager;
 import com.instrumentalist.elite.hacks.features.nulling.PluginsDetector;
 import com.instrumentalist.elite.hacks.features.exploit.ServerCrasher;
+import com.instrumentalist.elite.hacks.features.player.ChatCommands;
 import com.instrumentalist.elite.utils.ChatUtil;
 import com.instrumentalist.elite.utils.FileUtil;
 import com.instrumentalist.elite.utils.IMinecraft;
@@ -22,6 +23,7 @@ import net.minecraft.client.network.PlayerListEntry;
 import net.minecraft.client.util.InputUtil;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.network.packet.c2s.play.PlayerMoveC2SPacket;
+import net.minecraft.text.Text;
 import org.lwjgl.glfw.GLFW;
 import xyz.breadloaf.imguimc.interfaces.Renderable;
 import xyz.breadloaf.imguimc.interfaces.Theme;
@@ -189,7 +191,7 @@ public class ModuleRenderable implements Renderable {
                             if (ImGui.inputText("Command Input", commandInput, ImGuiInputTextFlags.EnterReturnsTrue)) {
                                 if (!commandLogs.isEmpty())
                                     commandLogs.add("==================================================");
-                                executeCommand(commandInput.get());
+                                executeCommand(commandInput.get(), false);
                                 commandInput.set("");
                                 ImGui.setKeyboardFocusHere(-1);
                             }
@@ -406,18 +408,29 @@ public class ModuleRenderable implements Renderable {
         }
     }
 
-    private void executeCommand(String command) {
-        if (command.isBlank()) return;
+    private static void showLog(Boolean chat, String message) {
+        if (chat) {
+            ChatUtil.printChat(message);
+            IMinecraft.mc.inGameHud.getChatHud().addToMessageHistory(message);
+        } else log(message);
+    }
+
+    public static void executeCommand(String command, Boolean chatMode) {
+        if (command.isBlank()) {
+            if (chatMode)
+                showLog(true, ChatCommands.Companion.getPrefix().get() + "help to show every commands");
+            return;
+        }
 
         if (command.equalsIgnoreCase("help") || command.equalsIgnoreCase("commands")) {
-            log("help/commands -> show every commands");
-            log("t/toggle <module> -> toggle module");
-            log("bind <module> <key> -> bind module");
-            log("crash -> crash the server");
-            log("pl/plugins -> detect server plugins");
-            log("transaction -> debug transaction packets (x10)");
-            log("session -> show your current session id");
-            log("vclip <height> -> teleport up from current position");
+            showLog(chatMode, "help/commands -> show every commands");
+            showLog(chatMode, "t/toggle <module> -> toggle module");
+            showLog(chatMode, "bind <module> <key> -> bind module");
+            showLog(chatMode, "crash -> crash the server");
+            showLog(chatMode, "pl/plugins -> detect server plugins");
+            showLog(chatMode, "transaction -> debug transaction packets (x10)");
+            showLog(chatMode, "session -> show your current session id");
+            showLog(chatMode, "vclip <height> -> teleport up from current position");
         } else if (command.toLowerCase().startsWith("t " ) || command.toLowerCase().startsWith("toggle " )) {
             String moduleName = "";
 
@@ -430,24 +443,24 @@ public class ModuleRenderable implements Renderable {
                 if (moduleName.equals(module.moduleName.toLowerCase().replace(" ", ""))) {
                     module.toggle();
                     if (module.tempEnabled)
-                        log("Enabled " + module.moduleName);
-                    else log("Disabled " + module.moduleName);
+                        showLog(chatMode, "Enabled " + module.moduleName);
+                    else showLog(chatMode, "Disabled " + module.moduleName);
                     return;
                 }
             }
 
-            log("Module " + moduleName + " was not found");
+            showLog(chatMode, "Module " + moduleName + " was not found");
         } else if (command.equalsIgnoreCase("crash")) {
-            log("Crashing server...");
+            showLog(chatMode, "Crashing server...");
             for (Module module : ModuleManager.modules) {
                 if (module instanceof ServerCrasher && !module.tempEnabled)
                     module.toggle();
             }
         } else if (command.equalsIgnoreCase("transaction")) {
-            log("Logging transactions...");
+            showLog(chatMode, "Logging transactions...");
             ModuleManager.gettingTransactions = true;
         } else if (command.equalsIgnoreCase("pl") || command.equalsIgnoreCase("plugins")) {
-            log("Detecting plugins...");
+            showLog(chatMode, "Detecting plugins...");
             for (Module module : ModuleManager.modules) {
                 if (module instanceof PluginsDetector && !module.tempEnabled)
                     module.toggle();
@@ -465,17 +478,17 @@ public class ModuleRenderable implements Renderable {
                         try {
                             int newKey = InputUtil.fromTranslationKey("key.keyboard." + parts[1].toLowerCase()).getCode();
                             module.key = newKey;
-                            log("Bound " + newKey + " key to " + module.moduleName + " module");
+                            showLog(chatMode, "Bound " + newKey + " key to " + module.moduleName + " module");
                         } catch (NumberFormatException ignored) {
                             module.key = GLFW.GLFW_KEY_UNKNOWN;
-                            log("Unbound " + module.moduleName + " module");
+                            showLog(chatMode, "Unbound " + module.moduleName + " module");
                         }
                         return;
                     }
                 }
             }
 
-            log("Module " + moduleName + " was not found");
+            showLog(chatMode, "Module " + moduleName + " was not found");
         } else if (command.startsWith("vclip ")) {
             String distance = "";
             if (command.toLowerCase().startsWith("vclip " ))
@@ -490,21 +503,21 @@ public class ModuleRenderable implements Renderable {
                         }
                     }
                     IMinecraft.mc.player.setPosition(IMinecraft.mc.player.getPos().x, IMinecraft.mc.player.getPos().y + dist, IMinecraft.mc.player.getPos().z);
-                    log("teleported");
+                    showLog(chatMode, "teleported");
                 }
             } catch (NumberFormatException ignored) {
-                log("tp failed");
+                showLog(chatMode, "tp failed");
             }
         } else if (command.equalsIgnoreCase("session")) {
             if (IMinecraft.mc.getNetworkHandler() != null)
-                log(String.valueOf(IMinecraft.mc.getNetworkHandler().getSessionId()));
-            else log("Session is null");
+                showLog(chatMode, String.valueOf(IMinecraft.mc.getNetworkHandler().getSessionId()));
+            else showLog(chatMode, "Session is null");
         } else {
-            log("Unknown command: " + command);
+            showLog(chatMode, "Unknown command: " + command);
         }
     }
 
-    private void log(String log) {
+    private static void log(String log) {
         commandLogs.add(log);
         if (commandLogs.size() > 50)
             commandLogs.removeFirst();
