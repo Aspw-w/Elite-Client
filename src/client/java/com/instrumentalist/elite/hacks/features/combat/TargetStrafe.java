@@ -54,7 +54,7 @@ public class TargetStrafe extends Module {
             return false;
         }
 
-        return (ModuleManager.getModuleState(new Fly()) || ModuleManager.getModuleState(new Speed())) && InputUtil.isKeyPressed(IMinecraft.mc.getWindow().getHandle(), InputUtil.fromTranslationKey(IMinecraft.mc.options.jumpKey.getBoundKeyTranslationKey()).getCode()) && !InputUtil.isKeyPressed(IMinecraft.mc.getWindow().getHandle(), InputUtil.fromTranslationKey(IMinecraft.mc.options.leftKey.getBoundKeyTranslationKey()).getCode()) && !InputUtil.isKeyPressed(IMinecraft.mc.getWindow().getHandle(), InputUtil.fromTranslationKey(IMinecraft.mc.options.rightKey.getBoundKeyTranslationKey()).getCode()) && !InputUtil.isKeyPressed(IMinecraft.mc.getWindow().getHandle(), InputUtil.fromTranslationKey(IMinecraft.mc.options.backKey.getBoundKeyTranslationKey()).getCode());
+        return (ModuleManager.getModuleState(new Fly()) || ModuleManager.getModuleState(new Speed())) && !InputUtil.isKeyPressed(IMinecraft.mc.getWindow().getHandle(), InputUtil.fromTranslationKey(IMinecraft.mc.options.leftKey.getBoundKeyTranslationKey()).getCode()) && !InputUtil.isKeyPressed(IMinecraft.mc.getWindow().getHandle(), InputUtil.fromTranslationKey(IMinecraft.mc.options.rightKey.getBoundKeyTranslationKey()).getCode()) && !InputUtil.isKeyPressed(IMinecraft.mc.getWindow().getHandle(), InputUtil.fromTranslationKey(IMinecraft.mc.options.backKey.getBoundKeyTranslationKey()).getCode());
     }
 
     @Override
