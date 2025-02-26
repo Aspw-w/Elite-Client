@@ -24,7 +24,7 @@ public class Zoom extends Module {
     }
 
     @Setting
-    private final KeyBindValue zoomKey = new KeyBindValue("Zoom Key", GLFW.GLFW_KEY_R);
+    private final KeyBindValue zoomKey = new KeyBindValue("Zoom Key", GLFW.GLFW_KEY_UNKNOWN);
 
     private static boolean zooming = false;
     private static Float prevFov = null;

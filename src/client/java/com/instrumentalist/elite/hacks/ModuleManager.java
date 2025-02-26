@@ -114,8 +114,6 @@ public class ModuleManager implements EventListener {
         modules.add(new Scoreboard());
         modules.add(new TargetESP());
         modules.add(new ChatCommands());
-
-        // Not shown for click gui (category is NULL)
         modules.add(new PluginsDetector());
 
         modules.sort(Comparator.comparing(module -> module.moduleName));
@@ -133,6 +131,15 @@ public class ModuleManager implements EventListener {
 
     public static boolean getModuleState(Module module) {
         return modules.stream().anyMatch(m -> m.getClass() == module.getClass() && m.tempEnabled);
+    }
+
+    public static Module getModuleByName(String moduleName) {
+        for (Module module : modules) {
+            if (module.moduleName.equalsIgnoreCase(moduleName)) {
+                return module;
+            }
+        }
+        return null;
     }
 
     public static void pullDebugScreen() {

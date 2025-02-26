@@ -58,33 +58,20 @@ public abstract class HeldItemRendererMixin {
         matrices.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(112.0F));
     }
 
-    @Inject(method = "renderFirstPersonItem", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/render/item/HeldItemRenderer;applyEquipOffset(Lnet/minecraft/client/util/math/MatrixStack;Lnet/minecraft/util/Arm;F)V", ordinal = 2, shift = At.Shift.AFTER))
-    private void applyFoodSwingOffset(AbstractClientPlayerEntity player, float tickDelta, float pitch, Hand hand, float swingProgress, ItemStack item, float equipProgress, MatrixStack matrices, VertexConsumerProvider vertexConsumers, int light, CallbackInfo ci) {
-        this.customApplySwingOffset(player, hand, swingProgress, matrices);
-    }
-
-    @Inject(method = "renderFirstPersonItem", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/render/item/HeldItemRenderer;applyEquipOffset(Lnet/minecraft/client/util/math/MatrixStack;Lnet/minecraft/util/Arm;F)V", ordinal = 4, shift = At.Shift.AFTER))
-    private void applyBowSwingOffset(AbstractClientPlayerEntity player, float tickDelta, float pitch, Hand hand, float swingProgress, ItemStack item, float equipProgress, MatrixStack matrices, VertexConsumerProvider vertexConsumers, int light, CallbackInfo ci) {
-        this.customApplySwingOffset(player, hand, swingProgress, matrices);
-    }
-
-    @Unique
-    private void customApplySwingOffset(AbstractClientPlayerEntity player, Hand hand, float swingProgress, MatrixStack matrices) {
-        if (ModuleManager.getModuleState(new LegacyCombat()) && LegacyCombat.Companion.getOldEatSwing().get()) {
-            final Arm arm = hand == Hand.MAIN_HAND ? player.getMainArm() : player.getMainArm().getOpposite();
-            applySwingOffset(matrices, arm, swingProgress);
-        }
-    }
-
     @Unique
     private void slightlyTiltItemPosition(AbstractClientPlayerEntity player, Hand hand, ItemStack stack, MatrixStack matrices, boolean legacyCombatToggleCheck) {
         if ((!legacyCombatToggleCheck || ModuleManager.getModuleState(new LegacyCombat()) && LegacyCombat.Companion.getOldItemPosition().get()) && !(stack.getItem() instanceof BlockItem)) {
             final Arm arm = hand == Hand.MAIN_HAND ? player.getMainArm() : player.getMainArm().getOpposite();
             final int direction = arm == Arm.RIGHT ? 1 : -1;
 
-            final float scale = 0.7585F / 0.86F;
+            float itemX = LegacyCombat.Companion.getItemX().get();
+            float itemY = LegacyCombat.Companion.getItemY().get();
+            float itemZ = LegacyCombat.Companion.getItemZ().get();
+            float itemScale = LegacyCombat.Companion.getItemScale().get();
+
+            final float scale = 0.7585F / 0.86F * itemScale;
             matrices.scale(scale, scale, scale);
-            matrices.translate(direction * -0.084F, 0.059F, 0.08F);
+            matrices.translate(direction * -0.084F + itemX, 0.059F + itemY, 0.08F + itemZ);
             matrices.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(direction * 5.0F));
         }
     }
@@ -119,7 +106,6 @@ public abstract class HeldItemRendererMixin {
                         this.slightlyTiltItemPosition(player, hand, item, matrices, false);
                         this.applyBlockTransformation(matrices);
                         break;
-
                     case "old":
                         matrices.translate(-0.05f, 0f, 0f);
 
@@ -134,6 +120,12 @@ public abstract class HeldItemRendererMixin {
                         matrices.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(77f));
                         matrices.multiply(RotationAxis.POSITIVE_Z.rotationDegrees(-10f));
                         matrices.multiply(RotationAxis.POSITIVE_X.rotationDegrees(-80f));
+
+                        if (player.isUsingItem()) {
+                            matrices.translate(0.05f, -0.05f, -0.1f);
+                            matrices.multiply(RotationAxis.POSITIVE_X.rotationDegrees(20f));
+                            matrices.scale(1.1f, 1.1f, 1.1f);
+                        }
                         break;
 
                     case "astra":
@@ -142,7 +134,7 @@ public abstract class HeldItemRendererMixin {
                         this.applyEquipOffset(matrices, arm, equipProgress / 1.42f);
                         this.applySwingOffset(matrices, arm, swingProgress);
 
-                        final float var9 = MathHelper.sin(MathHelper.sqrt(swingProgress) * (float) Math.PI);
+                        float var9 = MathHelper.sin(MathHelper.sqrt(swingProgress) * (float) Math.PI);
 
                         matrices.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(-var9 * -30f));
                         matrices.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(-var9 * 60f));
@@ -151,6 +143,12 @@ public abstract class HeldItemRendererMixin {
                         matrices.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(77f));
                         matrices.multiply(RotationAxis.POSITIVE_Z.rotationDegrees(-10f));
                         matrices.multiply(RotationAxis.POSITIVE_X.rotationDegrees(-80f));
+
+                        if (player.isUsingItem()) {
+                            matrices.translate(0.05f, -0.05f, -0.1f);
+                            matrices.multiply(RotationAxis.POSITIVE_X.rotationDegrees(20f));
+                            matrices.scale(1.1f, 1.1f, 1.1f);
+                        }
                         break;
 
                     case "slide":
@@ -159,12 +157,18 @@ public abstract class HeldItemRendererMixin {
                         this.applyEquipOffset(matrices, arm, equipProgress / 1.42f);
                         this.applySwingOffset(matrices, arm, swingProgress);
 
-                        final float var111 = MathHelper.sin(MathHelper.sqrt(swingProgress) * (float) Math.PI);
+                        float var111 = MathHelper.sin(MathHelper.sqrt(swingProgress) * (float) Math.PI);
 
                         matrices.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(-var111 * -30f));
                         matrices.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(77f));
                         matrices.multiply(RotationAxis.POSITIVE_Z.rotationDegrees(-10f));
                         matrices.multiply(RotationAxis.POSITIVE_X.rotationDegrees(-80f));
+
+                        if (player.isUsingItem()) {
+                            matrices.translate(0.05f, -0.05f, -0.1f);
+                            matrices.multiply(RotationAxis.POSITIVE_X.rotationDegrees(20f));
+                            matrices.scale(1.1f, 1.1f, 1.1f);
+                        }
                         break;
 
                     case "swank":
@@ -173,12 +177,18 @@ public abstract class HeldItemRendererMixin {
                         this.applyEquipOffset(matrices, arm, equipProgress / 1.42f);
                         this.applySwingOffset(matrices, arm, swingProgress);
 
-                        final float var69 = MathHelper.sin(MathHelper.sqrt(swingProgress));
+                        float var69 = MathHelper.sin(MathHelper.sqrt(swingProgress));
 
                         matrices.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(-var69 * -1f));
                         matrices.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(77f));
                         matrices.multiply(RotationAxis.POSITIVE_Z.rotationDegrees(-2f));
                         matrices.multiply(RotationAxis.POSITIVE_X.rotationDegrees(-80f));
+
+                        if (player.isUsingItem()) {
+                            matrices.translate(0.05f, -0.05f, -0.1f);
+                            matrices.multiply(RotationAxis.POSITIVE_X.rotationDegrees(20f));
+                            matrices.scale(1.1f, 1.1f, 1.1f);
+                        }
                         break;
                 }
 

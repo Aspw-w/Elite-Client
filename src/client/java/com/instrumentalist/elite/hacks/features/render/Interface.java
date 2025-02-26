@@ -122,6 +122,7 @@ public class Interface extends Module {
     );
 
 
+
     public static TextRenderer cachedTextRenderer = null;
     public static List<Module> sortedModules;
 
@@ -132,12 +133,11 @@ public class Interface extends Module {
         switch (colorMode.get().toLowerCase()) {
             case "static":
                 return primaryColor.get();
-
             case "fade":
                 float fadeProgress = (time % (long) fadeCycleDuration) / fadeCycleDuration;
                 fadeProgress = (fadeProgress + (float) index / totalModules) % 1.0f;
 
-                fadeProgress = 0.5f - 0.5f * (float) Math.cos(fadeProgress * 2 * Math.PI);
+                fadeProgress = 1 * (float) Math.cos(fadeProgress * 2 * Math.PI);
 
                 Color primary = primaryColor.get();
                 Color secondary = secondaryColor.get();
@@ -150,7 +150,6 @@ public class Interface extends Module {
 
                 float saturation = 1.0f;
                 return Color.getHSBColor(hueProgress, saturation, brightness);
-
             default:
                 return Color.WHITE;
         }

@@ -7,6 +7,7 @@ import com.instrumentalist.elite.hacks.features.combat.KillAura
 import com.instrumentalist.elite.utils.IMinecraft
 import com.instrumentalist.elite.utils.value.BooleanValue
 import com.instrumentalist.elite.utils.value.ListValue
+import com.instrumentalist.elite.utils.value.FloatValue
 import net.minecraft.block.*
 import net.minecraft.item.SwordItem
 import net.minecraft.util.hit.BlockHitResult
@@ -29,6 +30,18 @@ class LegacyCombat : Module("Legacy Combat", ModuleCategory.Render, GLFW.GLFW_KE
 
         @Setting
         val swingHandWhileDigging = BooleanValue("Swing Hand While Digging", true)
+
+        @Setting
+        val itemX = FloatValue("Item X", 0.0f, -1.0f, 1.0f)
+
+        @Setting
+        val itemY = FloatValue("Item Y", 0.0f, -1.0f, 1.0f)
+
+        @Setting
+        val itemZ = FloatValue("Item Z", 0.0f, -1.0f, 1.0f)
+
+        @Setting
+        val itemScale = FloatValue("Item Scale", 1.0f, 0.1f, 2.0f)
 
         fun shouldBlock(): Boolean {
             val hitResult = IMinecraft.mc.player!!.raycast(5.0, 0.0f, false)
