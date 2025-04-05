@@ -14,7 +14,6 @@ import net.minecraft.util.math.BlockPos
 import org.lwjgl.glfw.GLFW
 
 class AutoTool : Module("Auto Tool", ModuleCategory.Player, GLFW.GLFW_KEY_UNKNOWN, false, true) {
-    @Setting
     private val autoSword = BooleanValue("Auto Sword", true)
 
     private var pos: BlockPos? = null

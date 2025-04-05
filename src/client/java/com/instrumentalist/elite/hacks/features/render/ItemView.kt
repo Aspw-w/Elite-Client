@@ -12,13 +12,10 @@ import org.lwjgl.glfw.GLFW
 
 class ItemView : Module("Item View", ModuleCategory.Render, GLFW.GLFW_KEY_UNKNOWN, false, true) {
     companion object {
-        @Setting
         val lowOffHand = BooleanValue("Low Off Hand", true)
 
-        @Setting
         private val slowSwing = BooleanValue("Slow Swing", false)
 
-        @Setting
         private val setSwingSpeed = IntValue("Set Swing Speed", 5, -5, 20) { slowSwing.get() }
 
         fun hookSwingSpeed(original: Int, entity: Entity): Int {

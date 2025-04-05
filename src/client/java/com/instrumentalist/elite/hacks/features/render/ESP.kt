@@ -20,10 +20,8 @@ import org.lwjgl.opengl.GL11
 import kotlin.streams.asSequence
 
 class ESP : Module("ESP", ModuleCategory.Render, GLFW.GLFW_KEY_UNKNOWN, false, true) {
-    @Setting
     private val onlyPlayers = BooleanValue("Only Players", true)
 
-    @Setting
     private val local = BooleanValue("Local", false)
 
     override fun onDisable() {}

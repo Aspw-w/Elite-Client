@@ -17,7 +17,6 @@ public class HudPoser extends Module {
         super("Hud Poser", ModuleCategory.Render, GLFW.GLFW_KEY_UNKNOWN, true, true);
     }
 
-    @Setting
     public static final ListValue statusEffects = new ListValue("Status Effects", Arrays.asList("Down", "Hide").toArray(new String[0]), "Down");
 
     @Override

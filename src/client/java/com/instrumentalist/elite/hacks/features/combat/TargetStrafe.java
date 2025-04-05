@@ -34,7 +34,6 @@ public class TargetStrafe extends Module {
         super("Target Strafe", ModuleCategory.Combat, GLFW.GLFW_KEY_UNKNOWN, false, true);
     }
 
-    @Setting
     public static FloatValue distance = new FloatValue(
             "Distance",
             1.5f,
@@ -42,7 +41,6 @@ public class TargetStrafe extends Module {
             8f
     );
 
-    @Setting
     private static final BooleanValue jumpOnly = new BooleanValue("Jump Only", true);
 
     public static int direction = 1;

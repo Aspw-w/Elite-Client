@@ -35,17 +35,13 @@ import java.util.*
 
 class Scaffold : Module("Scaffold", ModuleCategory.Player, GLFW.GLFW_KEY_UNKNOWN, false, true) {
     companion object {
-        @Setting
         private val tower = BooleanValue("Tower", true)
 
-        @Setting
         private val towerCenter = BooleanValue("Tower Center", false) { tower.get() }
 
-        @Setting
         private val towerWhen =
             ListValue("Tower When", arrayOf("Always", "Moving", "Standing"), "Always") { tower.get() }
 
-        @Setting
         private val towerMode =
             ListValue(
                 "Tower Mode",
@@ -53,59 +49,44 @@ class Scaffold : Module("Scaffold", ModuleCategory.Player, GLFW.GLFW_KEY_UNKNOWN
                 "Vanilla"
             ) { tower.get() }
 
-        @Setting
         private val towerSpeed = FloatValue("Tower Speed", 1f, 0.1f, 1f) {
             tower.get() && towerMode.get().equals("vanilla", true)
         }
 
-        @Setting
         private val rotationMode = ListValue("Rotation Mode", arrayOf("Math", "Simple", "Hypixel", "None"), "Math")
 
-        @Setting
         private val hypixelMode =
             BooleanValue("Hypixel Mode", false) { rotationMode.get().equals("math", true) }
 
-        @Setting
         private val rotationSpeed = FloatValue("Rotation Speed", 40f, 0f, 180f) {
             rotationMode.get().equals("math", true) || rotationMode.get().equals("simple", true) || rotationMode.get()
                 .equals("hypixel", true)
         }
 
-        @Setting
         private val randomizedRotation =
             BooleanValue("Randomized Rotation", true) { rotationMode.get().equals("math", true) }
 
-        @Setting
         private val randomTurnSpeed = FloatValue("Random Turn Speed", 15f, 0f, 20f) {
             rotationMode.get().equals("math", true) && randomizedRotation.get()
         }
 
-        @Setting
         private val searchRange = IntValue("Search Range", 2, 0, 5, "m")
 
-        @Setting
         private val customTimer = BooleanValue("Custom Timer", false)
 
-        @Setting
         private val towerTimerSpeed =
             FloatValue("Tower Timer Speed", 1.5f, 0.1f, 10f) { customTimer.get() && tower.get() }
 
-        @Setting
         private val normalTimerSpeed = FloatValue("Normal Timer Speed", 1.5f, 0.1f, 10f) { customTimer.get() }
 
-        @Setting
         private val keepY = BooleanValue("KeepY", true)
 
-        @Setting
         private val keepYOnlySpeed = BooleanValue("KeepY Only Speed", true) { keepY.get() }
 
-        @Setting
         private val intelligentPicker = BooleanValue("Intelligent Picker", true)
 
-        @Setting
         private val noSprint = BooleanValue("No Sprint", false)
 
-        @Setting
         private val down = BooleanValue("Down", true)
 
         var hotbarStackSize: Int = 0

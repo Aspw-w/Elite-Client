@@ -31,10 +31,8 @@ import org.lwjgl.opengl.GL11
 import kotlin.streams.asSequence
 
 class BlockESP : Module("Block ESP", ModuleCategory.Render, GLFW.GLFW_KEY_UNKNOWN, false, true) {
-    @Setting
     private val chest = BooleanValue("Chest", true)
 
-    @Setting
     private val bed = BooleanValue("Bed", true)
 
     override fun onDisable() {}

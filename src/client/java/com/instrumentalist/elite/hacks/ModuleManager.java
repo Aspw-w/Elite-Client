@@ -14,6 +14,7 @@ import com.instrumentalist.elite.hacks.features.world.Timer;
 import com.instrumentalist.elite.utils.IMinecraft;
 import com.instrumentalist.elite.utils.packet.BlinkUtil;
 import com.instrumentalist.elite.utils.rotation.RotationUtil;
+import com.instrumentalist.elite.utils.value.SettingValue;
 import com.instrumentalist.mixin.Initializer;
 import net.minecraft.network.packet.Packet;
 import net.minecraft.network.packet.c2s.common.CommonPongC2SPacket;
@@ -24,10 +25,8 @@ import xyz.breadloaf.imguimc.customwindow.ModuleRenderable;
 import xyz.breadloaf.imguimc.screen.EmptyScreen;
 
 import java.io.File;
-import java.lang.reflect.Field;
 import java.text.DecimalFormat;
 import java.util.*;
-import java.util.stream.Collectors;
 
 public class ModuleManager implements EventListener {
     public static final List<Module> modules = new ArrayList<>();
@@ -121,12 +120,12 @@ public class ModuleManager implements EventListener {
         Client.eventManager.register(new ModuleManager());
     }
 
-    public static List<Field> getSettings(Object module) {
-        Field[] declaredFields = module.getClass().getDeclaredFields();
+    public static List<SettingValue<?>> getSettings(Object module) {
+        if (!(module instanceof Module moduleObj)) {
+            throw new RuntimeException("The type of this Object is not a Module");
+        }
 
-        return Arrays.stream(declaredFields)
-                .filter(field -> field.isAnnotationPresent(Module.Setting.class))
-                .collect(Collectors.toList());
+        return moduleObj.values;
     }
 
     public static boolean getModuleState(Module module) {

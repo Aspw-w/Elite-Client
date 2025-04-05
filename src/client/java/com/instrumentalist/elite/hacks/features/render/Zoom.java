@@ -23,7 +23,6 @@ public class Zoom extends Module {
         super("Zoom", ModuleCategory.Render, GLFW.GLFW_KEY_UNKNOWN, true, true);
     }
 
-    @Setting
     private final KeyBindValue zoomKey = new KeyBindValue("Zoom Key", GLFW.GLFW_KEY_UNKNOWN);
 
     private static boolean zooming = false;

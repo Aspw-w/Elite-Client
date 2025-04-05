@@ -17,7 +17,6 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable
 
 class XRay : Module("XRay", ModuleCategory.World, GLFW.GLFW_KEY_F7, false, true) {
     companion object {
-        @Setting
         private val bypassAntiXRay = BooleanValue("Bypass Anti XRay (Sodium only)", false)
 
         fun hookTransparentOre(blockState: BlockState, original: Boolean): Boolean {

@@ -13,7 +13,6 @@ import org.lwjgl.glfw.GLFW
 
 class ChatCommands : Module("Chat Commands", ModuleCategory.Player, GLFW.GLFW_KEY_UNKNOWN, true, true) {
     companion object {
-        @Setting
         val prefix = TextValue("Prefix", ".")
     }
 

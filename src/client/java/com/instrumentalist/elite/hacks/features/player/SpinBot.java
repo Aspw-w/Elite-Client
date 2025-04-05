@@ -14,7 +14,6 @@ public class SpinBot extends Module {
         super("Spin Bot", ModuleCategory.Player, GLFW.GLFW_KEY_UNKNOWN, false, true);
     }
 
-    @Setting
     private final FloatValue spinSpeed = new FloatValue(
             "Spin Speed",
             30f,
@@ -22,7 +21,6 @@ public class SpinBot extends Module {
             40f
     );
 
-    @Setting
     private final FloatValue pitch = new FloatValue(
             "Pitch",
             90f,

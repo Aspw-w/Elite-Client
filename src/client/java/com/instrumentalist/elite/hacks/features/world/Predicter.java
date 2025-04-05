@@ -31,7 +31,6 @@ public class Predicter extends Module {
         super("Predicter", ModuleCategory.World, GLFW.GLFW_KEY_UNKNOWN, false, true);
     }
 
-    @Setting
     private final IntValue tick = new IntValue("Tick", 5, 1, 20);
 
     @Override

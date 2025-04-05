@@ -26,7 +26,6 @@ public class Fly extends Module {
         super("Fly", ModuleCategory.Movement, GLFW.GLFW_KEY_UNKNOWN, false, true);
     }
 
-    @Setting
     private static final ListValue flyMode = new ListValue(
             "Fly Mode",
             Arrays.asList("Vanilla", "Creative", "Hypixel Prediction", "Cubecraft", "Miniblox", "Verus 1.8", "Verus JetPack", "Float").toArray(new String[0]),
@@ -36,14 +35,11 @@ public class Fly extends Module {
     private static final FlyModeManager flyModeManager = new FlyModeManager(flyMode);
 
     // Vanilla
-    @Setting
     public static final FloatValue vanillaHSpeed = new FloatValue("Horizontal Speed", 2f, 0.1f, 4f, () -> flyMode.get().equalsIgnoreCase("vanilla"));
 
-    @Setting
     public static final FloatValue vanillaVSpeed = new FloatValue("Vertical Speed", 1.2f, 0.1f, 4f, () -> flyMode.get().equalsIgnoreCase("vanilla"));
 
     // Verus JetPack
-    @Setting
     public static final BooleanValue verusJetPackJumpKeyOnly = new BooleanValue("Jump Key Only", false, () -> flyMode.get().equalsIgnoreCase("verus jetpack"));
 
     public static void onEnableFunctions() {
