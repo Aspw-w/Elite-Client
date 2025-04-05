@@ -125,7 +125,7 @@ public class ModuleManager implements EventListener {
             throw new RuntimeException("The type of this Object is not a Module");
         }
 
-        return moduleObj.values;
+        return moduleObj.settings;
     }
 
     public static boolean getModuleState(Module module) {

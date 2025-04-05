@@ -24,7 +24,7 @@ public abstract class Module implements EventListener {
     public boolean showOnArray;
 
     public ConfigObject configObject = new ConfigObject(this);
-    public List<SettingValue<?>> values;
+    public List<SettingValue<?>> settings;
 
     public Module(String moduleName, ModuleCategory moduleCategory, int key, boolean tempEnabled, boolean showOnArray) {
         this.moduleName = moduleName;
@@ -39,20 +39,20 @@ public abstract class Module implements EventListener {
     private void addSettings() {
         Field[] declaredFields = this.getClass().getDeclaredFields();
 
-        List<SettingValue<?>> values = new ArrayList<>();
+        List<SettingValue<?>> settings = new ArrayList<>();
         for (Field declaredField : declaredFields) {
             try {
                 declaredField.setAccessible(true);
                 Object value = declaredField.get(this);
                 if (value instanceof SettingValue<?>) {
-                    values.add((SettingValue<?>) value);
+                    settings.add((SettingValue<?>) value);
                 }
             } catch (Exception e) {
                 throw new RuntimeException(String.format("Initializing Setting(%s) of %s failed", this.moduleName, declaredField.getName()));
             }
         }
 
-        this.values = values;
+        this.settings = settings;
     }
 
     public void setState(boolean state) {
