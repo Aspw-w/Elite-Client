@@ -4,14 +4,9 @@ import com.instrumentalist.elite.Client;
 import com.instrumentalist.elite.configs.ConfigObject;
 import com.instrumentalist.elite.events.EventListener;
 import com.instrumentalist.elite.hacks.features.render.Interface;
-import com.instrumentalist.elite.utils.ChatUtil;
-import org.lwjgl.glfw.GLFW;
+import com.instrumentalist.elite.utils.value.SettingValue;
 
-import java.lang.annotation.ElementType;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import java.lang.annotation.Target;
-import java.lang.reflect.Field;
+import java.util.List;
 
 public abstract class Module implements EventListener {
     public final String moduleName;
@@ -21,11 +16,7 @@ public abstract class Module implements EventListener {
     public boolean showOnArray;
 
     public ConfigObject configObject = new ConfigObject(this);
-
-    @Target(ElementType.FIELD)
-    @Retention(RetentionPolicy.RUNTIME)
-    public @interface Setting {
-    }
+    public List<SettingValue<?>> settings;
 
     public Module(String moduleName, ModuleCategory moduleCategory, int key, boolean tempEnabled, boolean showOnArray) {
         this.moduleName = moduleName;

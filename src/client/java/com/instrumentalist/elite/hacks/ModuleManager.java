@@ -14,6 +14,7 @@ import com.instrumentalist.elite.hacks.features.world.Timer;
 import com.instrumentalist.elite.utils.IMinecraft;
 import com.instrumentalist.elite.utils.packet.BlinkUtil;
 import com.instrumentalist.elite.utils.rotation.RotationUtil;
+import com.instrumentalist.elite.utils.value.SettingValue;
 import com.instrumentalist.mixin.Initializer;
 import net.minecraft.network.packet.Packet;
 import net.minecraft.network.packet.c2s.common.CommonPongC2SPacket;
@@ -27,7 +28,6 @@ import java.io.File;
 import java.lang.reflect.Field;
 import java.text.DecimalFormat;
 import java.util.*;
-import java.util.stream.Collectors;
 
 public class ModuleManager implements EventListener {
     public static final List<Module> modules = new ArrayList<>();
@@ -48,85 +48,107 @@ public class ModuleManager implements EventListener {
     public static String bps = "0.00";
 
     public static void onInitialize() {
-        modules.add(new Speed());
-        modules.add(new Fly());
-        modules.add(new NoBreakCooldown());
-        modules.add(new Interface());
-        modules.add(new KillAura());
-        modules.add(new SpinBot());
-        modules.add(new VanillaSpoofer());
-        modules.add(new AntiBot());
-        modules.add(new AutoPotion());
-        modules.add(new Criticals());
-        modules.add(new Teams());
-        modules.add(new Velocity());
-        modules.add(new Phase());
-        modules.add(new ServerCrasher());
-        modules.add(new Spammer());
-        modules.add(new PerfectHorseJump());
-        modules.add(new InventoryMove());
-        modules.add(new WaterSpeed());
-        modules.add(new NoSlow());
-        modules.add(new AutoTool());
-        modules.add(new ChestStealer());
-        modules.add(new FastLadder());
-        modules.add(new InvManager());
-        modules.add(new NoFall());
-        modules.add(new Sprint());
-        modules.add(new ESP());
-        modules.add(new LightningDetector());
-        modules.add(new CameraNoClip());
-        modules.add(new LowFireOverlay());
-        modules.add(new Breaker());
-        modules.add(new CivBreak());
-        modules.add(new Timer());
-        modules.add(new Nuker());
-        modules.add(new XRay());
-        modules.add(new Scaffold());
-        modules.add(new TransactionConfirmBlinker());
-        modules.add(new ExploitPatcher());
-        modules.add(new PortalScreen());
-        modules.add(new FullBright());
-        modules.add(new TargetStrafe());
-        modules.add(new Disabler());
-        modules.add(new LegacyCombat());
-        modules.add(new Freecam());
-        modules.add(new Cape());
-        modules.add(new Predicter());
-        modules.add(new MurdererDetector());
-        modules.add(new NoHurtCam());
-        modules.add(new FastBow());
-        modules.add(new FastEat());
-        modules.add(new Zoom());
-        modules.add(new PathFinder());
-        modules.add(new NoBuildLimit());
-        modules.add(new FastBreak());
-        modules.add(new ItemView());
-        modules.add(new EntityDesync());
-        modules.add(new Step());
-        modules.add(new AntiVoid());
-        modules.add(new AutoFish());
-        modules.add(new NameTags());
-        modules.add(new NoJumpCooldown());
-        modules.add(new BlockESP());
-        modules.add(new HudPoser());
-        modules.add(new TimeChanger());
-        modules.add(new Scoreboard());
-        modules.add(new TargetESP());
-        modules.add(new ChatCommands());
-        modules.add(new PluginsDetector());
+        addModule(new Speed());
+        addModule(new Fly());
+        addModule(new NoBreakCooldown());
+        addModule(new Interface());
+        addModule(new KillAura());
+        addModule(new SpinBot());
+        addModule(new VanillaSpoofer());
+        addModule(new AntiBot());
+        addModule(new AutoPotion());
+        addModule(new Criticals());
+        addModule(new Teams());
+        addModule(new Velocity());
+        addModule(new Phase());
+        addModule(new ServerCrasher());
+        addModule(new Spammer());
+        addModule(new PerfectHorseJump());
+        addModule(new InventoryMove());
+        addModule(new WaterSpeed());
+        addModule(new NoSlow());
+        addModule(new AutoTool());
+        addModule(new ChestStealer());
+        addModule(new FastLadder());
+        addModule(new InvManager());
+        addModule(new NoFall());
+        addModule(new Sprint());
+        addModule(new ESP());
+        addModule(new LightningDetector());
+        addModule(new CameraNoClip());
+        addModule(new LowFireOverlay());
+        addModule(new Breaker());
+        addModule(new CivBreak());
+        addModule(new Timer());
+        addModule(new Nuker());
+        addModule(new XRay());
+        addModule(new Scaffold());
+        addModule(new TransactionConfirmBlinker());
+        addModule(new ExploitPatcher());
+        addModule(new PortalScreen());
+        addModule(new FullBright());
+        addModule(new TargetStrafe());
+        addModule(new Disabler());
+        addModule(new LegacyCombat());
+        addModule(new Freecam());
+        addModule(new Cape());
+        addModule(new Predicter());
+        addModule(new MurdererDetector());
+        addModule(new NoHurtCam());
+        addModule(new FastBow());
+        addModule(new FastEat());
+        addModule(new Zoom());
+        addModule(new PathFinder());
+        addModule(new NoBuildLimit());
+        addModule(new FastBreak());
+        addModule(new ItemView());
+        addModule(new EntityDesync());
+        addModule(new Step());
+        addModule(new AntiVoid());
+        addModule(new AutoFish());
+        addModule(new NameTags());
+        addModule(new NoJumpCooldown());
+        addModule(new BlockESP());
+        addModule(new HudPoser());
+        addModule(new TimeChanger());
+        addModule(new Scoreboard());
+        addModule(new TargetESP());
+        addModule(new ChatCommands());
+        addModule(new PluginsDetector());
 
         modules.sort(Comparator.comparing(module -> module.moduleName));
 
         Client.eventManager.register(new ModuleManager());
     }
 
-    public static List<Field> getSettings(Object module) {
+    public static void addModule(Module module) {
+        modules.add(module);
+
+        // add
         Field[] declaredFields = module.getClass().getDeclaredFields();
 
-        return Arrays.stream(declaredFields)
-                .filter(field -> field.isAnnotationPresent(Module.Setting.class))
-                .collect(Collectors.toList());
+        List<SettingValue<?>> settings = new ArrayList<>();
+        for (Field declaredField : declaredFields) {
+            try {
+                declaredField.setAccessible(true);
+                Object value = declaredField.get(module);
+                if (value instanceof SettingValue<?>) {
+                    settings.add((SettingValue<?>) value);
+                }
+            } catch (Exception e) {
+                throw new RuntimeException(String.format("Initializing Setting(%s) of %s failed", module.moduleName, declaredField.getName()));
+            }
+        }
+
+        module.settings = settings;
+    }
+
+    public static List<SettingValue<?>> getSettings(Object module) {
+        if (!(module instanceof Module moduleObj)) {
+            throw new RuntimeException("The type of this Object is not a Module");
+        }
+
+        return moduleObj.settings;
     }
 
     public static boolean getModuleState(Module module) {
