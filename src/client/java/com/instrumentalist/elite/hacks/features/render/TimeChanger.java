@@ -15,7 +15,6 @@ import java.lang.reflect.Field;
 
 public class TimeChanger extends Module {
 
-    @Setting
     private final ListValue time = new ListValue(
             "Time of Day",
             new String[]{"Day", "Night", "Midnight", "Sunrise"},

@@ -24,10 +24,8 @@ import org.lwjgl.opengl.GL11
 
 class Freecam : Module("Freecam", ModuleCategory.Render, GLFW.GLFW_KEY_F8, false, true) {
     companion object {
-        @Setting
         private val horizontalSpeed = FloatValue("Horizontal Speed", 2f, 0.1f, 4f)
 
-        @Setting
         private val verticalSpeed = FloatValue("Vertical Speed", 1f, 0.1f, 4f)
 
         var canFly = false

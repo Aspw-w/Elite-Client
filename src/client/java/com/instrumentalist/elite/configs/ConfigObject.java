@@ -25,14 +25,7 @@ public class ConfigObject {
         bjo.addProperty("bind", module.key);
         bjo.addProperty("show", module.showOnArray);
         JsonArray ja = new JsonArray();
-        ModuleManager.getSettings(module).stream().map(setting -> {
-            try {
-                setting.setAccessible(true);
-                return setting.get(module);
-            } catch (IllegalAccessException e) {
-                return null;
-            }
-        }).forEach(setting -> {
+        ModuleManager.getSettings(module).forEach(setting -> {
             if (setting == null) return;
             if (setting instanceof SettingValue<?>) {
                 JsonObject jsonObject = new JsonObject();
@@ -66,15 +59,7 @@ public class ConfigObject {
         jsonObject.entrySet().forEach(config -> {
             if (Objects.equals(config.getKey(), "toggle")) module.setState(config.getValue().getAsBoolean());
             if (Objects.equals(config.getKey(), "settings")) {
-                config.getValue().getAsJsonArray().forEach(jsonElement -> jsonElement.getAsJsonObject().entrySet().forEach(setting -> ModuleManager.getSettings(module).stream().map(m -> {
-                    try {
-                        m.setAccessible(true);
-                        return m.get(module);
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                        return null;
-                    }
-                }).forEach(m -> {
+                config.getValue().getAsJsonArray().forEach(jsonElement -> jsonElement.getAsJsonObject().entrySet().forEach(setting -> ModuleManager.getSettings(module).forEach(m -> {
                     if (!(m instanceof SettingValue<?>)) return;
                     switch (m) {
                         case TextValue textValue when Objects.equals(textValue.name, setting.getKey()) ->

@@ -32,13 +32,10 @@ import java.util.*
 
 class CivBreak : Module("Civ Break", ModuleCategory.World, GLFW.GLFW_KEY_UNKNOWN, false, true) {
     companion object {
-        @Setting
         private val range = FloatValue("Range", 3f, 0.1f, 6f, "m")
 
-        @Setting
         private val fastSpeed = IntValue("Fast Speed", 10, 1, 10)
 
-        @Setting
         private val rotations = BooleanValue("Rotations", true)
 
         var wasBreaking = false

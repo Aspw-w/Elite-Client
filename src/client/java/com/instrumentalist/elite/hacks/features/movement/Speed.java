@@ -25,7 +25,6 @@ public class Speed extends Module {
         super("Speed", ModuleCategory.Movement, GLFW.GLFW_KEY_UNKNOWN, false, true);
     }
 
-    @Setting
     private static final ListValue speedMode = new ListValue(
             "Speed Mode",
             Arrays.asList("Vanilla", "Smooth Vanilla", "Hypixel Hop", "Cubecraft Hop", "Verus Hop", "Miniblox").toArray(new String[0]),
@@ -35,10 +34,8 @@ public class Speed extends Module {
     private static final SpeedModeManager speedModeManager = new SpeedModeManager(speedMode);
 
     // Vanilla
-    @Setting
     public static final FloatValue vanillaSpeed = new FloatValue("Speed", 1f, 0.1f, 4f, () -> speedMode.get().equalsIgnoreCase("vanilla") || speedMode.get().equalsIgnoreCase("smooth vanilla"));
 
-    @Setting
     public static final BooleanValue vanillaAutoBHop = new BooleanValue("Auto BHop", true, () -> speedMode.get().equalsIgnoreCase("vanilla"));
 
     public static void onEnableFunctions() {

@@ -13,13 +13,10 @@ import java.util.*
 
 class Timer : Module("Timer", ModuleCategory.World, GLFW.GLFW_KEY_UNKNOWN, false, true) {
     companion object {
-        @Setting
         val mode = ListValue("Mode", arrayOf("Vanilla"), "Vanilla")
 
-        @Setting
         private val speed = FloatValue("Speed", 1.5f, 0.1f, 10f) { mode.get().equals("vanilla", true) }
 
-        @Setting
         private val moveOnly = BooleanValue("Move Only", false) { mode.get().equals("vanilla", true) }
     }
 

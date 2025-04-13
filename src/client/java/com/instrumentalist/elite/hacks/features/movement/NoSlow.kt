@@ -28,10 +28,8 @@ import org.lwjgl.glfw.GLFW
 
 class NoSlow : Module("No Slow", ModuleCategory.Movement, GLFW.GLFW_KEY_UNKNOWN, false, true) {
     companion object {
-        @Setting
         private val mode = ListValue("Mode", arrayOf("Vanilla", "Hypixel"), "Vanilla")
 
-        @Setting
         private val sneak = BooleanValue("Sneak", false) { mode.get().equals("vanilla", true) }
 
         fun noSlowHook(): Boolean {

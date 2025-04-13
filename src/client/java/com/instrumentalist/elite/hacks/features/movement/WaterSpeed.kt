@@ -11,7 +11,6 @@ import org.lwjgl.glfw.GLFW
 import java.util.*
 
 class WaterSpeed : Module("Water Speed", ModuleCategory.Movement, GLFW.GLFW_KEY_UNKNOWN, false, true) {
-    @Setting
     private val mode = ListValue("Mode", arrayOf("Vanilla", "Verus"), "Vanilla")
 
     override fun onDisable() {}

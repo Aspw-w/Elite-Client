@@ -21,7 +21,6 @@ import java.util.*
 import kotlin.math.abs
 
 class NoFall : Module("No Fall", ModuleCategory.Player, GLFW.GLFW_KEY_UNKNOWN, false, true) {
-    @Setting
     private val mode = ListValue("Mode", arrayOf("Packet", "Spoof", "No Ground", "Hypixel"), "Packet")
 
     private var timered = false

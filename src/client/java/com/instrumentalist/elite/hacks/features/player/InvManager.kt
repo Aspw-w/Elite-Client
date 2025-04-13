@@ -23,16 +23,12 @@ import net.minecraft.screen.slot.SlotActionType
 import org.lwjgl.glfw.GLFW
 
 class InvManager : Module("Inv Manager", ModuleCategory.Player, GLFW.GLFW_KEY_UNKNOWN, false, true) {
-    @Setting
     private val delay = IntValue("Delay", 0, 0, 10)
 
-    @Setting
     private val armorDelay = IntValue("Armor Delay", 0, 0, 10)
 
-    @Setting
     private val cleaner = BooleanValue("Cleaner", true)
 
-    @Setting
     private val onlyInventory = BooleanValue("Only Inventory", false)
 
     private var tickCounter: Int = 0

@@ -22,7 +22,6 @@ import java.util.*
 class AntiBot :
     Module("Anti Bot", ModuleCategory.Combat, GLFW.GLFW_KEY_UNKNOWN, false, true) {
     companion object {
-        @Setting
         private val mode = ListValue("Mode", arrayOf("Advanced", "Hypixel", "Shotbow"), "Advanced")
 
         private val suspectList = HashSet<UUID>()

@@ -32,20 +32,17 @@ public class Interface extends Module {
         super("Interface", ModuleCategory.Render, GLFW.GLFW_KEY_UNKNOWN, true, false);
     }
 
-    @Setting
     private final ListValue uiSpacingMode = new ListValue(
             "UI Spacing Mode",
             new String[]{"None", "Small"},
             "Small"
     );
 
-    @Setting
     private final BooleanValue waterMark = new BooleanValue(
             "Watermark",
             true
     );
 
-    @Setting
     private final ListValue watermarkMode = new ListValue(
             "Watermark Mode",
             new String[]{"Normal", "Radium"},
@@ -53,46 +50,39 @@ public class Interface extends Module {
             waterMark::get
     );
 
-    @Setting
     private final TextValue clientName = new TextValue(
             "Client Name",
             "Elite",
             waterMark::get
     );
 
-    @Setting
     private final BooleanValue extraInfo = new BooleanValue(
             "Extra Info",
             true
     );
 
-    @Setting
     private final BooleanValue moduleList = new BooleanValue(
             "Module List",
             true
     );
 
-    @Setting
     private final BooleanValue moduleInfo = new BooleanValue(
             "Module Info",
             true
     );
 
-    @Setting
     private final BooleanValue fontShadow = new BooleanValue(
             "Text Shadow",
             true,
             () -> waterMark.get() || extraInfo.get() || moduleList.get()
     );
 
-    @Setting
     private final BooleanValue backGround = new BooleanValue(
             "Back Ground",
             true,
             () -> waterMark.get() || extraInfo.get() || moduleList.get()
     );
 
-    @Setting
     private final ListValue colorMode = new ListValue(
             "Color Mode",
             new String[]{"Static", "Fade", "Rainbow"},
@@ -100,21 +90,18 @@ public class Interface extends Module {
             () -> waterMark.get() || moduleList.get()
     );
 
-    @Setting
     public final ColorValue primaryColor = new ColorValue(
             "Primary Color",
             new Color(255, 0, 0),
             () -> !colorMode.get().equalsIgnoreCase("rainbow")
     );
 
-    @Setting
     public final ColorValue secondaryColor = new ColorValue(
             "Secondary Color",
             new Color(0, 0, 255),
             () -> colorMode.get().equalsIgnoreCase("fade")
     );
 
-    @Setting
     public final FloatValue fadeSpeed = new FloatValue(
             "Fade Speed",
             1.0f, 0.1f, 5.0f,
