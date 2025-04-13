@@ -16,7 +16,6 @@ import org.lwjgl.glfw.GLFW
 import java.util.*
 
 class Velocity : Module("Velocity", ModuleCategory.Combat, GLFW.GLFW_KEY_UNKNOWN, false, true) {
-    @Setting
     private val mode = ListValue("Mode", arrayOf("Standard", "Hypixel"), "Standard")
 
     override fun tag(): String {

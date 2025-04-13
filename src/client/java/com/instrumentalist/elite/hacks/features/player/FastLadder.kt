@@ -13,16 +13,12 @@ import org.lwjgl.glfw.GLFW
 import java.util.*
 
 class FastLadder : Module("Fast Ladder", ModuleCategory.Player, GLFW.GLFW_KEY_UNKNOWN, false, true) {
-    @Setting
     private val mode = ListValue("Mode", arrayOf("Vanilla", "Timer"), "Vanilla")
 
-    @Setting
     private val resetY = BooleanValue("ResetY", true) { mode.get().equals("vanilla", true) }
 
-    @Setting
     private val speed = FloatValue("Speed", 0.4f, 0.2f, 1f) { mode.get().equals("vanilla", true) }
 
-    @Setting
     private val timerSpeed = FloatValue("TimerSpeed", 2f, 1.1f, 3f) { mode.get().equals("timer", true) }
 
     private var wasClimbing = false

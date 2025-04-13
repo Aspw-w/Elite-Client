@@ -20,7 +20,6 @@ public class InventoryMove extends Module {
         super("Inventory Move", ModuleCategory.Movement, GLFW.GLFW_KEY_UNKNOWN, false, true);
     }
 
-    @Setting
     private static final BooleanValue inventoryOnly = new BooleanValue("Inventory Only", false);
 
     public static void moveFreely() {

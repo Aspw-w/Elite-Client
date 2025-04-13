@@ -16,10 +16,8 @@ import org.lwjgl.glfw.GLFW
 import java.util.*
 
 class Criticals : Module("Criticals", ModuleCategory.Combat, GLFW.GLFW_KEY_UNKNOWN, false, true) {
-    @Setting
     private val mode = ListValue("Mode", arrayOf("Packet"), "Packet")
 
-    @Setting
     private val cooldownCheck = BooleanValue("CooldownCheck", false)
 
     override fun tag(): String {

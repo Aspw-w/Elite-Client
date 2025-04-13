@@ -26,25 +26,18 @@ import kotlin.math.sqrt
 
 class Nuker : Module("Nuker", ModuleCategory.World, GLFW.GLFW_KEY_UNKNOWN, false, true) {
     companion object {
-        @Setting
         private val mode = ListValue("Mode", arrayOf("Normal", "Floor"), "Normal")
 
-        @Setting
         private val clickMode = ListValue("Click Mode", arrayOf("Break", "Place"), "Break")
 
-        @Setting
         private val range = IntValue("Range", 4, 2, 6, "m")
 
-        @Setting
         private val singleBlock = BooleanValue("Single Block", false)
 
-        @Setting
         private val rotations = BooleanValue("Rotations", true) { singleBlock.get() }
 
-        @Setting
         private val nukeSpeed = IntValue("Nuke Speed", 10, 1, 10) { !singleBlock.get() }
 
-        @Setting
         private val noteBlockOnly = BooleanValue("Note Block Only", false)
 
         var wasBreaking = false

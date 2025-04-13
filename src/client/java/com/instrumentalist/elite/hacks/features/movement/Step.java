@@ -36,17 +36,14 @@ public class Step extends Module {
         super("Step", ModuleCategory.Movement, GLFW.GLFW_KEY_UNKNOWN, false, true);
     }
 
-    @Setting
     private static final ListValue mode = new ListValue(
             "Mode",
             Arrays.asList("Vanilla", "NCP", "Hypixel").toArray(new String[0]),
             "Vanilla"
     );
 
-    @Setting
     private static final BooleanValue disableWhenSpeed = new BooleanValue("Disable When Speed", true);
 
-    @Setting
     private static final FloatValue height = new FloatValue(
             "Height",
             2f,
@@ -55,7 +52,6 @@ public class Step extends Module {
             () -> !mode.get().equalsIgnoreCase("hypixel")
     );
 
-    @Setting
     private static final IntValue delay = new IntValue(
             "Delay",
             1,
@@ -63,10 +59,8 @@ public class Step extends Module {
             10
     );
 
-    @Setting
     private static final BooleanValue customTimer = new BooleanValue("Custom Timer", true);
 
-    @Setting
     private static final FloatValue timerSpeed = new FloatValue(
             "Timer Speed",
             0.6f,

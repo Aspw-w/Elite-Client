@@ -13,28 +13,20 @@ import org.lwjgl.glfw.GLFW
 
 class Teams : Module("Teams", ModuleCategory.Combat, GLFW.GLFW_KEY_UNKNOWN, false, true) {
     companion object {
-        @Setting
         private val scoreboardTeam = BooleanValue("ScoreboardTeam", true)
 
-        @Setting
         private val nameColor = BooleanValue("NameColor", false)
 
-        @Setting
         private val prefix = BooleanValue("Prefix", false)
 
-        @Setting
         private val armorColor = BooleanValue("ArmorColor", false)
 
-        @Setting
         private val helmet = BooleanValue("Helmet", true) { armorColor.get() }
 
-        @Setting
         private val chestPlate = BooleanValue("ChestPlate", true) { armorColor.get() }
 
-        @Setting
         private val leggings = BooleanValue("Leggings", true) { armorColor.get() }
 
-        @Setting
         private val boots = BooleanValue("Boots", true) { armorColor.get() }
 
         fun isInClientPlayersTeam(entity: LivingEntity): Boolean {

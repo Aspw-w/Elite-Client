@@ -15,10 +15,8 @@ import java.util.*
 
 class ChestStealer : Module("Chest Stealer", ModuleCategory.Player, GLFW.GLFW_KEY_UNKNOWN, false, true) {
 
-    @Setting
     private val stealDelay = IntValue("Steal Delay", 0, 0, 10)
 
-    @Setting
     private val closeDelay = IntValue("Close Delay", 2, 0, 10)
 
     private val random: Random = Random()

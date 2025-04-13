@@ -18,10 +18,8 @@ import org.lwjgl.glfw.GLFW
 import org.lwjgl.opengl.GL11
 
 class TargetESP : Module("Target ESP", ModuleCategory.Render, GLFW.GLFW_KEY_UNKNOWN, true, true) {
-    @Setting
     private val ring = BooleanValue("Ring", true)
 
-    @Setting
     private val star = BooleanValue("Star", true)
 
     override fun onDisable() {

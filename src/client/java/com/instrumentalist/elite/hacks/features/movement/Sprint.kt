@@ -13,19 +13,14 @@ import org.lwjgl.glfw.GLFW
 
 class Sprint : Module("Sprint", ModuleCategory.Movement, GLFW.GLFW_KEY_UNKNOWN, false, true) {
     companion object {
-        @Setting
         private val autoSprint = BooleanValue("Auto Sprint", true)
 
-        @Setting
         val multiDirection = BooleanValue("Multi Direction", true) { autoSprint.get() }
 
-        @Setting
         private val keepSprint = BooleanValue("Keep Sprint", true)
 
-        @Setting
         private val silentSprint = BooleanValue("Silent", true)
 
-        @Setting
         private val wallCheck = BooleanValue("Wall Check", false)
 
         fun keepSprintHook(entity: PlayerEntity): Boolean {

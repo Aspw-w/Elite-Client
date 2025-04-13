@@ -14,10 +14,8 @@ import org.lwjgl.glfw.GLFW
 
 class NameTags : Module("Name Tags", ModuleCategory.Render, GLFW.GLFW_KEY_UNKNOWN, false, true) {
     companion object {
-        @Setting
         private val onlyPlayers = BooleanValue("Only Players", true)
 
-        @Setting
         private val local = BooleanValue("Local", false)
 
         fun forceShouldRenderName(entity: Entity): Boolean {

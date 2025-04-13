@@ -547,22 +547,16 @@ public class ModuleRenderable implements Renderable {
             }
         }
 
-        List<Field> settings = ModuleManager.getSettings(module);
+        List<SettingValue<?>> settings = ModuleManager.getSettings(module);
 
         if (!settings.isEmpty()) {
             ImGui.separator();
             ImGui.indent();
         }
 
-        for (Field setting : settings) {
-            setting.setAccessible(true);
-            try {
-                Object settingInstance = setting.get(module);
-                if (settingInstance instanceof SettingValue<?> settingValue && settingValue.canDisplay.canDisplay()) {
-                    renderSetting(settingValue, module.moduleName);
-                }
-            } catch (IllegalAccessException e) {
-                throw new RuntimeException(e);
+        for (SettingValue<?> settingValue : settings) {
+            if (settingValue.canDisplay.canDisplay()) {
+                renderSetting(settingValue, module.moduleName);
             }
         }
 

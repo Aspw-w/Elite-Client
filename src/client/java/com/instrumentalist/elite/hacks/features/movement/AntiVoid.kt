@@ -23,10 +23,8 @@ class AntiVoid : Module(
     false,
     true
 ) {
-    @Setting
     private val stopXZ = BooleanValue("StopXZ", true)
 
-    @Setting
     private val distance = IntValue("Distance", 6, 0, 10)
 
     private var canTick = 0

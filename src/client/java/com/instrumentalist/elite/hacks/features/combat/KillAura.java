@@ -35,7 +35,6 @@ public class KillAura extends Module {
         super("Kill Aura", ModuleCategory.Combat, GLFW.GLFW_KEY_UNKNOWN, false, true);
     }
 
-    @Setting
     private final FloatValue targetRange = new FloatValue(
             "Target Range",
             4f,
@@ -43,7 +42,6 @@ public class KillAura extends Module {
             8f
     );
 
-    @Setting
     private final FloatValue attackRange = new FloatValue(
             "Attack Range",
             3f,
@@ -51,14 +49,12 @@ public class KillAura extends Module {
             6f
     );
 
-    @Setting
     private final ListValue apsMode = new ListValue(
             "APS Mode",
             Arrays.asList("Cooldown", "Randomized CPS", "Hurt Math", "No Delay").toArray(new String[0]),
             "Randomized CPS"
     );
 
-    @Setting
     private final IntValue maxCps = new IntValue(
             "Max CPS",
             12,
@@ -67,7 +63,6 @@ public class KillAura extends Module {
             () -> apsMode.get().equalsIgnoreCase("randomized cps")
     );
 
-    @Setting
     private final IntValue minCps = new IntValue(
             "Min CPS",
             6,
@@ -76,27 +71,23 @@ public class KillAura extends Module {
             () -> apsMode.get().equalsIgnoreCase("randomized cps")
     );
 
-    @Setting
     private final ListValue swingOrderMode = new ListValue(
             "Swing Order Mode",
             Arrays.asList("1.8", "1.9.x", "No Order").toArray(new String[0]),
             "1.9.x"
     );
 
-    @Setting
     public static final ListValue autoBlockMode = new ListValue(
             "Auto Block Mode",
             Arrays.asList("Vanilla", "Hypixel Full", "No Order").toArray(new String[0]),
             "No Order"
     );
 
-    @Setting
     private final BooleanValue rotations = new BooleanValue(
             "Rotations",
             true
     );
 
-    @Setting
     private final FloatValue rotationSpeed = new FloatValue(
             "Rotation Speed",
             40f,
@@ -105,14 +96,12 @@ public class KillAura extends Module {
             rotations::get
     );
 
-    @Setting
     private final BooleanValue randomizedRotation = new BooleanValue(
             "Randomized Rotation",
             true,
             rotations::get
     );
 
-    @Setting
     private final FloatValue randomTurnSpeed = new FloatValue(
             "Random Turn Speed",
             15,
@@ -121,19 +110,16 @@ public class KillAura extends Module {
             () -> rotations.get() && randomizedRotation.get()
     );
 
-    @Setting
     private final BooleanValue onlyPlayers = new BooleanValue(
             "Only Players",
             false
     );
 
-    @Setting
     public static final BooleanValue tpReach = new BooleanValue(
             "TP Reach",
             false
     );
 
-    @Setting
     private final FloatValue tpExtendedReach = new FloatValue(
             "TP Extended Reach",
             40f,
@@ -142,7 +128,6 @@ public class KillAura extends Module {
             tpReach::get
     );
 
-    @Setting
     private final BooleanValue tpBack = new BooleanValue(
             "TP Back",
             true,

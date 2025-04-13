@@ -33,17 +33,13 @@ import java.util.*
 
 class Breaker : Module("Breaker", ModuleCategory.World, GLFW.GLFW_KEY_UNKNOWN, false, true) {
     companion object {
-        @Setting
         private val mode = ListValue("Mode", arrayOf("Normal", "Hypixel", "Cubecraft"), "Normal")
 
-        @Setting
         private val clickMode =
             ListValue("Click Mode", arrayOf("Break", "Place"), "Break") { mode.get().equals("normal", true) }
 
-        @Setting
         private val block = ListValue("Block", arrayOf("Bed", "Egg"), "Bed") { mode.get().equals("normal", true) }
 
-        @Setting
         private val range = FloatValue("Range", 4f, 1f, 6f, "m")
 
         var wasBreaking = false

@@ -7,7 +7,6 @@ import org.lwjgl.glfw.GLFW
 
 class Cape : Module("Cape", ModuleCategory.Render, GLFW.GLFW_KEY_UNKNOWN, true, true) {
     companion object {
-        @Setting
         val overrideOriginalCape = BooleanValue("Override Original Cape", true)
     }
 

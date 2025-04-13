@@ -21,7 +21,6 @@ import org.lwjgl.glfw.GLFW
 import java.util.*
 
 class Phase : Module("Phase", ModuleCategory.Player, GLFW.GLFW_KEY_UNKNOWN, false, true) {
-    @Setting
     private val mode = ListValue("Mode", arrayOf("NCP", "AAC 4", "Hypixel"), "NCP")
 
     private var hypTick = 0
