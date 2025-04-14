@@ -46,6 +46,7 @@ class NoSlow : Module("No Slow", ModuleCategory.Movement, GLFW.GLFW_KEY_UNKNOWN,
     }
 
     private var waitingPacket = false
+    private var waitJump = false
 
     override fun tag(): String {
         return mode.get()
@@ -62,6 +63,14 @@ class NoSlow : Module("No Slow", ModuleCategory.Movement, GLFW.GLFW_KEY_UNKNOWN,
 
         if (mode.get().equals("hypixel", true) && IMinecraft.mc.player!!.mainHandStack.item !is SwordItem && IMinecraft.mc.player!!.isUsingItem && IMinecraft.mc.player!!.isOnGround)
             event.y += 1E-14
+
+        if (waitJump && IMinecraft.mc.player!!.isOnGround) {
+            IMinecraft.mc.options.jumpKey.isPressed = false
+            IMinecraft.mc.player!!.jump()
+            waitJump = false
+        } else if (event.y > 0.2) {
+            waitJump = false
+        }
     }
 
     override fun onSendPacket(event: SendPacketEvent) {
@@ -76,6 +85,8 @@ class NoSlow : Module("No Slow", ModuleCategory.Movement, GLFW.GLFW_KEY_UNKNOWN,
                 if (IMinecraft.mc.player!!.isOnGround) {
                     IMinecraft.mc.options.jumpKey.isPressed = false
                     IMinecraft.mc.player!!.jump()
+                } else {
+                    waitJump = true
                 }
 
                 waitingPacket = true

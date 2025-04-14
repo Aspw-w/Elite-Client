@@ -16,6 +16,8 @@ import net.minecraft.client.gui.screen.ingame.FurnaceScreen
 import net.minecraft.client.gui.screen.ingame.GenericContainerScreen
 import net.minecraft.client.gui.screen.ingame.InventoryScreen
 import net.minecraft.client.option.KeyBinding
+import net.minecraft.enchantment.Enchantment
+import net.minecraft.enchantment.EnchantmentHelper
 import net.minecraft.entity.EquipmentSlot
 import net.minecraft.entity.player.PlayerInventory
 import net.minecraft.item.*
@@ -173,7 +175,7 @@ class InvManager : Module("Inv Manager", ModuleCategory.Player, GLFW.GLFW_KEY_UN
             val currentArmor = player.getEquippedStack(slot)
 
             if (currentArmor.isEmpty || ToolUtil.isBetterArmor(bestArmor, currentArmor)) {
-                if (!currentArmor.isEmpty) {
+                if (currentArmor.isEmpty || isBetterArmorWithEnchant(bestArmor, currentArmor)) {
                     cleaning = true
                     val armorSlot = ToolUtil.getItemSlotId(currentArmor)
                     IMinecraft.mc.interactionManager!!.clickSlot(
@@ -296,13 +298,27 @@ class InvManager : Module("Inv Manager", ModuleCategory.Player, GLFW.GLFW_KEY_UN
             return rank1.compareTo(rank2)
 
         if (item1 == item2) {
-            val enchantments1 = stack1.enchantments.size
-            val enchantments2 = stack2.enchantments.size
-            if (enchantments1 != enchantments2)
-                return enchantments1.compareTo(enchantments2)
+            val ench1 = totalEnchantmentLevels(stack1)
+            val ench2 = totalEnchantmentLevels(stack2)
+            if (ench1 != ench2) return ench1.compareTo(ench2)
         }
 
         return 0
+    }
+
+    private fun totalEnchantmentLevels(stack: ItemStack): Int {
+        val enchantments = EnchantmentHelper.getEnchantments(stack)
+        var total = 0
+        for (entry in enchantments.enchantmentEntries) {
+            total += entry.intValue  // level
+        }
+        return total
+    }
+
+    private fun isBetterArmorWithEnchant(a: ItemStack, b: ItemStack): Boolean {
+        if (ToolUtil.isBetterArmor(a, b)) return true
+        if (ToolUtil.isBetterArmor(b, a)) return false
+        return totalEnchantmentLevels(a) > totalEnchantmentLevels(b)
     }
 
     private fun swapItems(from: Int, to: Int) {
